@@ -89,3 +89,8 @@ export interface IUserEditProfileType {
   nickname: string,
   bio: string | undefined,
 }
+
+export interface IEditProfileResponse {
+  message: string,
+  user: IUser
+}

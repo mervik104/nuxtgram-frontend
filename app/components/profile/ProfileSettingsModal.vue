@@ -11,21 +11,22 @@
                         <p v-else-if="isNicknameSuccess" class="text-green-500 text-xs">Это имя доступно</p>
                     </template>
                 </VeeInput>
-                <VeeInput name="biography" label="Краткое описание" placeholder="Краткое описание" is-textarea
-                    :maxlength="200" input-class="h-[200px]" />
+                <VeeInput name="biography" 
+                fill="subtle"
+                label="Краткое описание" 
+                placeholder="Краткое описание" 
+                is-textarea
+                :maxlength="200" input-class="h-[200px]" />
             </div>
 
             <div class="flex w-full mt-8 gap-3">
-                <button @click="isOpen = false"
-                    class="flex-1 px-4 py-2 text-white bg-red-500 hover:bg-red-600 rounded-lg transition-colors font-medium">
+                <BaseButton @click="isOpen = false" variant="secondary" class="flex-1">
                     Отмена
-                </button>
+                </BaseButton>
 
-                <button @click="saveProfile" :disabled="isSaveDisabled"
-                    class="flex-1 px-4 py-2 text-white bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg transition-colors font-medium">
-                    <BaseLoader v-if="isSaving" :is-center="true" size="md" />
-                    <p v-else>Сохранить</p>
-                </button>
+                <BaseButton @click="saveProfile" loader-variant="white" variant="primary" :loading="isSaving" :disabled="isSaveDisabled" class="flex-1">
+                    Сохранить
+                </BaseButton>
             </div>
         </div>
     </BaseModal>

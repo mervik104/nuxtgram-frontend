@@ -1,79 +1,41 @@
-.dark-mode body {
-  background-color: #101213;
-  color: #ffffff;
+/* Глобальные настройки */
+html {
+    scroll-behavior: smooth;
 }
 
-.dark-mode input {
-  background-color: #1b2125;
+/* Шрифт лучше вешать на body или html, а не на конкретные инпуты */
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+/* ================================
+   ТЕМЫ (Светлая / Темная)
+   ================================ */
+.dark-mode body {
+    background-color: #101213;
+    color: #ffffff;
 }
 
 .light-mode body {
-  background-color: #ffffff;
-  color: #000000;
+    background-color: #ffffff;
+    color: #000000;
 }
 
-textarea {
-    width: 100%;
-    min-height: 150px;
-    padding: 10px;
-    font-family: 'Inter', sans-serif;
-    font-size: 16px;
-    color: #fff;
-    background-color: #101416;
-    border: 1px solid #333;
-    border-radius: 8px;
-    resize: vertical;
-    outline: none;
-}
+/* УБРАЛИ .dark-mode input и .dark-mode textarea, 
+   теперь их фоны управляются через атомы (fill="transparent" / fill="subtle") */
 
-textarea::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-}
 
-textarea::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
-}
+/* ================================
+   СТИЛИ СКРОЛЛБАРОВ (Оставляем как есть, они крутые)
+   ================================ */
 
-textarea::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
-    border: 2px solid transparent;
-    background-clip: content-box;
-    transition: background-color 0.3s ease;
-}
-
-textarea::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(255, 255, 255, 0.5);
-}
-
-body.light-mode textarea {
-    background-color: #f5f5f5;
-    color: #111;
-    border: 1px solid #ccc;
-}
-
-body.light-mode textarea::-webkit-scrollbar-track {
-    background: rgba(0,0,0,0.05);
-}
-
-body.light-mode textarea::-webkit-scrollbar-thumb {
-    background-color: rgba(0,0,0,0.2);
-}
-
-body.light-mode textarea::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(0,0,0,0.5);
-}
-
+/* Общий скроллбар для всей страницы */
 ::-webkit-scrollbar {
     width: 12px; 
 }
-
 ::-webkit-scrollbar-track {
     background: transparent;
 }
-
 ::-webkit-scrollbar-thumb {
     background-color: rgba(100, 100, 100, 0.4);
     border-radius: 10px; 
@@ -81,27 +43,51 @@ body.light-mode textarea::-webkit-scrollbar-thumb:hover {
     background-clip: content-box;
     transition: background-color 0.3s ease;
 }
-
 ::-webkit-scrollbar-thumb:hover {
     background-color: rgba(100, 100, 100, 0.7);
 }
 
-body.dark-mode ::-webkit-scrollbar-thumb {
+/* Скроллбар конкретно внутри текстарей (появится при overflow: auto) */
+textarea::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+textarea::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+textarea::-webkit-scrollbar-thumb {
     background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+    transition: background-color 0.3s ease;
+}
+textarea::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.5);
 }
 
-body.dark-mode ::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(255, 255, 255, 0.5);
+/* Светлая тема для скроллбаров */
+body.light-mode textarea::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.05);
+}
+body.light-mode textarea::-webkit-scrollbar-thumb {
+    background-color: rgba(0,0,0,0.2);
+}
+body.light-mode textarea::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0,0,0,0.5);
 }
 
 body.light-mode ::-webkit-scrollbar-thumb {
     background-color: rgba(0, 0, 0, 0.2);
 }
-
-body.light-theme ::-webkit-scrollbar-thumb:hover {
+body.light-mode ::-webkit-scrollbar-thumb:hover {
     background-color: rgba(0, 0, 0, 0.5);
 }
 
-html {
-    scroll-behavior: smooth;
+body.dark-mode ::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+body.dark-mode ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.5);
 }

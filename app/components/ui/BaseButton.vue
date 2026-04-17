@@ -11,9 +11,9 @@ import BaseLoader from './BaseLoader.vue';
 
 defineOptions({ inheritAttrs: false })
 
-type ButtonVariant = 'primary' | 'ghost' | 'text' | 'danger'
+type ButtonVariant = 'primary' | 'ghost' | 'text' | 'danger' | 'secondary' | 'success'
 type LoaderVariant = 'heavy' | 'primary' | 'muted' | 'white'
-type ButtonSize = 'sm' | 'md' | 'lg'
+type ButtonSize = 'sm' | 'md' | 'lg' | 'xl'
 type ButtonRounded = 'full' | 'md' | 'none' | 'xl' | '2xl' | 'sm' | 'lg'
 
 const props = withDefaults(defineProps<{

@@ -3,23 +3,34 @@ import { tv } from 'tailwind-variants'
 // ==========================================
 // BUTTON (Объединил: uButton, dropdownButton, toolbarButton)
 // ==========================================
+
 export const button = tv({
-    base: 'inline-flex items-center justify-center transition-colors font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 disabled:opacity-60',
+    base: 'inline-flex items-center justify-center transition-colors font-medium outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900',
     variants: {
         variant: {
-            primary: 'bg-blue-500 text-white hover:bg-blue-600 focus-visible:ring-blue-500',
+            primary: 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm focus-visible:ring-blue-500',
+            success: 'bg-green-600 text-white hover:bg-green-700 shadow-sm focus-visible:ring-green-500',
+            secondary: 'bg-gray-800 text-gray-300 hover:bg-gray-700 border border-gray-700 focus-visible:ring-gray-500',
             ghost: 'bg-transparent text-gray-200 hover:bg-gray-800 focus-visible:ring-gray-500',
             text: 'bg-transparent text-gray-200 hover:text-gray-400',
             danger: 'bg-red-500 text-white hover:bg-red-600 focus-visible:ring-red-500',
         },
         rounded: { full: 'rounded-full', md: 'rounded-md', none: 'rounded-none', xl: 'rounded-xl', '2xl': 'rounded-2xl', sm: 'rounded-sm', lg: 'rounded-lg' },
-        size: { sm: 'px-2 py-1 text-sm gap-1.5', md: 'px-3 py-2 text-base gap-2', lg: 'px-4 py-3 text-lg gap-2.5' }, // Добавил gap для иконок
-        disabled: { true: 'cursor-not-allowed' },
+        size: { 
+            sm: 'px-3 py-1.5 text-sm gap-1.5', 
+            md: 'px-4 py-2 text-base gap-2', 
+            lg: 'px-5 py-2.5 text-lg gap-2.5',
+            xl: 'px-4 py-2 text-xl gap-2.5' 
+        },
+        disabled: { true: 'cursor-not-allowed pointer-events-none' },
         error: { true: 'ring-2 ring-red-500', false: '' },
-        loading: { true: 'cursor-wait', false: '' },
+        loading: { true: 'cursor-wait pointer-events-none', false: '' },
     },
     compoundVariants: [
-        { variant: ['primary', 'danger'], loading: true, class: 'opacity-80' }
+        { variant: 'primary', disabled: true, class: 'bg-blue-800 hover:bg-blue-800 shadow-none opacity-80' },
+        { variant: 'success', disabled: true, class: 'bg-green-800 hover:bg-green-800 shadow-none opacity-80' },
+        { variant: 'secondary', disabled: true, class: 'opacity-50' },
+        { variant: ['primary', 'success', 'danger'], loading: true, class: 'opacity-80' }
     ],
     defaultVariants: { variant: 'ghost', size: 'md', disabled: false, rounded: 'lg', error: false, loading: false },
 })
@@ -38,34 +49,52 @@ export const avatar = tv({
 // ==========================================
 // INPUT (Объединил: appInput, veeInput, postInput)
 // ==========================================
+
 export const input = tv({
-    base: 'w-full p-2 border rounded-md bg-transparent text-white placeholder-gray-500 focus:outline-none transition-colors',
+    base: 'w-full px-4 py-2 rounded-lg border text-white placeholder-gray-500 outline-none transition-colors',
     variants: {
         intent: {
             normal: 'border-border-input focus:border-blue-500',
             error: 'border-red-500 focus:border-red-600',
+            success: 'border-green-500 focus:border-green-600',
             disabled: 'border-gray-600 bg-gray-800 cursor-not-allowed',
         },
         size: { sm: 'text-sm', md: 'text-base' },
+        fill: {
+            transparent: 'bg-transparent',
+            subtle: 'bg-surface-secondary', 
+            solid: 'bg-gray-800',
+        }
     },
-    defaultVariants: { intent: 'normal', size: 'md' },
+    defaultVariants: { intent: 'normal', size: 'md', fill: 'transparent' },
 })
 
 // ==========================================
 // TEXTAREA
 // ==========================================
+
 export const textarea = tv({
-    base: 'w-full min-h-10 overflow-hidden border rounded-xl p-2 pr-12 text-white placeholder-gray-500 resize-none outline-none transition-colors',
+    base: 'w-full min-h-[150px] p-2.5 rounded-lg border border-gray-700 text-white text-base placeholder-gray-500 outline-none transition-colors',
     variants: {
         intent: {
-            normal: 'border-border-input focus:border-blue-500',
+            normal: 'focus:border-blue-500',
             error: 'border-red-500 focus:border-red-600',
-            disabled: 'border-gray-600 bg-gray-700 cursor-not-allowed',
+            disabled: 'border-gray-600 bg-gray-800 cursor-not-allowed',
+        },
+        fill: {
+            solid: 'bg-surface-base',
+            subtle: 'bg-surface-secondary',
+            transparent: 'bg-transparent'
         },
         overflow: { auto: 'overflow-auto', hidden: 'overflow-hidden' },
-        size: { sm: 'text-sm', md: 'text-base', lg: 'text-lg' },
+        resize: { none: 'resize-none', vertical: 'resize-y' },
     },
-    defaultVariants: { intent: 'normal', size: 'md', overflow: 'auto' },
+    defaultVariants: { 
+        intent: 'normal', 
+        fill: 'solid', 
+        overflow: 'auto', 
+        resize: 'vertical' 
+    },
 })
 
 // ==========================================
@@ -89,7 +118,7 @@ export const modal = tv({
 export const dropdown = tv({
     slots: {
         trigger: 'inline-flex items-center gap-2 px-3 py-1 rounded-md transition-colors bg-transparent text-gray-200 hover:bg-gray-800',
-        menu: 'bg-surface-secondary rounded-md shadow-lg py-1 z-50',
+        menu: 'bg-surface-menu border border-border-hover rounded-lg shadow-lg overflow-hidden py-1',
     },
     variants: {
         align: { start: 'origin-top-left', end: 'origin-top-right' },
@@ -116,9 +145,9 @@ export const loader = tv({
     // Заменил inline-block на inline-flex items-center justify-center
     base: 'animate-spin rounded-full border-solid box-border inline-flex items-center justify-center',
     variants: {
-        size: { 
-            sm: 'w-6 h-6 border-[4px]', 
-            md: 'w-10 h-10 border-[6px]', 
+        size: {
+            sm: 'w-6 h-6 border-[4px]',
+            md: 'w-10 h-10 border-[6px]',
             lg: 'w-16 h-16 border-[8px]',
             xl: 'w-24 h-24 border-[10px]'
         },

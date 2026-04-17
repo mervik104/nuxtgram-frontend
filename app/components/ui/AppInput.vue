@@ -16,8 +16,9 @@
             @input="onInput"
             @blur="$emit('blur', $event)"
             :type="type"
+            :autofocus="autofocus"
             :placeholder="placeholder"
-            :class="[inputClasses, inputClass]"
+            :class="[input({ intent: currentIntent, fill: props.fill }), isTextarea ? 'resize-none' : '', inputClass]"
         />
 
         <p v-if="error" class="text-red-500 text-xs mt-1 whitespace-pre-line">{{ error }}</p>
@@ -27,6 +28,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { vAutoAnimate } from '@formkit/auto-animate'
+import { input } from '~/utils/ui/atoms';
 
 const props = withDefaults(defineProps<{
     modelValue: string
@@ -37,7 +39,9 @@ const props = withDefaults(defineProps<{
     isSuccess?: boolean
     isTextarea?: boolean
     maxlength?: number
+    autofocus?: boolean,
     inputClass?: string
+    fill?: 'transparent' | 'subtle' | 'solid'
 }>(), {
     type: 'text'
 })
@@ -51,11 +55,11 @@ const onInput = (event: Event) => {
     emit('update:modelValue', (event.target as HTMLInputElement).value)
 }
 
-const inputClasses = computed(() => [
-    'w-full px-4 py-2 rounded-lg border outline-none transition-all',
-    props.error ? 'border-red-500' :
-    props.isSuccess ? 'border-green-500' :
-    'border-gray-500 focus:border-blue-400',
-    props.isTextarea ? 'resize-none' : ''
-])
+type InputIntent = 'normal' | 'error' | 'success' | 'disabled'
+
+const currentIntent = computed<InputIntent>(() => {
+    if (props.error) return 'error'
+    if (props.isSuccess) return 'success'
+    return 'normal'
+})
 </script>

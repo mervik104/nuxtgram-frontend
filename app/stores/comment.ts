@@ -6,8 +6,6 @@ import type { IReactionRequest } from '../types/ReactionTypes'
 import type { ICreateCommentRequest } from '../types/PostTypes'
 import type { IPaginationMeta } from '~/types/CommonTypes'
 
-const normalizeText = (text: string) => text.trim().replace(/\s+/g, ' ')
-
 export const useCommentStore = defineStore('commentStore', () => {
     const { apiFetch } = useApiFetch()
     const comments = ref<Record<string, IComment>>({})

@@ -22,4 +22,5 @@ useEventListener('keydown', (e: KeyboardEvent) => {
         isOpen.value = false
     }
 })
+
 </script>

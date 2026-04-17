@@ -32,27 +32,32 @@
 import { useAuthStore } from '~/stores/auth';
 import type { IUser } from '~/types/UserTypes';
 
-const user = ref<IUser | null>()
-const itsMe = ref<boolean>(false)
-const isFound = ref<boolean>(true)
 const userNick: string = useRoute().params.id as string
 const authStore = useAuthStore()
 
-const { getUserByNickname, user: me, openEditProfileModal } = authStore
-const { isProcess } = storeToRefs(authStore)
+const { getUserByNickname, openEditProfileModal } = authStore
+const { isProcess: isEditProcess, user: me } = storeToRefs(authStore)
 
-onMounted(async () => {
-    const result = await getUserByNickname(userNick)
-    if (result) {
-        user.value = result
-        isFound.value = true
-        itsMe.value = user.value.id === me?.id
-    } else {
-        user.value = null
-        isFound.value = false
-    }
+const otherUserData = ref<IUser | null>(null)
+const isLoadingPage = ref<boolean>(true)
+const isFound = ref<boolean>(true)
+const isProcess = computed(() => isLoadingPage.value || isEditProcess.value)
+const itsMe = computed(() => me.value?.nickname === userNick)
+const user = computed<IUser | null>(() => {
+    return itsMe.value ? me.value : otherUserData.value
 })
 
+onMounted(async () => {
+    if (itsMe.value) {
+        isLoadingPage.value = false
+        return
+    }
+    isLoadingPage.value = true
+    const result = await getUserByNickname(userNick)
+    otherUserData.value = result ? result : null
+    isFound.value = !!result
+    isLoadingPage.value = false
+})
 
 const subscribe = () => {
     console.log('Подписаться')

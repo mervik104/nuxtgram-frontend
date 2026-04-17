@@ -15,8 +15,6 @@
 </template>
 
 <script setup>
-import TransitionFade from '../common/TransitionFade.vue';
-
 const isPostVisible = defineModel({ required: true })
 const emit = defineEmits(['close']);
 </script>

@@ -1,5 +1,5 @@
 import { defineStore } from "pinia"
-import type { IUser, IUserEditProfileType, IUsersResponse, UserGetMeType, UserLoginType, UserRegisterType } from "../types/UserTypes"
+import type { IEditProfileResponse, IUser, IUserEditProfileType, IUsersResponse, UserGetMeType, UserLoginType, UserRegisterType } from "../types/UserTypes"
 import { useApiFetch } from '../composables/useApiFetch';
 import { ref } from "vue";
 import { useApi } from "../composables/useApi";
@@ -88,11 +88,12 @@ export const useAuthStore = defineStore('authStore', () => {
     async function editProfile(data: IUserEditProfileType) {
         isProcess.value = true
         try {
-            const {bio, username, nickname} = await apiFetch<IUser>(`users/me/profile`, {method: 'PATCH', body: data})
+            const newData = await apiFetch<IEditProfileResponse>(`users/me/profile`, {method: 'PATCH', body: data})
             if(user.value) {
-                user.value.bio = bio
-                user.value.nickname = nickname
-                user.value.username = username
+                if(user.value.nickname !== newData.user.nickname) {
+                    redirectToProfile(newData.user.nickname)
+                }
+                user.value = newData.user
             }
         } catch(e) {
             throw e
@@ -111,7 +112,6 @@ export const useAuthStore = defineStore('authStore', () => {
             if(user.value) {
                 user.value.avatar = data.avatar
             }
-            window.location.reload()
         }
         catch(e) {
             console.log(e)

@@ -9,6 +9,7 @@
         :error="errorMessage"
         :is-success="isSuccess"
         :is-textarea="isTextarea"
+        :autofocus="autofocus"
         :maxlength="maxlength"
         :input-class="inputClass" 
     >
@@ -31,6 +32,7 @@ const props = withDefaults(defineProps<{
     isTextarea?: boolean
     maxlength?: number
     inputClass?: string
+    autofocus?: boolean
 }>(), {
     type: 'text'
 })
