@@ -1,0 +1,3 @@
+<template>
+    Главная страница
+</template>

@@ -1,0 +1,3 @@
+<template>
+    <RegisterPage></RegisterPage>
+</template>

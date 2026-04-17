@@ -1,0 +1,279 @@
+// import { tv } from 'tailwind-variants'
+
+// /** common */
+// export const avatar = tv({
+//     base: 'rounded-full overflow-hidden bg-gray-700 flex items-center justify-center',
+//     variants: {
+//         size: {
+//             sm: 'w-8 h-8',
+//             md: 'w-10 h-10',
+//             lg: 'w-14 h-14',
+//             xl: 'w-24 h-24',
+//             '2xl': 'w-36 h-36',
+//         },
+//     },
+//     defaultVariants: { size: 'md' },
+// })
+
+// export const baseLoader = tv({
+//     base: 'animate-spin rounded-full border-4 border-t-transparent',
+//     variants: {
+//         size: { sm: 'w-4 h-4', md: 'w-6 h-6', lg: 'w-8 h-8' },
+//         color: { primary: 'border-blue-500', muted: 'border-gray-500' },
+//     },
+//     defaultVariants: { size: 'md', color: 'primary' },
+// })
+
+// export const baseModal = tv({
+//     base: 'fixed inset-0 flex items-center justify-center z-50',
+//     variants: {
+//         backdrop: { dark: 'bg-black/60', light: 'bg-white/60' },
+//         size: { sm: 'max-w-md', md: 'max-w-2xl', lg: 'max-w-4xl' },
+//     },
+//     defaultVariants: { backdrop: 'dark', size: 'md' },
+// })
+
+// export const modalContent = tv({
+//     base: 'p-6 mx-auto rounded-2xl bg-[#252525] w-full max-w-md flex flex-col items-center',
+//     variants: {
+//         size: { sm: 'max-w-sm', md: 'max-w-md', lg: 'max-w-lg' },
+//     },
+//     defaultVariants: { size: 'md' },
+// })
+
+// export const dropdownButton = tv({
+//     base: 'inline-flex items-center gap-2 px-3 py-1 rounded-md transition-colors',
+//     variants: {
+//         intent: {
+//             primary: 'bg-gray-800 text-white hover:bg-gray-700',
+//             ghost: 'bg-transparent text-gray-200 hover:bg-gray-800',
+//         },
+//         size: { sm: 'text-sm', md: 'text-base' },
+//     },
+//     defaultVariants: { intent: 'ghost', size: 'md' },
+// })
+
+// export const dropdownMenu = tv({
+//     base: 'bg-[#16181a] rounded-md shadow-lg py-1',
+//     variants: {
+//         align: { start: 'origin-top-left', end: 'origin-top-right' },
+//     },
+//     defaultVariants: { align: 'start' },
+// })
+
+// export const textBody = tv({
+//     base: 'text-gray-200 leading-relaxed',
+//     variants: { size: { sm: 'text-sm', md: 'text-base', lg: 'text-lg' } },
+//     defaultVariants: { size: 'md' },
+// })
+
+// export const toolbar = tv({
+//     base: 'flex items-center gap-2',
+// })
+
+// export const toolbarButton = tv({
+//     base: 'p-2 rounded-md transition-colors',
+//     variants: {
+//         intent: { default: 'text-gray-200 hover:bg-gray-800', danger: 'text-red-400 hover:bg-red-900' },
+//         size: { sm: 'text-sm', md: 'text-base' },
+//     },
+//     defaultVariants: { intent: 'default', size: 'md' },
+// })
+
+// /** transitions */
+// export const transitionFade = tv({ base: 'transition-opacity duration-200' })
+// export const transitionDrop = tv({ base: 'transition-transform duration-200' })
+
+// /** comment */
+// export const commentWrapper = tv({
+//     base: 'flex flex-col gap-3 bg-transparent',
+// })
+
+// export const commentBorder = tv({
+//     base: 'border-t border-[#232628] pt-3',
+//     variants: {
+//         variant: {
+//             side: 'ml-8 border-b border-l border-[#39425a] rounded-xl mb-5 relative',
+//         },
+//     },
+// })
+
+// export const commentHeader = tv({
+//     base: 'flex items-start gap-3',
+// })
+
+// export const commentItem = tv({
+//     base: 'flex gap-3 items-start',
+// })
+
+// export const commentList = tv({
+//     base: 'flex flex-col gap-3',
+// })
+
+// export const commentCreate = tv({
+//     base: 'flex items-center justify-center pl-1 gap-3 w-full',
+// })
+
+// export const textarea = tv({
+//     base: 'w-full min-h-10 overflow-hidden border rounded-xl p-2 pr-12 text-white placeholder-gray-500 resize-none focus:outline-none transition-colors',
+//     variants: {
+//         intent: {
+//             normal: 'border-[#3A3F45] focus:border-blue-500',
+//             error: 'border-red-500 focus:border-red-600',
+//             disabled: 'border-gray-600 bg-gray-700 cursor-not-allowed',
+//         },
+//         size: { sm: 'text-sm', md: 'text-base', lg: 'text-lg' },
+//     },
+//     defaultVariants: { intent: 'normal', size: 'md' },
+// })
+
+// export const sendButton = tv({
+//     base: 'absolute right-1 bottom-3 rounded-full transition-all duration-200 group',
+//     variants: {
+//         intent: {
+//             send: 'p-1.5 bg-blue-500 hover:bg-blue-600 cursor-pointer',
+//             edit: 'p-1.5 bg-green-500 hover:bg-green-600 cursor-pointer',
+//             disabled: 'p-1.5 bg-gray-600 cursor-not-allowed',
+//         },
+//         size: { md: 'p-1.5', sm: 'p-1', lg: 'p-2' },
+//     },
+//     defaultVariants: { intent: 'send', size: 'md' },
+// })
+
+// export const loader = tv({
+//     base: 'absolute right-0 -bottom-2 p-1.5 rounded-full transition-all duration-200 group',
+// })
+
+// /** layout / header / sidebar */
+// export const headerWrapper = tv({
+//     base: 'flex items-center justify-between px-4 py-3 bg-[#0b0c0d] border-b border-[#1b1d1e]',
+// })
+
+// export const headerButtonWrapper = tv({
+//     base: 'flex items-center gap-2',
+// })
+
+// export const sidebarItem = tv({
+//     base: 'flex items-center gap-3 px-3 py-2 rounded-md transition-colors',
+//     variants: {
+//         active: { true: 'bg-gray-800 text-white', false: 'text-gray-300 hover:bg-gray-900' },
+//     },
+//     defaultVariants: { active: false },
+// })
+
+// export const userDropdown = tv({
+//     base: 'flex items-center gap-3 p-2 rounded-md hover:bg-gray-800',
+// })
+
+// export const userWidget = tv({
+//     base: 'flex items-center gap-3',
+// })
+
+// /** post */
+// export const postCard = tv({
+//     base: 'bg-[#0b0c0d] border border-[#232628] rounded-xl p-4',
+//     variants: {
+//         featured: { true: 'ring-1 ring-blue-600', false: '' },
+//     },
+//     defaultVariants: { featured: false },
+// })
+
+// export const postHeader = tv({
+//     base: 'flex items-start justify-between gap-3',
+// })
+
+// export const postList = tv({
+//     base: 'flex flex-col gap-4',
+// })
+
+// export const postCreateForm = tv({
+//     base: 'flex flex-col gap-3 bg-transparent',
+// })
+
+// export const postInput = tv({
+//     base: 'w-full border rounded-lg p-3 bg-transparent text-white placeholder-gray-500 focus:outline-none focus:border-blue-500',
+//     variants: {
+//         intent: { normal: '', disabled: 'opacity-60 cursor-not-allowed' },
+//         size: { normal: '', large: 'w-[450px] min-h-[500px] max-h-[700px]' },
+//     },
+//     defaultVariants: { intent: 'normal', size: 'normal' },
+// })
+
+// export const postWrapper = tv({
+//     base: 'flex flex-col gap-4',
+// })
+
+// /** profile */
+// export const profileAvatar = tv({
+//     base: 'rounded-full overflow-hidden',
+//     variants: { size: { sm: 'w-10 h-10', md: 'w-20 h-20' } },
+//     defaultVariants: { size: 'md' },
+// })
+
+// export const profileUsername = tv({
+//     base: 'text-2xl font-bold text-gray-100',
+// })
+
+// export const pageContainer = tv({
+//     base: 'mx-auto px-4',
+//     variants: {
+//         width: { normal: 'max-w-4xl', wide: 'max-w-6xl', full: 'w-[1100px]' },
+//         pad: { base: 'p-4', none: '' },
+//     },
+//     defaultVariants: { width: 'normal', pad: 'base' },
+// })
+
+// export const profilePage = tv({ base: 'max-w-4xl mx-auto p-4' })
+// export const profileSettingsModal = tv({ base: 'bg-[#0b0c0d] p-4 rounded-md' })
+// export const profileUserInfo = tv({ base: 'flex flex-col gap-2' })
+// export const profileWrapper = tv({ base: 'flex flex-col gap-4' })
+
+// /** ui inputs & buttons */
+// export const appInput = tv({
+//     base: 'w-full p-2 border rounded-md bg-transparent text-white placeholder-gray-500 focus:outline-none focus:border-blue-500',
+//     variants: {
+//         intent: { normal: 'border-[#3A3F45]', error: 'border-red-500', disabled: 'border-gray-600 bg-gray-800' },
+//         size: { sm: 'text-sm', md: 'text-base' },
+//     },
+//     defaultVariants: { intent: 'normal', size: 'md' },
+// })
+
+// export const uButton = tv({
+//     base: 'inline-flex items-center justify-center rounded-md transition-colors',
+//     variants: {
+//         variant: {
+//             primary: 'bg-blue-500 text-white hover:bg-blue-600',
+//             ghost: 'bg-transparent text-gray-200 hover:bg-gray-800',
+//             danger: 'bg-red-500 text-white hover:bg-red-600',
+//         },
+//         size: { sm: 'px-2 py-1 text-sm', md: 'px-3 py-2 text-base' },
+//         disabled: { true: 'opacity-60 cursor-not-allowed', false: '' },
+//     },
+//     defaultVariants: { variant: 'ghost', size: 'md', disabled: false },
+// })
+
+// export const veeInput = tv({
+//     base: 'w-full p-2 border rounded-md bg-transparent text-white placeholder-gray-500 focus:outline-none',
+// })
+
+// /** icons */
+// export const icon = tv({
+//     base: 'inline-block',
+//     variants: { size: { sm: 'w-4 h-4', md: 'w-5 h-5', lg: 'w-6 h-6' } },
+//     defaultVariants: { size: 'md' },
+// })
+
+// /** misc */
+// export const badge = tv({
+//     base: 'inline-flex items-center px-2 py-0.5 rounded-full text-sm',
+//     variants: { intent: { info: 'bg-blue-500 text-white', muted: 'bg-gray-700 text-gray-200' } },
+//     defaultVariants: { intent: 'muted' },
+// })
+
+// export const card = tv({
+//     base: 'bg-[#0b0c0d] border border-[#232628] rounded-xl p-4 shadow-sm',
+// })
+
+// export const chip = tv({
+//     base: 'inline-flex items-center px-2 py-1 rounded-full bg-gray-800 text-gray-200 text-sm',
+// })

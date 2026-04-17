@@ -1,0 +1,3 @@
+<template>
+    <FeedPage></FeedPage>
+</template>
