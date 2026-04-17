@@ -1,6 +1,8 @@
 export const useApi = () => {
+  const config = useRuntimeConfig()
+
   const api = $fetch.create({
-    baseURL: 'http://localhost:3001/api',
+    baseURL: config.public.API_URL,
     credentials: 'include',
 
     onResponseError({ response }) {

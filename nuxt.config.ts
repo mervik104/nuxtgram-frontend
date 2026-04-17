@@ -14,9 +14,9 @@ export default defineNuxtConfig({
   },
   css: ['~/assets/css/main.css'],
   runtimeConfig: {
-    mongodbUri: process.env.MONGODB_URI,
-    accessSecret: process.env.ACCESS_SECRET,
-    refreshSecret: process.env.REFRESH_SECRET,
+    public: {
+      API_URL: process.env.API_URL,
+    }
   },
   app: {
     head: {
@@ -55,7 +55,8 @@ export default defineNuxtConfig({
        * Automatically add stores dirs to the auto imports. This is the same as
        * directly adding the dirs to the `imports.dirs` option. If you want to
        * also import nested stores, you can use the glob pattern `./stores/**`
-       * (on Nuxt 3) or `app/stores/**` (on Nuxt 4+)
+       * (on Nimport { API_URL } from './app/utils/constants';
+uxt 3) or `app/stores/**` (on Nuxt 4+)
        *
        * @default `['stores']`
        */

@@ -4,8 +4,6 @@ export default defineNuxtRouteMiddleware((to, from) => {
   const authStore = useAuthStore();
   const isLoggedIn = !!authStore.user;
 
-  console.log(authStore.user);
-
   if (to.path === '/' && !isLoggedIn) {
     return navigateTo('/login');
   }
@@ -18,4 +16,4 @@ export default defineNuxtRouteMiddleware((to, from) => {
     console.log('Вы уже авторизованы');
     return navigateTo('/');
   }
-});
+})

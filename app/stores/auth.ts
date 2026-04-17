@@ -4,7 +4,6 @@ import { useApiFetch } from '../composables/useApiFetch';
 import { ref } from "vue";
 import { useApi } from "../composables/useApi";
 
-
 export const useAuthStore = defineStore('authStore', () => {
     const {apiFetch} = useApiFetch()
     const {api} = useApi()

@@ -1,6 +1,6 @@
 <template>
     <div :class="[sizeClasses[size], 'overflow-hidden rounded-full']">
-        <img :src="avatar ? AvatarURL(avatar.thumbnailURL) : '/defaultAvatar.png'" alt="avatar"
+        <img :src="avatar ? avatarURL(avatar.thumbnailURL) : '/defaultAvatar.png'" alt="avatar"
             class="w-full h-full object-cover" :draggable="false"/>
     </div>
 </template>
@@ -8,6 +8,8 @@
 <script setup lang="ts">
 import type { IAvatarType } from '~/types/UserTypes';
 type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+
+const {avatarURL} = useAvatar()
 
 defineProps<{
     avatar?: IAvatarType,
