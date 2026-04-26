@@ -1,23 +1,25 @@
 <template>
-  <CommentWrapper>
-    <CommentHeader :date="formatSocialDate(createdAt)" :author="author" />
-    <div>
-      <TextBody class="pl-1">{{ content }}</TextBody>
-      <Toolbar>
+  <article :id="`comment-${props.id}`">
+    <CommentWrapper>
+      <CommentHeader :date="formatSocialDate(createdAt)" :author="author" />
+      <div>
+        <TextBody class="pl-1">{{ content }}</TextBody>
+        <Toolbar>
 
-        <ToolbarButton @click="likeHandler">
-          <img class="w-4 h-auto" draggable="false" :src="myReaction ? '/redLike.svg' : '/like.svg'" alt="like" />
-          <span>{{ formatCompactNumber(reactionsCount.like) }}</span>
-        </ToolbarButton>
+          <ToolbarButton @click="likeHandler">
+            <img class="w-4 h-auto" draggable="false" :src="myReaction ? '/redLike.svg' : '/like.svg'" alt="like" />
+            <span>{{ formatCompactNumber(reactionsCount.like) }}</span>
+          </ToolbarButton>
 
-        <DropdownMenu v-if="author.id === me?.id">
-          <DropdownButton @click="editHandler">Изменить</DropdownButton>
-          <DropdownButton @click="deleteHandler" danger>Удалить</DropdownButton>
-        </DropdownMenu>
+          <DropdownMenu v-if="author.id === me?.id">
+            <DropdownButton @click="editHandler">Изменить</DropdownButton>
+            <DropdownButton @click="deleteHandler" danger>Удалить</DropdownButton>
+          </DropdownMenu>
 
-      </Toolbar>
-    </div>
-  </CommentWrapper>
+        </Toolbar>
+      </div>
+    </CommentWrapper>
+  </article>
 </template>
 
 <script setup lang="ts">

@@ -2,7 +2,7 @@
     <div class="px-5 py-2">
         <div class="text-md select-none flex gap-4 items-center">
             <HeaderButtonWrapper @click="emit('toggleHidden')">
-                <Avatar :avatar="props.avatar" size="md"/>
+                <Avatar :avatar="props.avatar" size="md" />
             </HeaderButtonWrapper>
             <span class="flex-1 my-auto">
                 <div>
@@ -14,7 +14,6 @@
                         @{{ nickname }}
                     </p>
                 </div>
-
             </span>
         </div>
     </div>

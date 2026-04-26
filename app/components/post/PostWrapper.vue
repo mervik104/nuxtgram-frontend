@@ -1,3 +1,4 @@
+<!-- need refactor color -->
 <template>
   <div class="border-l border-[#424851] w-full transition-colors relative p-4 rounded-2xl">
     <div class="flex flex-col gap-3">

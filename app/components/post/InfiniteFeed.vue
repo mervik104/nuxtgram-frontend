@@ -7,7 +7,12 @@
         </div>
         <div class="flex items-center justify-center">
             <TransitionDrop>
-                    <BaseLoader v-if="isLoading && (posts.length > 0 || posts.length === 0)" :is-center="true" theme="muted" size="lg" />
+                <BaseLoader 
+                    v-if="isLoading && (posts.length > 0 || posts.length === 0)" 
+                    :is-center="true" 
+                    theme="muted"
+                    size="lg" 
+                />
             </TransitionDrop>
         </div>
     </div>
@@ -24,6 +29,7 @@ const props = defineProps<{
 const postsStore = usePostStore()
 const bottomSentinel = ref<HTMLElement | null>(null)
 const { isAtBottom } = useInfiniteScroll(bottomSentinel)
+
 const posts = computed(() => postsStore.getFeedList(props.feedKey))
 const isLoading = computed(() => postsStore.feeds[props.feedKey]?.isLoading || false)
 const canLoadMore = computed(() => {
@@ -32,16 +38,8 @@ const canLoadMore = computed(() => {
     return !feed.isFullyLoaded
 })
 
-const isLoadingMore = computed(() => {
-    const feed = postsStore.feeds[props.feedKey]
-    return feed?.ids && feed.ids.length > 0 && isLoading.value
-})
-
-
 function fetchCurrentFeed(page: number) {
-    if (props.feedKey === 'global') {
-        return postsStore.getGlobalFeed(page)
-    }
+    if (props.feedKey === 'global') return postsStore.getGlobalFeed(page)
     if (props.feedKey.startsWith('user_')) {
         const userId = props.feedKey.replace('user_', '')
         return postsStore.getUserFeed(userId, page)
@@ -55,10 +53,11 @@ onMounted(() => {
 })
 
 watch(isAtBottom, (atBottom) => {
-    if (atBottom && canLoadMore.value && !isLoadingMore.value) {
-        const currentPage = postsStore.feeds[props.feedKey]?.meta?.page || 1
+    if (atBottom && canLoadMore.value && !isLoading.value) {
+        const feed = postsStore.feeds[props.feedKey]
+        if (!feed?.meta) return 
+        const currentPage = feed.meta.page || 1
         fetchCurrentFeed(currentPage + 1)
     }
 })
-
 </script>

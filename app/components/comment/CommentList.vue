@@ -1,10 +1,10 @@
 <template>
+    <!-- need refactor -->
     <CommentBorder @close="closeCommentsHandler" v-model="isPostVisible">
         <div class="w-full">
-            <button v-auto-animate v-if="!isPostVisible && commentsList.length > 6"
-                @click="scrollToPostSmooth"
+            <button v-auto-animate v-if="!isPostVisible && commentsList.length > 6" @click="scrollToPost(props.postId, {highlight: false})"
                 class="sticky top-0 left-1/2 -translate-x-1/2 bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1 z-20">
-                <ArrowUp class="size-3"/>
+                <ArrowUp class="size-3" />
                 К посту
             </button>
             <div class="p-4 pb-[20px]">
@@ -15,12 +15,10 @@
                     </CommentItem>
                 </div>
                 <div v-else-if="!isLoading && commentsMeta?.totalDocs === 0">
-                    Комментариев пока нет
+                    <p class="text-gray-400">Комментариев пока нет</p>
                 </div>
                 <div v-if="canLoadMore && !isLoading" class="mt-3">
-                    <span 
-                        class="select-none text-gray-400 hover:underline cursor-pointer"
-                        @click="loadNextPageHandler">
+                    <span class="select-none text-gray-400 hover:underline cursor-pointer" @click="loadNextPageHandler">
                         Показать ещё...
                     </span>
                 </div>
@@ -33,8 +31,6 @@
                 <BaseLoader :is-center="true" v-if="isLoading" size="sm" theme="muted" />
             </TransitionDrop>
         </div>
-        
-
         <div v-if="me" @focusin="isFocus = true" @focusout="isFocus = false"
             :class="`sticky transition-colors duration-500 border-t -bottom-6 z-99 p-2 
         ${isSticky && !isFocus
@@ -72,23 +68,12 @@ const isFocus = ref(false)
 const sentinelBelow = ref<HTMLElement | null>(null);
 const sentinelAbove = ref<HTMLElement | null>(null);
 
-const { 
-    destroyObserver,
-    initObserver,
-    isPostVisible,
-    scrollToPostInstant,
-    isSticky,
-    scrollToPostSmooth 
-} = useScrollObserver(sentinelAbove, sentinelBelow)
+const { isPostVisible, isSticky } = useVisibilityObserver(sentinelAbove, sentinelBelow)
+const { scrollToComment, scrollToPost } = useScrollTo()
 
 onMounted(async () => {
     sentinelAbove.value = props.sentinelAbove
     await commentStore.fetchComments(props.postId)
-    initObserver()
-});
-
-onUnmounted(() => {
-    destroyObserver();
 });
 
 async function loadNextPageHandler() {
@@ -97,7 +82,7 @@ async function loadNextPageHandler() {
 }
 
 function closeCommentsHandler() {
-    scrollToPostInstant()
+    scrollToPost(props.postId)
     emit('close-comments')
 }
 
@@ -110,9 +95,9 @@ async function addCommentHandler(input: Ref<string>) {
         content: input.value,
         post: props.postId
     }
-    await commentStore.createComment(comment)
+    const newComment = await commentStore.createComment(comment)
     if (!isPostVisible.value) {
-        scrollToPostSmooth()
+        scrollToComment(newComment.id)
     }
     input.value = ''
 }

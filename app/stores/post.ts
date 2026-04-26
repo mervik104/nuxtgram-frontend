@@ -67,7 +67,8 @@ export const usePostStore = defineStore('postsStore', () => {
                 posts.value[post.id] = post
             })
 
-            feed.ids.push(...data.docs.map(p => p.id))
+            const newIds = data.docs.map(p => p.id).filter(id => !feed.ids.includes(id))
+            feed.ids.push(...newIds)
 
             const { docs, ...restData } = data
             feed.meta = restData as unknown as IPaginationMeta
@@ -90,7 +91,6 @@ export const usePostStore = defineStore('postsStore', () => {
     async function getPost(postId: string) {
         const data = await apiFetch<IPost>(`posts/${postId}`)
         posts.value[postId] = data
-        console.log(posts.value)
         return data
     }
 

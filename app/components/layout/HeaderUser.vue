@@ -6,7 +6,7 @@
     </TransitionFade>
   </div>
   <NuxtLink v-else to="/login">
-    <HeaderButtonWrapper >
+    <HeaderButtonWrapper>
       Войти
     </HeaderButtonWrapper>
   </NuxtLink>

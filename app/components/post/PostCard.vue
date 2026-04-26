@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-4">
+  <article class="mb-4" :id="`post-${props.id}`">
     <post-wrapper>
       <div ref="sentinelAbove" class="absolute top-0 left-0 w-full h-[1px] pointer-events-none"></div>
       <PostHeader :date="formatSocialDate(createdAt)" :author="author" />
@@ -29,7 +29,7 @@
     <div v-if="isCommentsOpen" v-auto-animate>
       <CommentList :sentinel-above="elementRef" @close-comments="toggleComments" :post-id="id"></CommentList>
     </div>
-  </div>
+  </article>
 </template>
 
 <script setup lang="ts">

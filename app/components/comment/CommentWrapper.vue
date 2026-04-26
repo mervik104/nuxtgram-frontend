@@ -1,4 +1,5 @@
 <template>
+    <!-- need refactor -->
     <div class="relative">
         <div class="border-l border-[#424851] w-full transition-colors relative p-2 rounded-2xl mb-2">
             <div class="flex flex-col gap-1">

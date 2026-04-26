@@ -41,9 +41,7 @@ import { button, textarea } from '~/utils/ui/atoms'
 
 const isValide = computed(() => normalizeText(input.value).length > 0)
 
-type FormProps = 
-    | { mode: 'create' } 
-    | { mode: 'edit'; post: IPost }
+type FormProps = | { mode: 'create' } | { mode: 'edit'; post: IPost }
 
 const props = defineProps<FormProps>()
 const isOpen = defineModel<boolean>({ required: true })
@@ -54,6 +52,7 @@ const { isSubmitting } = storeToRefs(postStore)
 
 const isDraft = ref<boolean>(false)
 const localStorageContent = 'create-post-content'
+const {scrollToPost} = useScrollTo()
 
 onMounted(() => {
     textareaRef.value?.focus()
@@ -83,7 +82,8 @@ function clearInputs() {
 
 async function submitHandler() {
     if (props.mode === 'create') {
-        await postStore.createPost({ content: input.value })
+        const newPost = await postStore.createPost({ content: input.value })
+        scrollToPost(newPost.id)
         clearInputs()
     } else {
         await postStore.editPost({ content: input.value }, props.post.id)

@@ -1,12 +1,13 @@
+<!-- need refactor color -->
 <template>
-        <div class="absolute z-40 right-3 top-[70px] rounded-md bg-[#171A1C]">
-            <div class="py-3">
-                <UserDropdownProfile @click="emit('toggleHidden')" v-bind="props">Профиль</UserDropdownProfile>
-                <UserDropdownButton>Настройки</UserDropdownButton>
-                <UserDropdownButton>Режим отображения</UserDropdownButton>
-                <UserDropdownButton @click="emit('logout')">Выйти</UserDropdownButton>
-            </div>
+    <div class="absolute z-40 right-3 top-[70px] rounded-md bg-[#171A1C]">
+        <div class="py-3">
+            <UserDropdownProfile @click="emit('toggleHidden')" v-bind="props">Профиль</UserDropdownProfile>
+            <UserDropdownButton>Настройки</UserDropdownButton>
+            <UserDropdownButton>Режим отображения</UserDropdownButton>
+            <UserDropdownButton @click="emit('logout')">Выйти</UserDropdownButton>
         </div>
+    </div>
 </template>
 
 <script lang="ts" setup>

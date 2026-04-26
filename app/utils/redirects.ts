@@ -7,8 +7,12 @@ export function redirectToRegister() {
     navigateTo('/register');
 }
 
-export function redirectToFeed() {
-    navigateTo('/feed');
+export function redirectToFeed(postId?: string) {
+    if(postId) {
+        navigateTo(`/feed/${postId}`);
+    } else {
+        navigateTo(`/feed`);
+    }
 }
 
 export function redirectToProfile(nickname: string) {

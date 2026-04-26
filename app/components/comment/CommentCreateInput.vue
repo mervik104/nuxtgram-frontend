@@ -11,37 +11,25 @@
         </BaseButton>
       </div>
 
-      <textarea 
-        ref="textareaRef" 
-        v-model="input" 
-        @keydown.enter.exact.prevent="handleSend"
-        :placeholder="isEditingComment ? 'Изменение комментария...' : 'Написать комментарий...'"
-        :class="[textarea({ 
-          overflow: isOverflowing ? 'auto' : 'hidden', 
+      <textarea ref="textareaRef" v-model="input" @keydown.enter.exact.prevent="handleSend"
+        :placeholder="isEditingComment ? 'Изменение комментария...' : 'Написать комментарий...'" :class="[textarea({
+          overflow: isOverflowing ? 'auto' : 'hidden',
           resize: 'none',
           fill: 'transparent'
-        }), 'max-h-72 !min-h-10']" 
-      ></textarea>
+        }), 'max-h-72 !min-h-10']"></textarea>
 
-      <BaseButton 
-    @click="handleSend" 
-    :disabled="!input.trim()" 
-    :loading="isSubmitting"
-    :variant="isEditingComment ? 'success' : 'primary'" 
-    loader-variant="white" 
-    rounded="full" 
-    size="sm"
-    class="!p-2 !gap-0 absolute ml-5 bottom-3 group !justify-end" 
->
+      <BaseButton @click="handleSend" :disabled="!input.trim()" :loading="isSubmitting"
+        :variant="isEditingComment ? 'success' : 'primary'" loader-variant="white" rounded="full" size="sm"
+        class="!p-2 !gap-0 absolute ml-5 bottom-3 group !justify-end">
 
-<span class="max-w-0 opacity-0 overflow-hidden whitespace-nowrap transition-all duration-200 ease-out group-hover:max-w-[100px] group-hover:opacity-100 group-hover:mr-2 group-hover:pl-2">
-        {{ isEditingComment ? 'Сохранить' : 'Отправить' }}
-    </span>
-    <ArrowUp v-if="!isSubmitting" class="size-4 flex-shrink-0" />
-  
-    
-</BaseButton>
-
+        <span
+          class="max-w-0 opacity-0 overflow-hidden whitespace-nowrap transition-all duration-200 ease-out group-hover:max-w-[100px] group-hover:opacity-100 group-hover:mr-2 group-hover:pl-2">
+          {{ isEditingComment ? 'Сохранить' : 'Отправить' }}
+        </span>
+        
+        <ArrowUp v-if="!isSubmitting" class="size-4 flex-shrink-0" />
+        
+      </BaseButton>
     </div>
   </div>
 </template>

@@ -1,3 +1,4 @@
+<!-- need refactor color -->
 <template>
   <aside class="w-[250px] shrink-0 border-r border-[#565758] overflow-y-auto p-5">
     <SidebarItem to="/">Главная</SidebarItem>

@@ -1,4 +1,5 @@
 <template>
+    <!-- need refactor -->
     <div class="flex-1 w-full">
         <div class="flex flex-col sm:flex-row sm:items-center gap-3 mb-2">
             <h1 class="text-2xl font-bold text-gray-100">{{ user.username }}</h1>

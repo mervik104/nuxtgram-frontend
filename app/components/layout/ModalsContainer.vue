@@ -1,7 +1,8 @@
 <template>
   <TransitionFade>
     <ProfileSettingsModal v-if="isEditProfileModalOpen" v-model="isEditProfileModalOpen" />
-    <PostFormModal v-if="isEditModalOpen && isEditingPost" mode="edit" :post="isEditingPost" v-model:model-value="isEditModalOpen" />
+    <PostFormModal v-if="isEditModalOpen && isEditingPost" mode="edit" :post="isEditingPost"
+      v-model:model-value="isEditModalOpen" />
     <PostFormModal v-if="isCreateModalOpen" mode="create" v-model:model-value="isCreateModalOpen" />
   </TransitionFade>
 </template>
