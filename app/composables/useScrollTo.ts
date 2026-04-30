@@ -1,15 +1,3 @@
-const getScrollParent = (node: HTMLElement | null): HTMLElement | Window => {
-    if (!node) return window;
-
-    if (node.scrollHeight > node.clientHeight) {
-        const overflowY = window.getComputedStyle(node).overflowY;
-        if (overflowY === 'auto' || overflowY === 'scroll') {
-            return node;
-        }
-    }
-    return getScrollParent(node.parentElement);
-}
-
 export function useScrollTo() {
     const scroll = ({ elementId, offset = 20, notFoundHandler, highlight = true }: {
         elementId: string,
@@ -17,7 +5,6 @@ export function useScrollTo() {
         notFoundHandler?: () => void,
         highlight?: boolean
     }) => {
-        console.log(highlight)
         const selector = `#${elementId}`
         const element = document.querySelector(selector) as HTMLElement
 
@@ -61,7 +48,7 @@ export function useScrollTo() {
             return;
         }
 
-        const scrollContainer = getScrollParent(element);
+        const scrollContainer = findScrollContainer(element);
 
         let scrollTimeout: ReturnType<typeof setTimeout>;
         let hasScrolled = false;

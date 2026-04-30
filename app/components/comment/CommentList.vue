@@ -1,5 +1,6 @@
 <template>
     <!-- need refactor -->
+    <!-- and need fix bugs with the styles, fix the jerking -->
     <CommentBorder @close="closeCommentsHandler" v-model="isPostVisible">
         <div class="w-full">
             <button v-auto-animate v-if="!isPostVisible && commentsList.length > 6" @click="scrollToPost(props.postId, {highlight: false})"
@@ -96,6 +97,8 @@ async function addCommentHandler(input: Ref<string>) {
         post: props.postId
     }
     const newComment = await commentStore.createComment(comment)
+    console.log(sentinelAbove)
+    console.log(isPostVisible)
     if (!isPostVisible.value) {
         scrollToComment(newComment.id)
     }

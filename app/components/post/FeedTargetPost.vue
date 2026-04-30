@@ -11,7 +11,7 @@
             class="mb-8"
         />
 
-        <InfiniteFeed feed-key="global" />
+        <InfiniteFeed :exclude-ids="[targetPostId]" feed-key="global" />
     </div>
 </template>
 
@@ -31,7 +31,6 @@ const targetPostError = ref<string | null>(null)
 
 async function resolveTargetPost() {
     targetPostError.value = null
-    
     try {
         const post = await postsStore.getPost(targetPostId.value)
         if (!post) {
@@ -47,6 +46,10 @@ async function resolveTargetPost() {
 
 onMounted(() => {
     resolveTargetPost()
+})
+
+useHead({
+    title: computed(() => 'Пост пользователя ' + (targetPost.value?.author.username ?? ''))
 })
 
 </script>

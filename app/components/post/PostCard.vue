@@ -1,7 +1,6 @@
 <template>
   <article class="mb-4" :id="`post-${props.id}`">
     <post-wrapper>
-      <div ref="sentinelAbove" class="absolute top-0 left-0 w-full h-[1px] pointer-events-none"></div>
       <PostHeader :date="formatSocialDate(createdAt)" :author="author" />
       <div class="relative">
         <TextBody class="pl-2">{{ content }}</TextBody>
@@ -17,13 +16,18 @@
             <span>{{ commentsCount }}</span>
           </ToolbarButton>
 
+          <ToolbarButton @click="() => createPostUrl(props.id)">
+            <ShareIcon/>
+          </ToolbarButton>
+
           <DropdownMenu v-if="author.id === me?.id">
             <DropdownButton @click="editHandler">Изменить</DropdownButton>
             <DropdownButton @click="deleteHandler" danger>Удалить</DropdownButton>
           </DropdownMenu>
         </Toolbar>
-        
+    
       </div>
+      <div ref="sentinelAbove" class="absolute bottom-0 left-0 w-full h-[1px] pointer-events-none"></div>
     </post-wrapper>
 
     <div v-if="isCommentsOpen" v-auto-animate>
@@ -43,6 +47,7 @@ const { user: me } = storeToRefs(useAuthStore())
 const props = defineProps<IPost>()
 const postsStore = usePostStore()
 const { deletePost, openEditModal, toggleReaction } = postsStore
+const {createPostUrl} = useCreatePostUrl()
 const sentinelAbove = ref<HTMLElement | null>(null)
 const elementRef = ref<HTMLElement | null>(null)
 
@@ -65,6 +70,7 @@ const toggleComments = () => {
 }
 
 async function deleteHandler() {
+  if(!confirm('Вы уверены что хотите удалить этот пост?')) return
   await deletePost(props.id)
 }
 

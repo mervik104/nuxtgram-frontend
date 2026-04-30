@@ -13,19 +13,14 @@
             </div>
 
             <div>
-                <textarea 
-                    ref="textareaRef" 
-                    v-model="input"
+                <textarea ref="textareaRef" v-model="input"
                     :class="[textarea(), 'mb-5 border-0 !w-[600px] !min-h-[550px] !max-h-[700px]']"
                     placeholder="Напишите что-нибудь...">
                 </textarea>
 
                 <div class="flex justify-end">
-                    <BaseButton :loading="isSubmitting" 
-                    :disabled="!isValide" 
-                    variant="primary"
-                    loader-variant="white"
-                    @click="submitHandler">
+                    <BaseButton :loading="isSubmitting" :disabled="!isValide" variant="primary" loader-variant="white"
+                        @click="submitHandler">
                         {{ mode === 'create' ? 'Опубликовать' : 'Изменить' }}
                     </BaseButton>
                 </div>
@@ -35,6 +30,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed, watch, nextTick, onUnmounted } from 'vue'
 import { usePostStore } from '~/stores/post'
 import type { IPost } from '~/types/PostTypes'
 import { button, textarea } from '~/utils/ui/atoms'
@@ -52,11 +48,11 @@ const { isSubmitting } = storeToRefs(postStore)
 
 const isDraft = ref<boolean>(false)
 const localStorageContent = 'create-post-content'
-const {scrollToPost} = useScrollTo()
+const { scrollToPost } = useScrollTo()
+const { checkVisibility } = useIsElementVisible()
 
 onMounted(() => {
     textareaRef.value?.focus()
-    
     if (props.mode === 'edit') {
         input.value = props.post.content
     } else {
@@ -68,11 +64,15 @@ onMounted(() => {
     }
 })
 
-watch(input, (newValue) => {
+watchDebounced(input, (newValue) => {
     if (props.mode === 'create') {
-        localStorage.setItem(localStorageContent, newValue)
+        if (newValue) {
+            localStorage.setItem(localStorageContent, newValue)
+        } else {
+            localStorage.removeItem(localStorageContent)
+        }
     }
-})
+}, { debounce: 500 })
 
 function clearInputs() {
     input.value = ''
@@ -80,16 +80,23 @@ function clearInputs() {
     isDraft.value = false
 }
 
+const waitForFrame = () => new Promise(resolve => requestAnimationFrame(resolve))
+
 async function submitHandler() {
     if (props.mode === 'create') {
         const newPost = await postStore.createPost({ content: input.value })
-        scrollToPost(newPost.id)
         clearInputs()
+        isOpen.value = false
+        await nextTick()
+        await waitForFrame()
+        const isPostVisible = await checkVisibility(`post-${newPost.id}`)
+        if (!isPostVisible) {
+            scrollToPost(newPost.id, { highlight: true })
+        }
     } else {
         await postStore.editPost({ content: input.value }, props.post.id)
         input.value = ''
+        isOpen.value = false
     }
-    
-    isOpen.value = false
 }
 </script>

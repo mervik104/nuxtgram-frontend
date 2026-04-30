@@ -114,7 +114,7 @@ export const usePostStore = defineStore('postsStore', () => {
                 adjustFeedTotalDocs('global', 1)
             }
 
-            const userFeedKey = `user_${newPost.author}`
+            const userFeedKey = `user_${newPost.author.id}`
             if (feeds.value[userFeedKey]) {
                 feeds.value[userFeedKey].ids.unshift(newPost.id)
                 adjustFeedTotalDocs(userFeedKey, 1)
@@ -172,7 +172,6 @@ export const usePostStore = defineStore('postsStore', () => {
         if (reaction.target.relationTo === 'comments') return
 
         const post = posts.value[reaction.target.value]
-        console.log(post)
         if (!post) return
         if (!reaction.type) return
 

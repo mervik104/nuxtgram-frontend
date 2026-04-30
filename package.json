@@ -20,6 +20,7 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.2.1",
     "nuxt": "^4.3.0",
+    "nuxt-toast": "^1.4.0",
     "pinia": "^3.0.4",
     "tailwind-merge": "^3.5.0",
     "tailwind-variants": "^3.2.2",

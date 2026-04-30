@@ -14,7 +14,6 @@ export const useAuthStore = defineStore('authStore', () => {
     const isEditProfileModalOpen = ref(false)
     
     function openEditProfileModal() { 
-        console.log(isEditProfileModalOpen.value)
         isEditProfileModalOpen.value = true 
     }
 

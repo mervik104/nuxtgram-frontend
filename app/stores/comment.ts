@@ -3,8 +3,9 @@ import { ref } from 'vue'
 import { useApiFetch } from '../composables/useApiFetch'
 import type { IComment, ICommentResponse, ICommentsResponse } from '../types/CommentTypes'
 import type { IReactionRequest } from '../types/ReactionTypes'
-import type { ICreateCommentRequest } from '../types/PostTypes'
+import type { ICreateCommentRequest, IPost } from '../types/PostTypes'
 import type { IPaginationMeta } from '~/types/CommonTypes'
+import { usePostStore } from './post'
 
 export const useCommentStore = defineStore('commentStore', () => {
     const { apiFetch } = useApiFetch()
@@ -15,8 +16,16 @@ export const useCommentStore = defineStore('commentStore', () => {
         isLoading: boolean
         isFullyLoaded: boolean
     }>>({})
+    const postStore = usePostStore()
 
     const isSubmitting = ref(false)
+
+    function updatePost(post: IPost, postId: string) {
+        if (postStore.posts[postId]) {
+            postStore.posts[postId].commentsCount = post.commentsCount
+            postStore.posts[postId].reactionsCount = post.reactionsCount
+        }
+    }
 
     function adjustFeedTotalDocs(feedKey: string, delta: number) {
         const feed = feeds.value[feedKey]
@@ -103,6 +112,8 @@ export const useCommentStore = defineStore('commentStore', () => {
                 }
             }
 
+            updatePost(newComment.post, postId)
+                
             return newComment
         } catch (e) {
             throw e
@@ -134,14 +145,17 @@ export const useCommentStore = defineStore('commentStore', () => {
     async function deleteComment(postId: string, commentId: string) {
         isSubmitting.value = true
         try {
-            await apiFetch(`/comments/${commentId}`, { method: 'DELETE' })
+            const {doc: deletedComment} = await apiFetch<ICommentResponse>(`/comments/${commentId}`, { method: 'DELETE' })
             delete comments.value[commentId]
-
             const feed = feeds.value[postId]
             if (feed) {
                 feed.ids = feed.ids.filter(id => id !== commentId)
                 adjustFeedTotalDocs(postId, -1)
             }
+
+            updatePost(deletedComment.post, postId)
+
+            return deletedComment
         } catch (e) {
             throw e
         } finally {

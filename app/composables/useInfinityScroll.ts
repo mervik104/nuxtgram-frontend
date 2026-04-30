@@ -7,21 +7,6 @@ export function useInfiniteScroll(
     const isAtBottom = ref(false);
     let observer: IntersectionObserver | null = null;
     let scrollRoot: HTMLElement | Window | null = null;
-    const findScrollContainer = (element: HTMLElement | null): HTMLElement | Window => {
-        if (!element) return window;
-        
-        let parent = element.parentElement;
-        while (parent) {
-            const style = window.getComputedStyle(parent);
-            const overflowY = style.overflowY;
-            if (overflowY === 'auto' || overflowY === 'scroll') {
-                return parent;
-            }
-            parent = parent.parentElement;
-        }
-        
-        return window;
-    };
 
     onMounted(() => {
         if (!sentinelRef.value) return;

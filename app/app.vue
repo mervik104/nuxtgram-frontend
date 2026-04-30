@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen">
     <NuxtLayout>
-      <NuxtPage :keepalive="{ max: 10 }" />
+      <NuxtPage />
     </NuxtLayout>
   </div>
 </template>

@@ -63,4 +63,13 @@ const subscribe = () => {
     console.log('Подписаться')
 }
 
+useHead({
+    title: computed(() => {
+        if (isLoadingPage.value) return 'Загрузка профиля...';
+        if (!isFound.value) return 'Пользователь не найден';
+        if (itsMe.value) return 'Мой профиль';
+        return `Профиль ${user.value?.username || 'Загрузка...'}`;
+    })
+})
+
 </script>

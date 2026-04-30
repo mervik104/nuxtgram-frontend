@@ -36,7 +36,22 @@ export default defineNuxtConfig({
       enabled: true,
     },
   },
-  modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt', 'nuxt-single-html', '@nuxtjs/color-mode', '@vueuse/nuxt', ],
+  modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt', 'nuxt-toast', 'nuxt-single-html', '@nuxtjs/color-mode', '@vueuse/nuxt', ],
+  toast: {
+    composableName: 'useNotification', // Customize the composable name
+    settings: {
+      position: "bottomCenter",
+      closeOnClick: true,
+      pauseOnHover: true,
+      theme: "dark",
+      backgroundColor: '#2A2F33',
+      closeOnEscape: true,
+      close: true,
+      drag: true,
+      displayMode: 1000,
+      timeout: 1500,
+    }
+  },
   colorMode: {
     preference: 'system',
     fallback: 'light',
