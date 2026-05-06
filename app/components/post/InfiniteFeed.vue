@@ -17,6 +17,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { usePostStore } from '~/stores/post'
+import type { IPaginationMeta } from '~/types/CommonTypes';
 
 const props = withDefaults(defineProps<{
     feedKey: string

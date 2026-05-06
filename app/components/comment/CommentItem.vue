@@ -7,7 +7,7 @@
         <Toolbar>
 
           <ToolbarButton @click="likeHandler">
-            <img class="w-4 h-auto" draggable="false" :src="myReaction ? '/redLike.svg' : '/like.svg'" alt="like" />
+            <LoveIcon class="size-4" :myReaction="!!myReaction" />
             <span>{{ formatCompactNumber(reactionsCount.like) }}</span>
           </ToolbarButton>
 

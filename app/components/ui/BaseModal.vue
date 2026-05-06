@@ -3,7 +3,7 @@
         <div :class="modal({ size: 'xl' }).base()" >
             <button @click="isOpen = false"
                 :class="[button({ variant: 'text', size: 'sm' }), 'absolute top-4 right-4']">
-                <Cross/>
+                <BaseIcon name="cross" class="1"/>
             </button>
             <div>
                 <slot></slot>

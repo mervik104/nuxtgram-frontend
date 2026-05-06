@@ -7,16 +7,16 @@
         <template v-if="itsMe">
             <div
                 class="absolute inset-[3px] rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center border-4 border-base-dark pointer-events-none">
-                <Camera />
+                <BaseIcon name="camera" class="text-white flex size-10 opacity-80" />
             </div>
 
             <button v-if="user.avatar" @click.stop="handleDeleteAvatar"
-                class="absolute -bottom-1 -right-1 bg-red-500 text-gray-200 rounded-full p-1.5 shadow-md hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-all duration-200"
+                class="absolute -bottom-1 -right-1 bg-red-500 text-gray-200 rounded-full p-1 shadow-md hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-all duration-200"
                 title="Удалить аватар">
-                <TrashCan />
+                <BaseIcon name="trash" class="text-white flex size-5" />
             </button>
 
-            <input accept="image/jpeg, image/png" ref="avatarInput" type="file" class="hidden"
+            <input accept="image/jpeg, image/png" title="Загрузить новый аватар" ref="avatarInput" type="file" class="hidden"
                 @change="handleAvatarUpload" />
         </template>
     </div>
@@ -34,7 +34,7 @@ const props = defineProps<{
 const avatarInput = ref<HTMLInputElement | null>(null)
 const authStore = useAuthStore()
 
-const {uploadAvatar, deleteAvatar} = authStore
+const { uploadAvatar, deleteAvatar } = authStore
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png']
 

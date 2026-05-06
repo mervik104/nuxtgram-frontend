@@ -88,3 +88,8 @@ body.dark-mode ::-webkit-scrollbar-thumb:hover {
 .highlighted {
     animation: highlight-animation 0.5s ease-in-out;
 }
+
+.iziToast-wrapper  {
+    z-index: 40 !important;
+    top: 64px !important;
+}

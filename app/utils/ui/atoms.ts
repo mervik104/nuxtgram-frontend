@@ -3,7 +3,6 @@ import { tv } from 'tailwind-variants'
 // ==========================================
 // BUTTON (Объединил: uButton, dropdownButton, toolbarButton)
 // ==========================================
-
 export const button = tv({
     base: 'inline-flex items-center justify-center transition-colors font-medium outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900',
     variants: {
@@ -11,16 +10,19 @@ export const button = tv({
             primary: 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm focus-visible:ring-blue-500',
             success: 'bg-green-600 text-white hover:bg-green-700 shadow-sm focus-visible:ring-green-500',
             secondary: 'bg-gray-800 text-gray-300 hover:bg-gray-700 border border-gray-700 focus-visible:ring-gray-500',
+            outline: 'bg-transparent text-gray-300 border border-gray-600 hover:bg-gray-800 focus-visible:ring-gray-500', // <-- НОВЫЙ ВАРИАНТ
             ghost: 'bg-transparent text-gray-200 hover:bg-gray-800 focus-visible:ring-gray-500',
             text: 'bg-transparent text-gray-200 hover:text-gray-400',
             danger: 'bg-red-500 text-white hover:bg-red-600 focus-visible:ring-red-500',
         },
         rounded: { full: 'rounded-full', md: 'rounded-md', none: 'rounded-none', xl: 'rounded-xl', '2xl': 'rounded-2xl', sm: 'rounded-sm', lg: 'rounded-lg' },
-        size: { 
-            sm: 'px-3 py-1.5 text-sm gap-1.5', 
-            md: 'px-4 py-2 text-base gap-2', 
+        // В объекте size:
+        size: {
+            sm: 'px-3 py-1.5 text-sm gap-1.5',
+            base: 'px-5 py-1.5 text-sm gap-1.5', // <-- НОВЫЙ РАЗМЕР (точно как в старом коде)
+            md: 'px-4 py-2 text-base gap-2',
             lg: 'px-5 py-2.5 text-lg gap-2.5',
-            xl: 'px-4 py-2 text-xl gap-2.5' 
+            xl: 'px-4 py-2 text-xl gap-2.5'
         },
         disabled: { true: 'cursor-not-allowed pointer-events-none' },
         error: { true: 'ring-2 ring-red-500', false: '' },
@@ -30,9 +32,20 @@ export const button = tv({
         { variant: 'primary', disabled: true, class: 'bg-blue-800 hover:bg-blue-800 shadow-none opacity-80' },
         { variant: 'success', disabled: true, class: 'bg-green-800 hover:bg-green-800 shadow-none opacity-80' },
         { variant: 'secondary', disabled: true, class: 'opacity-50' },
+        { variant: 'outline', disabled: true, class: 'opacity-50' },
         { variant: ['primary', 'success', 'danger'], loading: true, class: 'opacity-80' }
     ],
     defaultVariants: { variant: 'ghost', size: 'md', disabled: false, rounded: 'lg', error: false, loading: false },
+})
+
+export const dropdownButton = tv({
+    variants: {
+        variant: {
+            default: 'w-full text-left px-3 py-1.5 text-sm transition-colors hover:bg-border-hover text-white',
+            danger: 'w-full text-left px-3 py-1.5 text-sm transition-colors hover:bg-border-hover text-red-400'
+        }
+    },
+    defaultVariants: { variant: 'default' }
 })
 
 // ==========================================
@@ -62,7 +75,7 @@ export const input = tv({
         size: { sm: 'text-sm', md: 'text-base' },
         fill: {
             transparent: 'bg-transparent',
-            subtle: 'bg-surface-secondary', 
+            subtle: 'bg-surface-secondary',
             solid: 'bg-gray-800',
         }
     },
@@ -89,11 +102,11 @@ export const textarea = tv({
         overflow: { auto: 'overflow-auto', hidden: 'overflow-hidden' },
         resize: { none: 'resize-none', vertical: 'resize-y' },
     },
-    defaultVariants: { 
-        intent: 'normal', 
-        fill: 'solid', 
-        overflow: 'auto', 
-        resize: 'vertical' 
+    defaultVariants: {
+        intent: 'normal',
+        fill: 'solid',
+        overflow: 'auto',
+        resize: 'vertical'
     },
 })
 
@@ -135,6 +148,36 @@ export const card = tv({
         highlighted: { true: 'ring-1 ring-blue-600' },
     },
     defaultVariants: { highlighted: false },
+})
+
+// atoms.ts
+
+// ==========================================
+// ICON BUTTON (Для круглых кнопок с иконками)
+// ==========================================
+export const iconButton = tv({
+    base: 'inline-flex items-center justify-center transition-all duration-200 outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 cursor-pointer',
+    variants: {
+        intent: {
+            accent: 'bg-surface-accent border border-border-accent text-gray-200 hover:bg-surface-accent-hover hover:scale-110',
+            ghost: 'bg-transparent text-gray-200 hover:bg-gray-800',
+            danger: 'bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20',
+        },
+        size: {
+            sm: 'w-6 h-6', // 24px (замена w-[15px] h-[15px] не нужна, 24px — стандарт для тап-таргетов)
+            md: 'w-8 h-8',
+            lg: 'w-10 h-10',
+        },
+        rounded: {
+            full: 'rounded-full',
+            md: 'rounded-md',
+        }
+    },
+    defaultVariants: {
+        intent: 'accent',
+        size: 'sm',
+        rounded: 'full'
+    },
 })
 
 // ==========================================

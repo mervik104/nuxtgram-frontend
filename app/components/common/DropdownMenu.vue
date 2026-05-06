@@ -2,7 +2,9 @@
     <div class="relative inline-block" ref="triggerRef">
         <div @click.stop="toggle"
             class="w-max rounded-full px-2 py-1 hover:bg-gray-800 hover:text-white hover:brightness-75 flex items-center cursor-pointer select-none gap-1 text-gray-500 font-semibold text-sm transition-colors">
-            <span class="text-gray-400 text-sm pointer-events-none">⋯</span>
+            <span class="text-gray-400 text-sm pointer-events-none">
+                <BaseIcon name="menuDots" class="text-icon-access flex size-4" />
+            </span>
         </div>
     </div>
 
@@ -23,7 +25,7 @@ const isOpen = ref(false)
 const dropdownRef = ref<HTMLDivElement | null>(null)
 const triggerRef = ref<HTMLDivElement | null>(null)
 const dropdownStyle = ref<Record<string, string>>({})
-const DISTANCE_LIMIT = 50
+const DISTANCE_LIMIT = 70
 
 const open = () => {
     isOpen.value = true
@@ -57,16 +59,25 @@ const handleMouseMove = (e: MouseEvent) => {
     if (distance > DISTANCE_LIMIT) close()
 }
 
+const handleWheel = (e: WheelEvent) => {
+    if (dropdownRef.value && !dropdownRef.value.contains(e.target as Node)) {
+        close()
+    }
+}
+
 watch(isOpen, (val) => {
     if (val) {
         document.addEventListener("mousemove", handleMouseMove)
+        document.addEventListener("wheel", handleWheel, { passive: true })
     } else {
         document.removeEventListener("mousemove", handleMouseMove)
+        document.removeEventListener("wheel", handleWheel)
     }
 })
 
 onBeforeUnmount(() => {
     document.removeEventListener("mousemove", handleMouseMove)
+    document.removeEventListener("wheel", handleWheel)
 })
 
 provide("menuClose", close)

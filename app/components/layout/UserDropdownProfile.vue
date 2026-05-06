@@ -1,14 +1,12 @@
 <template>
-    <NuxtLink :to='`/profile/${username}`'
-        class="px-5 cursor-pointer py-2 hover:brightness-90 text-md select-none flex gap-4 items-center">
-        <Avatar :avatar="props.avatar" size="md" />
-        <span class="flex-1 my-auto">
-            <slot></slot>
-        </span>
+    <NuxtLink :to="`/profile/${username}`"
+        class="flex items-center gap-3 px-4 py-2 cursor-pointer transition-colors hover:bg-gray-800">
+        <Avatar :avatar="avatar" size="md" />
+        <span class="flex-1 text-md text-gray-200">Профиль</span>
     </NuxtLink>
 </template>
 
 <script setup lang="ts">
-import type { IUser } from '~/types/UserTypes';
-const props = defineProps<IUser>()
+import type { IUser } from '~/types/UserTypes'
+defineProps<IUser>()
 </script>

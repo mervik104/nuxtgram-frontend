@@ -6,18 +6,18 @@
         <TextBody class="pl-2">{{ content }}</TextBody>
         <Toolbar>
 
-          <ToolbarButton @click="likeHandler">
-            <img :src="myReaction ? '/redLike.svg' : '/like.svg'" />
+          <ToolbarButton @click="likeHandler" title="Лайк">
+            <LoveIcon class="size-6" :myReaction="!!myReaction" />
             <span>{{ formatCompactNumber(reactionsCount.like) }}</span>
           </ToolbarButton>
 
-          <ToolbarButton @click="isCommentsOpen = !isCommentsOpen">
-            <img draggable="false" src="/comment.svg" alt="comment">
-            <span>{{ commentsCount }}</span>
+          <ToolbarButton @click="isCommentsOpen = !isCommentsOpen" title="Комментарии">
+            <BaseIcon name="message" class="size-[22px] text-icon-access flex" />
+            <span>{{ formatCompactNumber(commentsCount) }}</span>
           </ToolbarButton>
 
-          <ToolbarButton @click="() => createPostUrl(props.id)">
-            <ShareIcon/>
+          <ToolbarButton @click="() => createPostUrl(props.id)" title="Поделиться">
+            <BaseIcon name="share" class="size-6 text-icon-access flex" />
           </ToolbarButton>
 
           <DropdownMenu v-if="author.id === me?.id">

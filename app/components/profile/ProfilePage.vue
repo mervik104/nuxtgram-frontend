@@ -9,14 +9,14 @@
         <ProfileWrapper>
             <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6 pb-6 border-b border-gray-800">
                 <ProfileAvatar :user="user" :its-me="itsMe" />
-                <ProfileUserInfo 
+                <ProfileUserInfo v-if="feedMeta" :feed-meta="feedMeta"
                 @open-edit-modal-handler="openEditProfileModal()" 
                 @subscribe-handler="subscribe"
                 :user="user" :its-me="itsMe" />
             </div>
             <div class="mt-6 flex flex-col gap-4">
                 <h2 class="text-lg font-semibold text-gray-300 top-0 bg-base-dark py-2 z-10">Публикации</h2>
-                <InfiniteFeed :feed-key="`user_${user.id}`" />
+                <InfiniteFeed v-if="feedKey" :feed-key="feedKey" />
             </div>
         </ProfileWrapper>
     </div>
@@ -30,14 +30,17 @@
 
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth';
+import { usePostStore } from '~/stores/post';
 import type { IUser } from '~/types/UserTypes';
 
 const userNick: string = useRoute().params.id as string
 const authStore = useAuthStore()
+const postStore = usePostStore()
+const { feeds } = storeToRefs(postStore)
 
 const { getUserByNickname, openEditProfileModal } = authStore
 const { isProcess: isEditProcess, user: me } = storeToRefs(authStore)
-
+const feedMeta = computed(() => feedKey.value && feeds.value[feedKey.value]?.meta)
 const otherUserData = ref<IUser | null>(null)
 const isLoadingPage = ref<boolean>(true)
 const isFound = ref<boolean>(true)
@@ -46,6 +49,7 @@ const itsMe = computed(() => me.value?.nickname === userNick)
 const user = computed<IUser | null>(() => {
     return itsMe.value ? me.value : otherUserData.value
 })
+const feedKey = computed(() => user.value && `user_${user.value.id}`)
 
 onMounted(async () => {
     if (itsMe.value) {

@@ -1,7 +1,10 @@
-<!-- need refactor color -->
 <template>
-  <aside class="w-[250px] shrink-0 border-r border-[#565758] overflow-y-auto p-5">
-    <SidebarItem to="/">Главная</SidebarItem>
-    <SidebarItem to="/feed">Лента</SidebarItem>
+  <aside class="w-64 shrink-0 border-r border-gray-700/50 overflow-y-auto p-5">
+    <SidebarItem to="/" content="Главная">
+       <BaseIcon name="home"/>
+    </SidebarItem>
+    <SidebarItem to="/feed" content="Лента">
+      <BaseIcon name="home"/>
+    </SidebarItem>
   </aside>
 </template>

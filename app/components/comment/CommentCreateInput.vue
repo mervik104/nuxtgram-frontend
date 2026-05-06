@@ -1,6 +1,6 @@
 <template>
   <div v-if="me" class="flex items-center justify-center pl-1 gap-3 w-full">
-    <Avatar :avatar="me.avatar" size="md" class="mb-2" />
+    <Avatar @click="redirectToProfile(me.nickname)" class="cursor-pointer hover:brightness-90 mb-2 transition" :avatar="me.avatar" size="md" />
 
     <div class="relative flex-1">
 
@@ -27,7 +27,7 @@
           {{ isEditingComment ? 'Сохранить' : 'Отправить' }}
         </span>
         
-        <ArrowUp v-if="!isSubmitting" class="size-4 flex-shrink-0" />
+        <BaseIcon v-if="!isSubmitting" name="arrowUp" class="size-6 flex-shrink-0" />
         
       </BaseButton>
     </div>

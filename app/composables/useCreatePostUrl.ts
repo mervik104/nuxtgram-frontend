@@ -5,7 +5,7 @@ export const useCreatePostUrl = () => {
         const postUrl = url + `/#/feed/${postId}`
         navigator.clipboard.writeText(postUrl)
         const toast = useNotification()
-        toast.success({ title: 'Скопировано', message: 'Ссылка на пост скопирована', })
+        toast.success({ message: 'Ссылка на пост скопирована' })
     }
     return {
         createPostUrl

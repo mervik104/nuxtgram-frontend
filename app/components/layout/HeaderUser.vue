@@ -1,34 +1,39 @@
 <template>
-  <div v-if="user" ref="modalRef">
-    <UserWidget v-bind="user" @toggle-hidden="isHiddenToggle" />
+  <div v-if="user" ref="menuRef" class="relative">
+    <div :class="dropdownStyles.trigger()" @click="toggleMenu">
+      <UserWidget v-bind="user" />
+    </div>
+
     <TransitionFade>
-      <UserDropdown v-if="!isHidden" @toggle-hidden="isHiddenToggle" v-bind="user" @logout="logoutHandler" />
+      <UserDropdownMenu v-if="isOpen" v-bind="user" @toggle-hidden="toggleMenu" @logout="logoutHandler" />
     </TransitionFade>
   </div>
-  <NuxtLink v-else to="/login">
-    <HeaderButtonWrapper>
-      Войти
-    </HeaderButtonWrapper>
-  </NuxtLink>
+
+  <button v-else :class="button({ variant: 'ghost', rounded: 'full' })" as="NuxtLink" to="/login">
+    Войти
+  </button>
+
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { useAuthStore } from '~/stores/auth'
+import { button, dropdown } from '~/utils/ui/atoms'
 
 const authStore = useAuthStore()
 const { user } = storeToRefs(authStore)
 
-const isHidden = ref(true)
-const modalRef = ref()
+const isOpen = ref(false)
+const menuRef = ref<HTMLElement | null>(null)
+const dropdownStyles = dropdown({ align: 'end' })
 
-function isHiddenToggle() {
-  isHidden.value = !isHidden.value
+function toggleMenu() {
+  isOpen.value = !isOpen.value
 }
 
 function logoutHandler() {
-  isHidden.value = true
+  isOpen.value = false
   authStore.logout()
 }
 
-onClickOutside(modalRef, () => (isHidden.value = true))
+onClickOutside(menuRef, () => (isOpen.value = false))
 </script>

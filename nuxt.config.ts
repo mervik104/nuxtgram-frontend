@@ -26,6 +26,7 @@ export default defineNuxtConfig({
       ],
       link: [
         { rel: 'stylesheet', href: 'https://awesome-lib.css' },
+        { rel: 'icon', type: 'image/svg', href: '/logo.svg' },
       ],
     },
   },
@@ -36,11 +37,11 @@ export default defineNuxtConfig({
       enabled: true,
     },
   },
-  modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt', 'nuxt-toast', 'nuxt-single-html', '@nuxtjs/color-mode', '@vueuse/nuxt', ],
+  modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt', 'nuxt-toast', 'nuxt-single-html', '@nuxtjs/color-mode', '@vueuse/nuxt', '@nuxt/icon'],
   toast: {
     composableName: 'useNotification', // Customize the composable name
     settings: {
-      position: "bottomCenter",
+      position: 'topRight',
       closeOnClick: true,
       pauseOnHover: true,
       theme: "dark",
@@ -66,15 +67,15 @@ export default defineNuxtConfig({
     },
   ],
   pinia: {
-      /**
-       * Automatically add stores dirs to the auto imports. This is the same as
-       * directly adding the dirs to the `imports.dirs` option. If you want to
-       * also import nested stores, you can use the glob pattern `./stores/**`
-       * (on Nimport { API_URL } from './app/utils/constants';
+    /**
+     * Automatically add stores dirs to the auto imports. This is the same as
+     * directly adding the dirs to the `imports.dirs` option. If you want to
+     * also import nested stores, you can use the glob pattern `./stores/**`
+     * (on Nimport { API_URL } from './app/utils/constants';
 uxt 3) or `app/stores/**` (on Nuxt 4+)
-       *
-       * @default `['stores']`
-       */
-        storesDirs: []
-    },
+     *
+     * @default `['stores']`
+     */
+    storesDirs: []
+  },
 })
