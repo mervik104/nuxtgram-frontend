@@ -3,6 +3,11 @@
     <post-wrapper>
       <PostHeader :date="formatSocialDate(createdAt)" :author="author" />
       <div class="relative">
+
+        <div class="my-2">
+          <MediaGallery v-if="props.image" :images="props.image" ></MediaGallery>
+        </div>
+
         <TextBody class="pl-2">{{ content }}</TextBody>
         <Toolbar>
 

@@ -1,7 +1,7 @@
-export const useAvatar = () => {
+export const useAPIBuilder = () => {
     const config = useRuntimeConfig()
     
-    const avatarURL = (url: string): string => {
+    const buildAPIUrl = (url: string): string => {
         if (!url) return ''
         if (url.startsWith('http')) return url
         
@@ -17,6 +17,6 @@ export const useAvatar = () => {
     }
     
     return {
-        avatarURL
+        buildAPIUrl
     }
 }

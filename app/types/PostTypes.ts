@@ -1,4 +1,4 @@
-import type { IPaginationMeta } from "./CommonTypes"
+import type { IPaginationMeta, MediaArray } from "./CommonTypes"
 import type { ReactionsCount, ReactionType } from "./ReactionTypes"
 import type { IUser } from "./UserTypes"
 
@@ -6,6 +6,7 @@ export interface IPost {
   id: string
   content: string
   author: IUser
+  image?: MediaArray,
   reactionsCount: ReactionsCount
   commentsCount: number
   myReaction: ReactionType

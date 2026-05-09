@@ -1,6 +1,6 @@
 <template>
     <div :class="[sizeClasses[size], 'overflow-hidden rounded-full']">
-        <img :src="avatar ? avatarURL(avatar.thumbnailURL) : '/defaultAvatar.png'" alt="avatar"
+        <img :src="avatar ? buildAPIUrl(avatar.thumbnailURL) : '/defaultAvatar.png'" alt="avatar"
             class="w-full h-full object-cover" :draggable="false"/>
     </div>
 </template>
@@ -9,7 +9,7 @@
 import type { IAvatarType } from '~/types/UserTypes';
 type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
 
-const { avatarURL } = useAvatar()
+const { buildAPIUrl } = useAPIBuilder()
 
 defineProps<{
     avatar?: IAvatarType,

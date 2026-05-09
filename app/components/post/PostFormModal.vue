@@ -1,6 +1,12 @@
 <template>
-    <BaseModal v-model="isOpen">
-        <div>
+    <BaseModal v-model="isOpen" @dragover.prevent="isDragging = true" @dragleave="isDragging = false"
+        @drop.prevent="handleDrop">
+        <div class="relative">
+            <div v-if="isDragging"
+                class="absolute inset-0 border-2 border-dashed border-blue-500 rounded-xl bg-blue-500/10 z-10 flex items-center justify-center pointer-events-none">
+                <p class="text-blue-400 text-lg">Перетащите фото сюда</p>
+            </div>
+
             <h3 class="text-xl text-center mb-5">
                 {{ mode === 'create' ? 'Новый пост' : 'Изменить пост' }}
             </h3>
@@ -14,11 +20,37 @@
 
             <div>
                 <textarea ref="textareaRef" v-model="input"
-                    :class="[textarea(), 'mb-5 border-0 !w-[600px] !min-h-[550px] !max-h-[700px]']"
+                    :class="[textarea(), 'mb-5 border-0 !min-w-[600px] !min-h-[550px] !max-h-[700px]']"
                     placeholder="Напишите что-нибудь...">
                 </textarea>
 
-                <div class="flex justify-end">
+                <div v-if="selectedImages.length" class="flex gap-2 flex-wrap mb-3">
+                    <div v-for="(img, idx) in selectedImages" :key="idx" class="relative">
+                        <img :src="img.preview" class="w-20 h-20 object-cover rounded-lg" />
+                        <button @click="removeImage(idx)"
+                            class="absolute -top-1 -right-1 bg-red-500 rounded-full w-4 h-4 text-xs text-white flex items-center justify-center">
+                            ×
+                        </button>
+                    </div>
+                </div>
+
+                <div v-if="selectedImages.length" class="flex justify-between items-center mb-3">
+                    <span class="text-xs text-gray-400">
+                        {{ selectedImages.length }} / {{ MAX_IMAGES }}
+                    </span>
+                    <span v-if="selectedImages.length >= MAX_IMAGES" class="text-xs text-red-400">
+                        Достигнут лимит фотографий
+                    </span>
+                </div>
+
+                <div class="flex justify-between items-center">
+                    <label v-if="selectedImages.length < MAX_IMAGES && mode === 'create'" :class="button({ variant: 'text', size: 'sm' })">
+                        <BaseIcon name="image" class="size-7 flex"/>
+                        <span>Добавить фото</span>
+                        <input type="file" accept="image/*" multiple class="hidden" @change="handleImageSelect" />
+                    </label>
+                    <div v-else />
+
                     <BaseButton :loading="isSubmitting" :disabled="!isValide" variant="primary" loader-variant="white"
                         @click="submitHandler">
                         {{ mode === 'create' ? 'Опубликовать' : 'Изменить' }}
@@ -30,9 +62,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onUnmounted } from 'vue'
 import { usePostStore } from '~/stores/post'
-import type { IPost } from '~/types/PostTypes'
+import type { ICreatePostRequest, IPost } from '~/types/PostTypes'
 import { button, textarea } from '~/utils/ui/atoms'
 
 const isValide = computed(() => normalizeText(input.value).length > 0)
@@ -47,6 +78,7 @@ const postStore = usePostStore()
 const { isSubmitting } = storeToRefs(postStore)
 
 const isDraft = ref<boolean>(false)
+const isDragging = ref<boolean>(false)
 const localStorageContent = 'create-post-content'
 const { scrollToPost } = useScrollTo()
 const { checkVisibility } = useIsElementVisible()
@@ -78,13 +110,68 @@ function clearInputs() {
     input.value = ''
     localStorage.removeItem(localStorageContent)
     isDraft.value = false
+    selectedImages.value.forEach(img => URL.revokeObjectURL(img.preview))
+    selectedImages.value = []
 }
 
 const waitForFrame = () => new Promise(resolve => requestAnimationFrame(resolve))
 
+const selectedImages = ref<{ file: File; preview: string }[]>([])
+const MAX_IMAGES = 15
+
+function handleImageSelect(e: Event) {
+    const files = (e.target as HTMLInputElement).files
+    if (!files) return
+
+    const remaining = MAX_IMAGES - selectedImages.value.length
+    if (remaining <= 0) return
+
+    const filesToAdd = Array.from(files).slice(0, remaining)
+    for (const file of filesToAdd) {
+        selectedImages.value.push({
+            file,
+            preview: URL.createObjectURL(file)
+        })
+    }
+}
+
+function removeImage(idx: number) {
+    if (selectedImages.value[idx]) {
+        URL.revokeObjectURL(selectedImages.value[idx].preview)
+        selectedImages.value.splice(idx, 1)
+    }
+}
+
+function handleDrop(e: DragEvent) {
+    isDragging.value = false
+    const files = e.dataTransfer?.files
+    if (!files) return
+
+    const remaining = MAX_IMAGES - selectedImages.value.length
+    const filesToAdd = Array.from(files)
+        .filter(f => f.type.startsWith('image/'))
+        .slice(0, remaining)
+
+    for (const file of filesToAdd) {
+        selectedImages.value.push({
+            file,
+            preview: URL.createObjectURL(file)
+        })
+    }
+}
+
 async function submitHandler() {
     if (props.mode === 'create') {
-        const newPost = await postStore.createPost({ content: input.value })
+        let payload: FormData | ICreatePostRequest
+        if (selectedImages.value.length > 0) {
+            const formData = new FormData()
+            formData.append('content', input.value)
+            selectedImages.value.forEach(img => formData.append('image', img.file))
+            payload = formData
+        } else {
+            payload = { content: input.value }
+        }
+        const newPost = await postStore.createPost(payload)
         clearInputs()
         isOpen.value = false
         await nextTick()

@@ -7,7 +7,6 @@
 
 <script lang="ts" setup>
 const attrs = useAttrs()
-console.log(attrs.class)
 
 const className = computed(() => {
     const baseClass = 'flex'

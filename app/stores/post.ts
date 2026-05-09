@@ -34,6 +34,10 @@ export const usePostStore = defineStore('postsStore', () => {
         }
     }
 
+    function extractPost(data: IPostResponse | IPost, isFormData: boolean): IPost {
+        return isFormData ? data as IPost : (data as IPostResponse).doc!
+    }
+
     function getFeedList(feedKey: string): IPost[] {
         const feed = feeds.value[feedKey]
         if (!feed) return []
@@ -98,13 +102,26 @@ export const usePostStore = defineStore('postsStore', () => {
         return fetchFeed(`user_${userId}`, `/posts?where[author][equals]=${userId}&sort=-createdAt`, page)
     }
 
-    async function createPost(payload: ICreatePostRequest) {
+    async function createPost(payload: ICreatePostRequest | FormData) {
         isSubmitting.value = true
-        payload.content = normalizeText(payload.content)
-        try {
-            const data = await apiFetch<IPostResponse>('/posts', { method: 'POST', body: payload })
 
-            const newPost = data.doc
+        const isFormData = payload instanceof FormData
+        const url = isFormData ? '/posts/create-with-media' : '/posts'
+
+        if (!isFormData) {
+            payload.content = normalizeText(payload.content)
+        } else {
+            const content = payload.get('content') as string
+            payload.set('content', normalizeText(content))
+        }
+
+        try {
+            const data = await apiFetch<IPostResponse | IPost>(url, {
+                method: 'POST',
+                body: payload
+            })
+            
+            const newPost = extractPost(data, isFormData)
             if (!newPost) throw new Error("Сервер не вернул созданный пост")
 
             posts.value[newPost.id] = newPost
