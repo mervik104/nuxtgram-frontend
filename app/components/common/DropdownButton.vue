@@ -1,12 +1,12 @@
 <template>
-    <button @click="handleClick" :class="dropdownButton({ variant: danger ? 'danger' : 'default' })">
+    <button @click="handleClick" :class="menuItem({ variant: danger ? 'danger' : 'default' })">
         <slot />
     </button>
 </template>
 
 <script setup lang="ts">
 import { inject } from "vue"
-import { dropdownButton } from "~/utils/ui/atoms";
+import { menuItem } from "~/utils/ui/atoms";
 
 const props = defineProps<{
     danger?: boolean;

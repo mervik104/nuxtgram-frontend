@@ -80,9 +80,6 @@ export const useCommentStore = defineStore('commentStore', () => {
             if (data.docs.length < limit) {
                 feed.isFullyLoaded = true
             }
-        } catch (e) {
-            console.error('Ошибка загрузки комментариев', e)
-            throw e
         } finally {
             feed.isLoading = false
         }
@@ -115,8 +112,6 @@ export const useCommentStore = defineStore('commentStore', () => {
             updatePost(newComment.post, postId)
                 
             return newComment
-        } catch (e) {
-            throw e
         } finally {
             isSubmitting.value = false
         }
@@ -135,8 +130,6 @@ export const useCommentStore = defineStore('commentStore', () => {
             if (data.doc) {
                 comments.value[commentId] = data.doc
             }
-        } catch (e) {
-            throw e
         } finally {
             isSubmitting.value = false
         }
@@ -156,8 +149,6 @@ export const useCommentStore = defineStore('commentStore', () => {
             updatePost(deletedComment.post, postId)
 
             return deletedComment
-        } catch (e) {
-            throw e
         } finally {
             isSubmitting.value = false
         }

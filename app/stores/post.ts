@@ -80,9 +80,6 @@ export const usePostStore = defineStore('postsStore', () => {
             if (data.docs.length < limit) {
                 feed.isFullyLoaded = true
             }
-        } catch (e) {
-            console.error(`Ошибка загрузки ленты ${feedKey}`, e)
-            throw e
         } finally {
             feed.isLoading = false
         }
@@ -139,8 +136,6 @@ export const usePostStore = defineStore('postsStore', () => {
 
             closeModals()
             return newPost
-        } catch (e) {
-            throw e
         } finally {
             isSubmitting.value = false
         }
@@ -157,8 +152,6 @@ export const usePostStore = defineStore('postsStore', () => {
             }
 
             closeModals()
-        } catch (e) {
-            throw e
         } finally {
             isSubmitting.value = false
         }
@@ -178,8 +171,6 @@ export const usePostStore = defineStore('postsStore', () => {
                 feed.ids = feed.ids.filter(pid => pid !== id)
                 adjustFeedTotalDocs(key, -1)
             }
-        } catch (e) {
-            throw e
         } finally {
             isSubmitting.value = false
         }

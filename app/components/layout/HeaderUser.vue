@@ -9,9 +9,9 @@
     </TransitionFade>
   </div>
 
-  <button v-else :class="button({ variant: 'ghost', rounded: 'full' })" as="NuxtLink" to="/login">
+  <NuxtLink v-else :class="button({ variant: 'ghost', rounded: 'full' })" to="/login">
     Войти
-  </button>
+  </NuxtLink>
 
 </template>
 
