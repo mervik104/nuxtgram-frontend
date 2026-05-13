@@ -1,64 +1,75 @@
-import { defineStore } from "pinia"
-import { useApiFetch } from '../composables/useApiFetch';
-import { ref } from "vue";
-import type { FollowsResponse, FollowType, UnfollowType } from "~/types/FollowsTypes";
+import type { FollowsResponse, FollowType, UnfollowType } from "~/types/FollowsTypes"
+import { useAuthStore } from "./auth"
 
 export const useFollowsStore = defineStore('followsStore', () => {
     const { apiFetch } = useApiFetch()
-    const isProcess = ref<boolean>(false)
-    const currentFollows = ref<FollowsResponse | null>(null)
+    const authStore = useAuthStore()
 
-    async function getFollows(id: string) {
-        currentFollows.value = null
-        isProcess.value = true
+    const isFollowProcess = ref(false)
+    const follows = ref<Record<string, FollowsResponse>>({})
+
+    watch(() => authStore.user?.id, async (userId) => {
+        if (!userId) return
+        await loadMeFollows()
+    }, { immediate: true })
+
+    async function loadMeFollows() {
+        const userId = authStore.user?.id
+        if (!userId) return
+        const response = await fetchFollows(userId)
+        if (response) follows.value[userId] = response
+    }
+
+    async function fetchFollows(id: string): Promise<FollowsResponse | null> {
         try {
-            const follows = await apiFetch<FollowsResponse>(`/follows/user/${id}`, { method: 'GET' })
-            currentFollows.value = follows
-            return currentFollows
-        } finally {
-            isProcess.value = false
+            return await apiFetch<FollowsResponse>(`/follows/user/${id}`, { method: 'GET' })
+        } catch {
+            return null
         }
     }
 
+    async function getFollows(id: string) {
+        const response = await fetchFollows(id)
+        if (response) follows.value[id] = response
+    }
+
     async function follow(targetId: string) {
-        if (currentFollows.value?.isFollowing) return
-        isProcess.value = true
-        currentFollows.value!.isFollowing = true
-        currentFollows.value!.followersCount += 1
+        if (!follows.value[targetId] || follows.value[targetId].isFollowing) return
+
+        follows.value[targetId].isFollowing = true
+        follows.value[targetId].followersCount += 1
+        isFollowProcess.value = true
+
         try {
             await apiFetch<FollowType>(`/follows/follow`, { method: 'POST', body: { targetId } })
         } catch (e) {
-            currentFollows.value!.isFollowing = false
-            currentFollows.value!.followersCount -= 1
+            follows.value[targetId].isFollowing = false
+            follows.value[targetId].followersCount -= 1
             throw e
-        }
-        finally {
-            isProcess.value = false
+        } finally {
+            await loadMeFollows()
+            isFollowProcess.value = false
         }
     }
 
     async function unfollow(targetId: string) {
-        if (!currentFollows.value?.isFollowing) return
-        isProcess.value = true
-        currentFollows.value!.isFollowing = false
-        currentFollows.value!.followersCount -= 1
+        if (!follows.value[targetId] || !follows.value[targetId].isFollowing) return
+
+        follows.value[targetId].isFollowing = false
+        follows.value[targetId].followersCount -= 1
+        isFollowProcess.value = true
+
         try {
             await apiFetch<UnfollowType>(`/follows/unfollow`, { method: 'DELETE', body: { targetId } })
         } catch (e) {
-            currentFollows.value!.isFollowing = true
-            currentFollows.value!.followersCount += 1
+            follows.value[targetId].isFollowing = true
+            follows.value[targetId].followersCount += 1
             throw e
         } finally {
-            isProcess.value = false
+            await loadMeFollows()
+            isFollowProcess.value = false
         }
     }
 
-    return {
-        isProcess,
-        currentFollows,
-        unfollow,
-        follow,
-        getFollows
-    }
-}
-)
+    return { isFollowProcess, follows, getFollows, follow, unfollow }
+})

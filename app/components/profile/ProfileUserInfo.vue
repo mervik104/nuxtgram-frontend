@@ -11,13 +11,12 @@
                     </BaseButton>
                 </div>
                 <div v-else>
-                    <BaseButton v-if="!follows.isFollowing" @click="follow(props.user.id)" 
-                    variant="primary"
-                    size="base">
+                    <BaseButton v-if="!follows?.isFollowing" @click="follow(props.user.id)" variant="primary"
+                        size="base">
                         Подписаться
                     </BaseButton>
 
-                    <BaseButton v-if="follows.isFollowing" variant="outline" size="base"
+                    <BaseButton v-if="follows?.isFollowing" variant="outline" size="base"
                         @click="unfollow(props.user.id)">
                         Отписаться
                     </BaseButton>
@@ -30,11 +29,9 @@
         </p>
 
         <div v-if="follows" class="flex gap-4 mt-3 text-sm text-gray-500">
-            <span><span class="font-medium text-gray-300">{{ formatCompactNumber(feedMeta ? feedMeta.totalDocs : 0)}}</span> публикаций</span>
-            <span><span class="font-medium text-gray-300">{{ formatCompactNumber(follows.followersCount) }}</span>
-                подписчиков</span>
-            <span><span class="font-medium text-gray-300">{{ formatCompactNumber(follows.followingCount) }}</span>
-                подписок</span>
+            <ProfileStatChip :stat="feedMeta ? feedMeta.totalDocs : 0" >{{ pluralPublications(feedMeta?.totalDocs || 0) }}</ProfileStatChip>
+            <ProfileStatChip :stat="follows?.followersCount" >{{ pluralFollowers(follows?.followersCount) }}</ProfileStatChip>
+            <ProfileStatChip :stat="follows?.followingCount" >{{ pluralFollowing(follows?.followingCount) }}</ProfileStatChip>
         </div>
     </div>
 </template>
@@ -50,11 +47,13 @@ const props = defineProps<{
     itsMe: boolean
 }>()
 
-const { getFollows, follow, unfollow } = useFollowsStore()
-const follows = await getFollows(props.user.id)
+const followsStore = useFollowsStore()
+const { getFollows, follow, unfollow } = followsStore
+await getFollows(props.user.id)
+const follows = computed(() => followsStore.follows[props.user.id])
 
 const emit = defineEmits<{
     (e: 'openEditModalHandler'): void,
-    (e: 'subscribeHandler'): void,
 }>()
+
 </script>

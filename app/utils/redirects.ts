@@ -8,7 +8,7 @@ export function redirectToRegister() {
 }
 
 export function redirectToFeed(postId?: string) {
-    if(postId) {
+    if(postId && typeof postId === 'string') {
         navigateTo(`/feed/${postId}`);
     } else {
         navigateTo(`/feed`);
