@@ -9,10 +9,13 @@
         <ProfileWrapper>
             <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6 pb-6 border-b border-gray-800">
                 <ProfileAvatar :user="user" :its-me="itsMe" />
-                <ProfileUserInfo v-if="feedMeta" :feed-meta="feedMeta"
-                @open-edit-modal-handler="openEditProfileModal()" 
-                @subscribe-handler="subscribe"
-                :user="user" :its-me="itsMe" />
+                <UserCard 
+                v-if="feedMeta" 
+                :user="user" 
+                :its-me="itsMe"
+                size="profile" 
+                :feed-meta="feedMeta"
+                @openEditModalHandler="openEditProfileModal()" />
             </div>
             <div class="mt-6 flex flex-col gap-4">
                 <h2 class="text-lg font-semibold text-gray-300 top-0 bg-base-dark py-2 z-10">Публикации</h2>
@@ -62,10 +65,6 @@ onMounted(async () => {
     isFound.value = !!result
     isLoadingPage.value = false
 })
-
-const subscribe = () => {
-    console.log('Подписаться')
-}
 
 useHead({
     title: computed(() => {

@@ -1,5 +1,5 @@
 <template>
-    <span :class="chip({ size: 'md' }) + ' flex gap-2'">
+    <span :class="chip({ size: 'md' }) + ' flex gap-1'">
         <span>{{ formatCompactNumber(stat) }}</span>
         <span>
             <slot></slot>
