@@ -1,9 +1,9 @@
 <template>
-    <div class="w-[1000px] mx-auto py-10">
+    <div class="w-250 mx-auto py-10">
         <div class="flex flex-col gap-4">
             <h2 class="text-2xl font-bold">{{ title }}</h2>
-            <div v-if="isLoadingPage" class="flex justify-center">
-                <BaseLoader size="md" theme="muted" :is-center="true"/>
+            <div v-if="isLoadingPage">
+                <UserlistSkeleton />
             </div>
             <div v-else-if="sortedUsers.length === 0" class="text-gray-400">{{ emptyText }}</div>
             <div v-else class="flex flex-col gap-3">

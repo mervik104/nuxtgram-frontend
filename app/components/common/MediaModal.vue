@@ -3,7 +3,7 @@
     <Transition name="modal-fade">
       <div 
         v-if="modelValue !== null"
-        class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/95 backdrop-blur-md"
+        class="fixed inset-0 z-100 flex flex-col items-center justify-center bg-black/95 backdrop-blur-md"
         @click.self="close"
       >
         <button 
@@ -36,7 +36,7 @@
             <div 
               v-for="(img, idx) in images" 
               :key="idx"
-              class="w-full h-full flex-shrink-0 flex items-center justify-center overflow-hidden"
+              class="w-full h-full shrink-0 flex items-center justify-center overflow-hidden"
             >
               <img 
                 :src="buildAPIUrl(img.url)" 

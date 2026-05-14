@@ -1,7 +1,7 @@
 <template>
   <article class="mb-4" :id="`post-${props.id}`">
     <post-wrapper>
-      <PostHeader :date="formatSocialDate(createdAt)" :author="author" />
+      <UserCard :user="author" :date="formatSocialDate(createdAt)" :size="'post'" />
       <div class="relative">
 
         <div class="my-2">
@@ -17,7 +17,7 @@
           </ToolbarButton>
 
           <ToolbarButton @click="isCommentsOpen = !isCommentsOpen" title="Комментарии">
-            <BaseIcon name="message" class="size-[22px] text-icon-access flex" />
+            <BaseIcon name="message" class="size-5.5 text-icon-access flex" />
             <span>{{ formatCompactNumber(commentsCount) }}</span>
           </ToolbarButton>
 
@@ -32,7 +32,7 @@
         </Toolbar>
     
       </div>
-      <div ref="sentinelAbove" class="absolute bottom-0 left-0 w-full h-[1px] pointer-events-none"></div>
+      <div ref="sentinelAbove" class="absolute bottom-0 left-0 w-full h-px pointer-events-none"></div>
     </post-wrapper>
 
     <div v-if="isCommentsOpen" v-auto-animate>

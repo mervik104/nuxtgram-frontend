@@ -1,4 +1,7 @@
 <template>
+  <PostSkeleton></PostSkeleton>
+  <ProfileSkeleton></ProfileSkeleton>
+
   <div class="min-h-screen p-10 text-white font-sans">
     <div class="max-w-5xl mx-auto space-y-24">
 

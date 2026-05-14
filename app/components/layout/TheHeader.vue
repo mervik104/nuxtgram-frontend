@@ -1,7 +1,7 @@
 <template>
-  <header class="h-[70px] shrink-0 border-b border-gray-700/50 flex items-center justify-between px-5 bg-surface-base">
+  <header class="h-17.5 shrink-0 border-b border-gray-700/50 flex items-center justify-between px-5 bg-surface-base">
     <NuxtLink to="/" class="flex items-center gap-2">
-      <img src="/logo.svg" class="w-[75px] h-auto" alt="logo">
+      <img src="/logo.svg" class="w-18.75 h-auto" alt="logo">
       <h1 class="text-2xl font-bold text-white">NuxtGram</h1>
     </NuxtLink>
 

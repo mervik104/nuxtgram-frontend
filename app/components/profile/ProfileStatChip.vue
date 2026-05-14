@@ -5,8 +5,6 @@
             <slot></slot>
         </span>
     </span>
-    
-    <!-- <span><span class="font-medium text-gray-300">{{ formatCompactNumber(stat) }}</span> <slot></slot></span> -->
 </template>
 
 <script setup lang="ts">

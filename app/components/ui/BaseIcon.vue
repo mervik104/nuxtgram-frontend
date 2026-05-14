@@ -1,9 +1,12 @@
 <template>
-    <Icon :name="icons[props.name]" :class="props.class" />
+    <Icon :name="icons[props.name]" :class="props.class">
+        <template #loading>
+            <USkeleton class="rounded" :class="props.class" />
+        </template>
+    </Icon>
 </template>
 
 <script setup lang="ts">
-
 const icons = {
     square: 'ic:baseline-square',
     home: 'mingcute:home-3-fill',
@@ -33,7 +36,6 @@ const props = withDefaults(defineProps<{
     class?: string
 }>(), {
     name: 'square',
-    class: "size-5 text-icon-primary flex"
+    class: 'size-5 text-icon-primary flex'
 })
-
 </script>

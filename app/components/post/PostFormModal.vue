@@ -20,7 +20,7 @@
 
             <div>
                 <textarea ref="textareaRef" v-model="input"
-                    :class="[textarea(), 'mb-5 border-0 !min-w-[600px] !min-h-[550px] !max-h-[700px]']"
+                    :class="[textarea(), 'mb-5 border-0 min-w-150! min-h-138! max-h-175!']"
                     placeholder="Напишите что-нибудь...">
                 </textarea>
 

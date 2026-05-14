@@ -1,7 +1,7 @@
 <template>
   <div v-if="user" ref="menuRef" class="relative">
     <div :class="dropdownStyles.trigger()" @click="toggleMenu">
-      <UserWidget v-bind="user" />
+       <UserCard :user="user" :size="'widget'" />
     </div>
 
     <TransitionFade>

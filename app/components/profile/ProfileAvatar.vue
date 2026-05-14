@@ -1,12 +1,12 @@
 <template>
     <div class="relative group w-fit" :class="{ 'cursor-pointer': itsMe }" @click="itsMe && openFileInput()">
-        <div class="rounded-full p-[3px]"
-            :class="itsMe ? 'bg-gradient-to-tr from-blue-500 to-purple-500' : 'bg-gray-700'">
+        <div class="rounded-full p-0.75"
+            :class="itsMe ? 'bg-linear-to-tr from-blue-500 to-purple-500' : 'bg-gray-700'">
             <Avatar :avatar="user.avatar" size="2xl" class="rounded-full border-4 border-base-dark" />
         </div>
         <template v-if="itsMe">
             <div
-                class="absolute inset-[3px] rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center border-4 border-base-dark pointer-events-none">
+                class="absolute inset-0.75 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center border-4 border-base-dark pointer-events-none">
                 <BaseIcon name="camera" class="text-white flex size-10 opacity-80" />
             </div>
 

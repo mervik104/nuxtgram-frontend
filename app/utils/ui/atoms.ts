@@ -75,7 +75,7 @@ export const iconButton = tv({
 })
 
 export const avatar = tv({
-    base: 'rounded-full overflow-hidden bg-gray-700 flex items-center justify-center flex-shrink-0',
+    base: 'rounded-full overflow-hidden bg-gray-700 flex items-center justify-center shrink-0',
     variants: {
         size: {
             sm:  'w-8 h-8',
@@ -111,7 +111,7 @@ export const input = tv({
 })
 
 export const textarea = tv({
-    base: 'w-full min-h-[150px] p-2.5 rounded-lg border border-gray-700 text-white text-base placeholder-gray-500 outline-none transition-colors',
+    base: 'w-full min-h-37 p-2.5 rounded-lg border border-gray-700 text-white text-base placeholder-gray-500 outline-none transition-colors',
     variants: {
         intent: {
             normal:   'focus:border-blue-500',
@@ -195,10 +195,10 @@ export const loader = tv({
     base: 'animate-spin rounded-full border-solid box-border inline-flex items-center justify-center',
     variants: {
         size: {
-            sm: 'w-6 h-6 border-[4px]',
+            sm: 'w-6 h-6 border-4',
             md: 'w-10 h-10 border-[6px]',
-            lg: 'w-16 h-16 border-[8px]',
-            xl: 'w-24 h-24 border-[10px]',
+            lg: 'w-16 h-16 border-8',
+            xl: 'w-24 h-24 border-10',
         },
         theme: {
             heavy:   'border-loader-track border-b-loader-shadow',
@@ -232,4 +232,60 @@ export const text = tv({
         },
     },
     defaultVariants: { size: 'md' },
+})
+
+export const userCardVariants = tv({
+  slots: {
+    container: '',
+    wrapper: 'flex items-center gap-3',
+    info: 'flex-1 min-w-0',
+    name: 'font-medium text-gray-200 truncate',
+    nickname: 'font-mono text-gray-500 truncate',
+  },
+  variants: {
+    size: {
+      widget: {
+        container: '',
+        wrapper: 'flex items-center gap-3 px-2 py-2 cursor-pointer select-none',
+        name: 'text-md',
+        nickname: 'text-sm hover:text-gray-400 active:text-gray-300 cursor-pointer',
+      },
+      post: {
+        container: 'flex items-center justify-between',
+        wrapper: 'flex items-center gap-3',
+        name: 'text-md cursor-pointer hover:text-gray-300',
+        nickname: 'text-[12px]',
+      },
+      comment: {
+        container: 'flex items-center justify-between',
+        wrapper: 'flex items-center gap-3',
+        name: 'text-md cursor-pointer hover:text-gray-300',
+        nickname: '',
+      },
+      sm: {
+        container: 'flex gap-4 items-center hover:bg-gray-700/50 rounded-xl p-2 px-3 w-full',
+        wrapper: '',
+        name: 'text-md text-center',
+        nickname: '',
+      },
+      md: {
+        container: 'flex gap-4 items-center hover:bg-gray-700/50 rounded-xl p-2 px-3 w-full',
+        wrapper: '',
+        name: 'text-lg text-center',
+        nickname: '',
+      },
+      lg: {
+        container: 'flex gap-4 items-center hover:bg-gray-700/50 rounded-xl p-2 px-3 w-full',
+        wrapper: '',
+        name: 'text-xl',
+        nickname: 'text-gray-400 text-[12px]',
+      },
+      profile: {
+        container: 'flex-1 w-full',
+        wrapper: '',
+        name: 'text-2xl font-bold text-white',
+        nickname: 'text-gray-500 font-mono',
+      },
+    },
+  },
 })

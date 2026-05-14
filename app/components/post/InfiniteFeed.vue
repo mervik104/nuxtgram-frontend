@@ -5,19 +5,13 @@
         <div v-if="!canLoadMore && posts.length > 0" class="text-center py-4 text-gray-500">
             Вы достигли конца
         </div>
-        <div class="flex items-center justify-center">
-            <TransitionDrop>
-                <BaseLoader v-if="isLoading && (posts.length > 0 || posts.length === 0)" :is-center="true" theme="muted"
-                    size="lg" />
-            </TransitionDrop>
-        </div>
+        <FeedSkeleton v-if="isLoading && (posts.length > 0 || posts.length === 0)" />
     </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { usePostStore } from '~/stores/post'
-import type { IPaginationMeta } from '~/types/CommonTypes';
 
 const props = withDefaults(defineProps<{
     feedKey: string

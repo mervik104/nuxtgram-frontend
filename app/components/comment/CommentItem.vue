@@ -1,7 +1,7 @@
 <template>
   <article :id="`comment-${props.id}`">
     <CommentWrapper>
-      <CommentHeader :date="formatSocialDate(createdAt)" :author="author" />
+      <UserCard :user="author" :date="formatSocialDate(createdAt)" :size="'comment'" />
       <div>
         <TextBody class="pl-1">{{ content }}</TextBody>
         <Toolbar>

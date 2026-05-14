@@ -1,5 +1,5 @@
 <template>
-    <div class="mx-auto w-[1100px] p-4">
+    <div class="mx-auto w-275 p-4">
         <FeedTargetPost v-if="route.params.id" />
         <InfiniteFeed v-else feed-key="global" />
     </div>
