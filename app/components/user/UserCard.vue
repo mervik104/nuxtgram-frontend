@@ -87,8 +87,8 @@
 
 <script lang="ts" setup>
 import { useFollowsStore } from '~/stores/follows'
-import type { IPaginationMeta } from '~/types/CommonTypes'
-import type { IUser } from '~/types/UserTypes'
+import type { IPaginationMeta } from '~/types/common.types'
+import type { IUser } from '~/types/user.types'
 import { userCardVariants } from '~/utils/ui/atoms';
 
 const props = withDefaults(

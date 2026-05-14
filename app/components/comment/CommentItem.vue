@@ -1,13 +1,13 @@
 <template>
   <article :id="`comment-${props.id}`">
-    <CommentWrapper>
+    <CommentLayout>
       <UserCard :user="author" :date="formatSocialDate(createdAt)" :size="'comment'" />
       <div>
         <TextBody class="pl-1">{{ content }}</TextBody>
         <Toolbar>
 
           <ToolbarButton @click="likeHandler">
-            <LoveIcon class="size-4" :myReaction="!!myReaction" />
+            <LikeIcon class="size-4" :myReaction="!!myReaction" />
             <span>{{ formatCompactNumber(reactionsCount.like) }}</span>
           </ToolbarButton>
 
@@ -18,13 +18,14 @@
 
         </Toolbar>
       </div>
-    </CommentWrapper>
+    </CommentLayout>
   </article>
 </template>
 
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth';
-import type { IComment } from '~/types/CommentTypes';
+import type { IComment } from '~/types/comment.types.ts';
+import CommentLayout from './CommentLayout.vue';
 const me = useAuthStore().user
 const props = defineProps<IComment>()
 const emit = defineEmits<{

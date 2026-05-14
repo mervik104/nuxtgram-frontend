@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import { vAutoAnimate } from '@formkit/auto-animate';
 
-import type { IPost } from '~/types/PostTypes';
+import type { IPost } from '~/types/post.types';
 const props = defineProps<{
     postsList: IPost[]
 }>()

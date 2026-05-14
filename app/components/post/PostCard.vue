@@ -1,6 +1,6 @@
 <template>
   <article class="mb-4" :id="`post-${props.id}`">
-    <post-wrapper>
+    <PostLayout>
       <UserCard :user="author" :date="formatSocialDate(createdAt)" :size="'post'" />
       <div class="relative">
 
@@ -12,17 +12,17 @@
         <Toolbar>
 
           <ToolbarButton @click="likeHandler" title="Лайк">
-            <LoveIcon class="size-6" :myReaction="!!myReaction" />
+            <LikeIcon class="size-6" :myReaction="!!myReaction" />
             <span>{{ formatCompactNumber(reactionsCount.like) }}</span>
           </ToolbarButton>
 
           <ToolbarButton @click="isCommentsOpen = !isCommentsOpen" title="Комментарии">
-            <BaseIcon name="message" class="size-5.5 text-icon-access flex" />
+            <AppIcon name="message" class="size-5.5 text-icon-access flex" />
             <span>{{ formatCompactNumber(commentsCount) }}</span>
           </ToolbarButton>
 
           <ToolbarButton @click="() => createPostUrl(props.id)" title="Поделиться">
-            <BaseIcon name="share" class="size-6 text-icon-access flex" />
+            <AppIcon name="share" class="size-6 text-icon-access flex" />
           </ToolbarButton>
 
           <DropdownMenu v-if="author.id === me?.id">
@@ -33,7 +33,7 @@
     
       </div>
       <div ref="sentinelAbove" class="absolute bottom-0 left-0 w-full h-px pointer-events-none"></div>
-    </post-wrapper>
+    </PostLayout>
 
     <div v-if="isCommentsOpen" v-auto-animate>
       <CommentList :sentinel-above="elementRef" @close-comments="toggleComments" :post-id="id"></CommentList>
@@ -45,14 +45,15 @@
 import { vAutoAnimate } from '@formkit/auto-animate'
 import { useAuthStore } from '~/stores/auth';
 import { usePostStore } from '~/stores/post';
-import type { IPost } from '~/types/PostTypes';
+import type { IPost } from '~/types/post.types';
+import PostLayout from './PostLayout.vue';
 
 const isCommentsOpen = ref<boolean>(false);
 const { user: me } = storeToRefs(useAuthStore())
 const props = defineProps<IPost>()
 const postsStore = usePostStore()
 const { deletePost, openEditModal, toggleReaction } = postsStore
-const {createPostUrl} = useCreatePostUrl()
+const {createPostUrl} = usePostLink()
 const sentinelAbove = ref<HTMLElement | null>(null)
 const elementRef = ref<HTMLElement | null>(null)
 

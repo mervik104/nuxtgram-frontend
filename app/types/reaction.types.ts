@@ -1,6 +1,6 @@
-import type { IComment } from "./CommentTypes"
-import type { IPost } from "./PostTypes"
-import type { IUser } from "./UserTypes"
+import type { IComment } from "./comment.types.js"
+import type { IPost } from "./post.types.js"
+import type { IUser } from "./user.types.js"
 
 export type ReactionType = 'like' | 'love' | 'haha' | 'fire' | null
 

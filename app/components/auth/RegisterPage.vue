@@ -10,10 +10,10 @@
     </template>
 
     <template #buttons>
-      <BaseButton @click="handleSubmitAction" :disabled="isError" :loading="isProcess" variant="primary" size="xl"
+      <AppButton @click="handleSubmitAction" :disabled="isError" :loading="isProcess" variant="primary" size="xl"
         rounded="md" class="w-full mt-2">
         Зарегистрироваться
-      </BaseButton>
+      </AppButton>
     </template>
   </AuthCard>
 </template>

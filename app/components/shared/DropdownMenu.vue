@@ -3,7 +3,7 @@
         <div @click.stop="toggle"
             class="w-max rounded-full px-2 py-1 hover:bg-gray-800 hover:text-white hover:brightness-75 flex items-center cursor-pointer select-none gap-1 text-gray-500 font-semibold text-sm transition-colors">
             <span class="text-gray-400 text-sm pointer-events-none">
-                <BaseIcon name="menuDots" class="text-icon-access flex size-4" />
+                <AppIcon name="menuDots" class="text-icon-access flex size-4" />
             </span>
         </div>
     </div>

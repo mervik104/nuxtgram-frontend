@@ -1,13 +1,12 @@
 <template>
     <button :type="type" :disabled="isDisabled" :class="[computedClasses, 'gap-2']" v-bind="$attrs">
-        <BaseLoader v-if="loading" size="sm" :theme="props.loaderVariant" />
+        <AppLoader v-if="loading" size="sm" :theme="props.loaderVariant" />
         <slot />
     </button>
 </template>
 
 <script setup lang="ts">
 import { button } from '~/utils/ui/atoms';
-import BaseLoader from './BaseLoader.vue';
 
 defineOptions({ inheritAttrs: false })
 

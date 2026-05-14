@@ -1,4 +1,4 @@
-import type { IPaginationMeta } from "./CommonTypes"
+import type { IPaginationMeta } from "./common.types"
 
 export type UserSessionType = {
   id: string,

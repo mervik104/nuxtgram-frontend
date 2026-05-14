@@ -6,7 +6,7 @@
             :class="iconButton({ class: 'sticky top-2 left-0 -translate-x-1/2 z-20' })"
             @click="emit('close')"
         >
-            <BaseIcon name="cross" class="size-3 flex"/>
+            <AppIcon name="cross" class="size-3 flex"/>
         </SmartScrollButton>
 
         <div @click.stop>

@@ -1,5 +1,5 @@
 <template>
-    <BaseIcon 
+    <AppIcon 
         :name="myReaction ? 'loveFilled' : 'loveOutline'"
         :class="className"
     />

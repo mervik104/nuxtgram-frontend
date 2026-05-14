@@ -1,6 +1,6 @@
 <template>
     <div class="min-h-screen bg-base-dark text-white">
-        <ProfileWrapper>
+        <ProfileLayout>
             <ProfileSkeleton v-if="isLoadingPage || !feedMeta || isProcess" />
 
             <template v-else-if="user">
@@ -29,15 +29,14 @@
                     <p>Пользователь не найден</p>
                 </div>
             </div>
-        </ProfileWrapper>
+        </ProfileLayout>
     </div>
 </template>
 
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth';
-import { useFollowsStore } from '~/stores/follows';
 import { usePostStore } from '~/stores/post';
-import type { IUser } from '~/types/UserTypes';
+import type { IUser } from '~/types/user.types';
 
 const userNick: string = useRoute().params.id as string
 const authStore = useAuthStore()

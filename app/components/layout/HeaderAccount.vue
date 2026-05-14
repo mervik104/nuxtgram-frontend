@@ -5,7 +5,7 @@
     </div>
 
     <TransitionFade>
-      <UserDropdownMenu v-if="isOpen" v-bind="user" @toggle-hidden="toggleMenu" @logout="logoutHandler" />
+      <UserMenu v-if="isOpen" v-bind="user" @toggle-hidden="toggleMenu" @logout="logoutHandler" />
     </TransitionFade>
   </div>
 

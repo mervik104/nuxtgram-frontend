@@ -1,5 +1,5 @@
 <template>
-    <BaseModal v-model="isOpen" @dragover.prevent="isDragging = true" @dragleave="isDragging = false"
+    <AppModal v-model="isOpen" @dragover.prevent="isDragging = true" @dragleave="isDragging = false"
         @drop.prevent="handleDrop">
         <div class="relative">
             <div v-if="isDragging"
@@ -45,26 +45,27 @@
 
                 <div class="flex justify-between items-center">
                     <label v-if="selectedImages.length < MAX_IMAGES && mode === 'create'" :class="button({ variant: 'text', size: 'sm' })">
-                        <BaseIcon name="image" class="size-7 flex"/>
+                        <AppIcon name="image" class="size-7 flex"/>
                         <span>Добавить фото</span>
                         <input type="file" accept="image/*" multiple class="hidden" @change="handleImageSelect" />
                     </label>
                     <div v-else />
 
-                    <BaseButton :loading="isSubmitting" :disabled="!isValide" variant="primary" loader-variant="white"
+                    <AppButton :loading="isSubmitting" :disabled="!isValide" variant="primary" loader-variant="white"
                         @click="submitHandler">
                         {{ mode === 'create' ? 'Опубликовать' : 'Изменить' }}
-                    </BaseButton>
+                    </AppButton>
                 </div>
             </div>
         </div>
-    </BaseModal>
+    </AppModal>
 </template>
 
 <script setup lang="ts">
 import { usePostStore } from '~/stores/post'
-import type { ICreatePostRequest, IPost } from '~/types/PostTypes'
+import type { ICreatePostRequest, IPost } from '~/types/post.types'
 import { button, textarea } from '~/utils/ui/atoms'
+import AppModal from '../ui/AppModal.vue'
 
 const isValide = computed(() => normalizeText(input.value).length > 0)
 

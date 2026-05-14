@@ -6,9 +6,9 @@
 
       <div v-if="isEditingComment" class="mb-1 flex items-center">
         <span class="text-sm ml-1 text-gray-200">Изменение комментария</span>
-        <BaseButton @click="isEditingComment = null" variant="text" size="sm" class="text-red-500 hover:underline ml-3">
+        <AppButton @click="isEditingComment = null" variant="text" size="sm" class="text-red-500 hover:underline ml-3">
           Отменить
-        </BaseButton>
+        </AppButton>
       </div>
 
       <textarea ref="textareaRef" v-model="input" @keydown.enter.exact.prevent="handleSend"
@@ -18,7 +18,7 @@
           fill: 'transparent'
         }), 'max-h-72 min-h-10!']"></textarea>
 
-      <BaseButton @click="handleSend" :disabled="!input.trim()" :loading="isSubmitting"
+      <AppButton @click="handleSend" :disabled="!input.trim()" :loading="isSubmitting"
         :variant="isEditingComment ? 'success' : 'primary'" loader-variant="white" rounded="full" size="sm"
         class="p-2! gap-0! absolute ml-5 bottom-3 group justify-end!">
 
@@ -27,9 +27,9 @@
           {{ isEditingComment ? 'Сохранить' : 'Отправить' }}
         </span>
         
-        <BaseIcon v-if="!isSubmitting" name="arrowUp" class="size-6 shrink-0" />
+        <AppIcon v-if="!isSubmitting" name="arrowUp" class="size-6 shrink-0" />
         
-      </BaseButton>
+      </AppButton>
     </div>
   </div>
 </template>
@@ -38,7 +38,7 @@
 import { useTextareaAutosize } from '@vueuse/core'
 import { useAuthStore } from '~/stores/auth';
 import { useCommentStore } from '~/stores/comment';
-import type { IComment } from '~/types/CommentTypes';
+import type { IComment } from '~/types/comment.types.ts';
 import { textarea } from '~/utils/ui/atoms';
 import { nextTick, ref, watch } from 'vue';
 

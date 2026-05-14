@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useApiFetch } from '../composables/useApiFetch'
-import type { ICreatePostRequest, IPost, IPostResponse, IPostsResponse } from '../types/PostTypes'
-import type { IReactionRequest } from '../types/ReactionTypes'
-import type { IPaginationMeta } from '~/types/CommonTypes'
+import type { ICreatePostRequest, IPost, IPostResponse, IPostsResponse } from '../types/post.types'
+import type { IReactionRequest } from '../types/reaction.types'
+import type { IPaginationMeta } from '~/types/common.types'
 
 export const usePostStore = defineStore('postsStore', () => {
     const { apiFetch } = useApiFetch()

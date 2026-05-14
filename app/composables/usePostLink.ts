@@ -1,4 +1,4 @@
-export const useCreatePostUrl = () => {
+export const usePostLink = () => {
     const createPostUrl = (postId: string) => {
         if (!postId) return ''
         const url = window.location.origin

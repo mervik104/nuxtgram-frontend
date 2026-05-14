@@ -1,4 +1,4 @@
-import type { IUser } from "./UserTypes"
+import type { IUser } from "./user.types"
 
 export interface FollowsResponse {
     followersCount: number

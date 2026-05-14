@@ -7,13 +7,13 @@
         <template v-if="itsMe">
             <div
                 class="absolute inset-0.75 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center border-4 border-base-dark pointer-events-none">
-                <BaseIcon name="camera" class="text-white flex size-10 opacity-80" />
+                <AppIcon name="camera" class="text-white flex size-10 opacity-80" />
             </div>
 
             <button v-if="user.avatar" @click.stop="handleDeleteAvatar"
                 class="absolute -bottom-1 -right-1 bg-red-500 text-gray-200 rounded-full p-1 shadow-md hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-all duration-200"
                 title="Удалить аватар">
-                <BaseIcon name="trash" class="text-white flex size-5" />
+                <AppIcon name="trash" class="text-white flex size-5" />
             </button>
 
             <input accept="image/jpeg, image/png" title="Загрузить новый аватар" ref="avatarInput" type="file" class="hidden"
@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth'
-import type { IUser } from '~/types/UserTypes'
+import type { IUser } from '~/types/user.types'
 
 const props = defineProps<{
     user: IUser,

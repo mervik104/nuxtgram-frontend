@@ -1,4 +1,4 @@
-import type { FollowsResponse, FollowType, UnfollowType } from "~/types/FollowsTypes"
+import type { FollowsResponse, FollowType, UnfollowType } from "~/types/follows.types"
 import { useAuthStore } from "./auth"
 
 export const useFollowsStore = defineStore('followsStore', () => {

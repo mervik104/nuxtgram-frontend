@@ -111,7 +111,7 @@ export const input = tv({
 })
 
 export const textarea = tv({
-    base: 'w-full min-h-37 p-2.5 rounded-lg border border-gray-700 text-white text-base placeholder-gray-500 outline-none transition-colors',
+    base: 'w-full min-h-38 p-2.5 rounded-lg border border-gray-700 text-white text-base placeholder-gray-500 outline-none transition-colors',
     variants: {
         intent: {
             normal:   'focus:border-blue-500',

@@ -1,5 +1,5 @@
 import { defineStore } from "pinia"
-import type { IEditProfileResponse, IUser, IUserEditProfileType, IUsersResponse, UserGetMeType, UserLoginType, UserRegisterType } from "../types/UserTypes"
+import type { IEditProfileResponse, IUser, IUserEditProfileType, IUsersResponse, UserGetMeType, UserLoginType, UserRegisterType } from "../types/user.types"
 import { useApiFetch } from '../composables/useApiFetch';
 import { ref } from "vue";
 import { useApi } from "../composables/useApi";

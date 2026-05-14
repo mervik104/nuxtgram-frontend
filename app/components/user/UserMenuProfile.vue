@@ -7,6 +7,6 @@
 </template>
 
 <script setup lang="ts">
-import type { IUser } from '~/types/UserTypes'
+import type { IUser } from '~/types/user.types'
 defineProps<IUser>()
 </script>

@@ -10,7 +10,7 @@
         <span class="text-sm">+ Создать</span>
       </button>
 
-      <HeaderUser />
+      <HeaderAccount />
     </div>
   </header>
 </template>

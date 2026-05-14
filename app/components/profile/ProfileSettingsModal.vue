@@ -1,6 +1,6 @@
 <template>
-    <BaseModal v-model="isOpen">
-        <div class="flex flex-col items-center p-6 w-100px mx-auto rounded-2xl">
+    <AppModal v-model="isOpen">
+        <div class="flex flex-col items-center p-6 w-100 mx-auto rounded-2xl">
             <h3 class="text-2xl font-bold text-gray-200 mb-6">Настройки профиля</h3>
 
             <div class="w-full space-y-4">
@@ -20,16 +20,16 @@
             </div>
 
             <div class="flex w-full mt-8 gap-3">
-                <BaseButton @click="isOpen = false" variant="secondary" class="flex-1">
+                <AppButton @click="isOpen = false" variant="secondary" class="flex-1">
                     Отмена
-                </BaseButton>
+                </AppButton>
 
-                <BaseButton @click="saveProfile" loader-variant="white" variant="primary" :loading="isSaving" :disabled="isSaveDisabled" class="flex-1">
+                <AppButton @click="saveProfile" loader-variant="white" variant="primary" :loading="isSaving" :disabled="isSaveDisabled" class="flex-1">
                     Сохранить
-                </BaseButton>
+                </AppButton>
             </div>
         </div>
-    </BaseModal>
+    </AppModal>
 </template>
 
 <script setup lang="ts">

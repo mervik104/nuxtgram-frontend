@@ -7,7 +7,7 @@
     />
 
     <img
-      :src="avatar ? buildAPIUrl(avatar.thumbnailURL) : '/defaultAvatar.png'"
+      :src="avatar ? buildApiUrl(avatar.thumbnailURL) : '/defaultAvatar.png'"
       alt="avatar"
       class="w-full h-full object-cover transition-opacity duration-300"
       :class="isLoading ? 'opacity-0' : 'opacity-100'"
@@ -18,11 +18,11 @@
 </template>
 
 <script setup lang="ts">
-import type { IAvatarType } from '~/types/UserTypes'
+import type { IAvatarType } from '~/types/user.types'
 
 type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
 
-const { buildAPIUrl } = useAPIBuilder()
+const { buildApiUrl } = useApiBuilder()
 
 const props = defineProps<{
   avatar?: IAvatarType

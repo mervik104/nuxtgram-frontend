@@ -6,16 +6,16 @@
         </template>
 
         <template #buttons>
-            <BaseButton @click="handleSubmitAction" :disabled="isError" :loading="isProcess" loader-variant="white"
-                variant="success" size="xl" rounded="md" class="w-full mt-3">Войти</BaseButton>
+            <AppButton @click="handleSubmitAction" :disabled="isError" :loading="isProcess" loader-variant="white"
+                variant="success" size="xl" rounded="md" class="w-full mt-3">Войти</AppButton>
 
             <span class="text-center text-md text-gray-600 font-semibold uppercase">или</span>
 
-            <BaseButton @click="redirectToRegister" variant="primary" size="xl" rounded="md" class="w-full">Регистрация</BaseButton>
-            <BaseButton @click="redirectToFeed" variant="text"
+            <AppButton @click="redirectToRegister" variant="primary" size="xl" rounded="md" class="w-full">Регистрация</AppButton>
+            <AppButton @click="redirectToFeed" variant="text"
                 class="text-gray-700 hover:text-gray-600 hover:underline">
                 Продолжить без входа
-            </BaseButton>
+            </AppButton>
         </template>
     </AuthCard>
 </template>

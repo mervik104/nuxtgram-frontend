@@ -6,7 +6,7 @@
                 @click="scrollToPost(props.postId, { highlight: false })">
 
                 <div class="flex items-center justify-center gap-0.5">
-                    <BaseIcon name="arrowUpDashed" class="size-6"/>
+                    <AppIcon name="arrowUpDashed" class="size-6"/>
                     <span class="text-sm">К посту</span>
                 </div>
                 
@@ -35,7 +35,7 @@
 
         <div class="flex items-center justify-center">
             <TransitionDrop>
-                <BaseLoader :is-center="true" v-if="isLoading" size="sm" theme="muted" />
+                <AppLoader :is-center="true" v-if="isLoading" size="sm" theme="muted" />
             </TransitionDrop>
         </div>
 
@@ -53,10 +53,11 @@
 
 <script setup lang="ts">
 import { vAutoAnimate } from '@formkit/auto-animate';
+import App from '~/app.vue';
 import { useAuthStore } from '~/stores/auth';
 import { useCommentStore } from '~/stores/comment';
-import type { IComment } from '~/types/CommentTypes';
-import type { IReactionRequest } from '~/types/ReactionTypes';
+import type { IComment } from '~/types/comment.types.ts';
+import type { IReactionRequest } from '~/types/reaction.types';
 import { button } from '~/utils/ui/atoms';
 
 const { user: me } = storeToRefs(useAuthStore())

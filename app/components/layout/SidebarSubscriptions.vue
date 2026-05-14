@@ -3,7 +3,7 @@
         <NuxtLink to="/subscriptions">
             <div class="flex items-center gap-3 mb-1 cursor-pointer py-2 mt-2 px-3 hover:bg-gray-700/50 rounded-xl">
                 <h4 class=" text-gray-200 text-lg">Подписки</h4>
-                <BaseIcon name="right" class="text-gray-100 font-sans" />
+                <AppIcon name="right" class="text-gray-100 font-sans" />
             </div>
         </NuxtLink>
 

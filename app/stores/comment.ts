@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useApiFetch } from '../composables/useApiFetch'
-import type { IComment, ICommentResponse, ICommentsResponse } from '../types/CommentTypes'
-import type { IReactionRequest } from '../types/ReactionTypes'
-import type { ICreateCommentRequest, IPost } from '../types/PostTypes'
-import type { IPaginationMeta } from '~/types/CommonTypes'
+import type { IComment, ICommentResponse, ICommentsResponse } from '../types/comment.types.ts'
+import type { IReactionRequest } from '../types/reaction.types'
+import type { ICreateCommentRequest, IPost } from '../types/post.types'
+import type { IPaginationMeta } from '~/types/common.types'
 import { usePostStore } from './post'
 
 export const useCommentStore = defineStore('commentStore', () => {

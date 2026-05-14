@@ -11,7 +11,7 @@
           class="absolute top-6 right-6 z-10 text-white text-6xl leading-none flex items-center justify-center hover:text-gray-300 transition-colors"
           aria-label="Закрыть"
         >
-          <BaseIcon name="cross" class="flex size-10"/>
+          <AppIcon name="cross" class="flex size-10"/>
         </button>
 
         <div 
@@ -39,7 +39,7 @@
               class="w-full h-full shrink-0 flex items-center justify-center overflow-hidden"
             >
               <img 
-                :src="buildAPIUrl(img.url)" 
+                :src="buildApiUrl(img.url)" 
                 class="max-w-full max-h-full object-contain rounded-2xl pointer-events-none"
                 :style="getImageStyle(idx)"
                 draggable="false" 
@@ -63,7 +63,7 @@
           <img 
             v-for="(img, idx) in images" 
             :key="idx" 
-            :src="buildAPIUrl(img.url)"
+            :src="buildApiUrl(img.url)"
             class="w-16 h-16 object-cover rounded-xl cursor-pointer border-2 transition-all snap-start"
             :class="modelValue === idx ? 'border-white scale-105' : 'border-transparent hover:border-white/50'"
             @click="emit('update:modelValue', idx)" 
@@ -75,7 +75,8 @@
 </template>
 
 <script setup lang="ts">
-import type { MediaArray } from '~/types/CommonTypes'
+import App from '~/app.vue';
+import type { MediaArray } from '~/types/common.types'
 
 const props = defineProps<{
   modelValue: number | null
@@ -86,7 +87,7 @@ const emit = defineEmits<{
   (e: 'update:modelValue', value: number | null): void
 }>()
 
-const { buildAPIUrl } = useAPIBuilder()
+const { buildApiUrl } = useApiBuilder()
 
 const close = () => emit('update:modelValue', null)
 

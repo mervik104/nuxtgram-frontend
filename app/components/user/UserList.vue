@@ -19,7 +19,7 @@
 <script lang="ts" setup>
 import { useAuthStore } from '~/stores/auth';
 import { useFollowsStore } from '~/stores/follows';
-import type { IUser } from '~/types/UserTypes';
+import type { IUser } from '~/types/user.types';
 
 const props = defineProps<{
     type: 'following' | 'followers'
