@@ -2,6 +2,11 @@ import { ref, watch, type Ref } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import { useAuthStore } from '~/stores/auth'
 
+// Live-проверка уникальности никнейма на форме профиля/регистрации.
+//
+// Следит за полем nicknameVal, дебаунсит ввод (200ms) и запрашивает
+// у authStore доступность ника; при занятости сразу вешает ошибку поля.
+// Возвращает refs: isAvailable (bool | null, пока не проверили) и isChecking.
 export function useNicknameCheck(
     nicknameVal: Ref<string>,
     originalNickname: Ref<string | undefined>,

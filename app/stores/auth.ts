@@ -1,12 +1,15 @@
 import { defineStore } from "pinia"
-import type { IEditProfileResponse, IUser, IUserEditProfileType, IUsersResponse, UserGetMeType, UserLoginType, UserRegisterType } from "../types/user.types"
-import { useApiFetch } from '../composables/useApiFetch';
+import type { IUser, IUserEditProfileType } from "../types/user.types"
 import { ref } from "vue";
-import { useApi } from "../composables/useApi";
+import { useSurrealDb } from "../data/surreal/useSurrealDb";
+import { toAvatar, toUser } from "~/data/surreal/mappers";
+import { log, logError } from "~/utils/logger";
 
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+// Стор авторизации/профиля: текущий юзер, загрузка профиля, вход/выход,
+// редактирование профиля и аватара. Ходит в clerkAuth (authBridge) + SurrealDB.
 export const useAuthStore = defineStore('authStore', () => {
-    const { apiFetch } = useApiFetch()
-    const { api } = useApi()
     const user = ref<IUser | null>(null)
 
     const isProcess = ref<boolean>(false)
@@ -17,100 +20,157 @@ export const useAuthStore = defineStore('authStore', () => {
         isEditProfileModalOpen.value = true
     }
 
-    async function register(body: UserRegisterType) {
-        isProcess.value = true
-        try {
-            await apiFetch<string>('/users/register', { body, method: 'POST' })
-            await api<string>('/users/login', { body: { email: body.email, password: body.password }, method: 'POST' })
-            window.location.reload()
-        } finally {
-            isProcess.value = false
-        }
+    // Полный сброс юзера (логаут / «профиль не создан»).
+    function clearUser() {
+        user.value = null
     }
 
-    async function login(body: UserLoginType) {
-        isProcess.value = true
-        try {
-            await api<string>('/users/login', { body, method: 'POST' })
-            window.location.reload()
-        } finally {
-            isProcess.value = false
-        }
-    }
-
+    // Загрузка профиля по clerkId из Clerk-моста.
+    // Ждёт загрузки Clerk (до 3с), сбрасывает user, если не авторизован;
+    // при отсутствии профиля в БД — пытается создать через provision и
+    // перезапрашивает. Ошибки сети НЕ трогают текущего user'а.
     async function getMe() {
-        const res = await apiFetch<UserGetMeType>('/users/me', { method: 'GET' })
-        user.value = res.user
+        const bridge = authBridge.value
+        if (!bridge) {
+            log('auth', 'getMe: мост (bridge) ещё не готов')
+            return user
+        }
+
+        if (!bridge.isLoaded.value) {
+            for (let attempt = 0; attempt < 15; attempt++) {
+                await sleep(200)
+                if (bridge.isLoaded.value) break
+            }
+            if (!bridge.isLoaded.value) {
+                log('auth', 'getMe: Clerk так и не загрузился (3с)')
+                return user
+            }
+        }
+
+        if (!bridge.isSignedIn.value || !bridge.userId.value) {
+            log('auth', 'getMe: не авторизован, сбрасываю user', {
+                isSignedIn: bridge.isSignedIn.value,
+                userId: bridge.userId.value,
+            })
+            clearUser()
+            return user
+        }
+
+        try {
+            const { getUserByClerkId } = useSurrealDb()
+            let currentUser = await getUserByClerkId(bridge.userId.value)
+
+            if (!currentUser) {
+                const candidate = bridge.clientUsername.value
+                if (candidate) {
+                    log('auth', 'getMe: профиль не найден, создаю через provision', { username: candidate })
+                    await bridge.provision(candidate)
+                    currentUser = await useSurrealDb().getUserByClerkId(bridge.userId.value)
+                }
+            }
+
+            if (!currentUser) {
+                log('auth', 'getMe: профиль так и не создан', { clerkId: bridge.userId.value })
+                clearUser()
+                return user
+            }
+
+            user.value = toUser(currentUser)
+            log('auth', 'getMe: профиль загружен', { username: user.value.username, id: String(currentUser.id) })
+        } catch (error) {
+            logError('auth', 'getMe: запрос профиля упал (текущий user сохранён)', error)
+        }
+
         return user
     }
 
+    // Выход через Clerk-мост + сброс юзера и редирект на вход.
     async function logout() {
         isProcess.value = true
         try {
-            await apiFetch<IUser>('/users/logout', { method: 'POST' })
-            user.value = null
+            if (authBridge.value?.isLoaded.value) await authBridge.value.signOut()
+            clearUser()
             redirectToLogin()
         } finally {
             isProcess.value = false
         }
     }
 
+    // Профиль по никнейму (для страницы профиля по ссылке) или null.
     async function getUserByNickname(nick: string) {
-        const { docs } = await apiFetch<IUsersResponse>(`users?where[nickname][equals]=${nick}`)
-        if (docs.length === 1) {
-            return docs[0]
-        }
-        else {
-            return null
-        }
+        if (!authBridge.value?.isLoaded.value) return null
+
+        const { getUserByNickname: findUserByNickname } = useSurrealDb()
+        const currentUser = await findUserByNickname(nick)
+        return currentUser ? toUser(currentUser) : null
     }
 
+    // Доступность никнейма (для live-валидации форм).
     async function checkNicknameAvailable(nick: string) {
-        const { available } = await apiFetch<{ available: boolean }>(`users/check-nickname?nickname=${nick}`)
-        return available
+        if (!authBridge.value?.isLoaded.value) return false
+
+        const { isNicknameAvailable } = useSurrealDb()
+        return await isNicknameAvailable(nick)
     }
 
+    // Обновляет профиль (username/nickname/bio). Если сменили никнейм — 
+    // редиректим на новый URL профиля.
     async function editProfile(data: IUserEditProfileType) {
         isProcess.value = true
         try {
-            const newData = await apiFetch<IEditProfileResponse>(`users/me/profile`, { method: 'PATCH', body: data })
-            if (user.value) {
-                if (user.value.nickname !== newData.user.nickname) {
-                    redirectToProfile(newData.user.nickname)
+            const bridge = authBridge.value
+            if (bridge?.isLoaded.value && bridge.userId.value) {
+                const { updateUserByClerkId } = useSurrealDb()
+                const updatedUser = await updateUserByClerkId(bridge.userId.value, data)
+                if (!updatedUser) throw new Error('Профиль не найден')
+
+                const nextUser = toUser(updatedUser)
+                if (user.value && user.value.nickname !== nextUser.nickname) {
+                    redirectToProfile(nextUser.nickname)
                 }
-                user.value = newData.user
+                user.value = nextUser
+                return
             }
+            throw new Error('Сессия Clerk недоступна')
         } finally {
             isProcess.value = false
         }
     }
 
+    // Загрузка аватара: файл → worker /media/upload → /media/complete-avatar,
+    // затем профиль перечитывается getMe().
     async function uploadAvatar(formData: FormData) {
         isProcess.value = true
         try {
-            const data = await apiFetch<IUser>(`users/me/avatar`, {
+            const bridge = authBridge.value
+            if (!bridge) throw new Error('Сессия Clerk недоступна')
+
+            const file = formData.get('avatar')
+            if (!(file instanceof File)) throw new Error('File is required')
+
+            const upload = await bridge.uploadImage(file.name, file.type, file)
+
+            await bridge.requestWorker('/media/complete-avatar', {
                 method: 'POST',
-                body: formData
+                body: { objectKey: upload.objectKey, filename: file.name, alt: `Avatar for ${user.value?.username || 'user'}` },
             })
-            if (user.value) {
-                user.value.avatar = data.avatar
-            }
+
+            await getMe()
         }
         finally {
             isProcess.value = false
         }
     }
 
+    // Удаляет аватар через worker /media/delete-avatar, затем getMe().
     async function deleteAvatar() {
         isProcess.value = true
         try {
-            const data = await apiFetch<IUser>(`users/me/avatar`, {
-                method: 'DELETE'
-            })
-            if (user.value) {
-                user.value.avatar = data.avatar
-            }
-            window.location.reload()
+            const bridge = authBridge.value
+            if (!bridge) throw new Error('Сессия Clerk недоступна')
+
+            await bridge.requestWorker('/media/delete-avatar', { method: 'POST' })
+            await getMe()
         }
         finally {
             isProcess.value = false
@@ -119,8 +179,6 @@ export const useAuthStore = defineStore('authStore', () => {
     }
 
     return {
-        register,
-        login,
         getMe,
         logout,
         user,
@@ -130,6 +188,7 @@ export const useAuthStore = defineStore('authStore', () => {
         deleteAvatar,
         isEditProfileModalOpen,
         openEditProfileModal,
+        clearUser,
         checkNicknameAvailable,
         editProfile
     }

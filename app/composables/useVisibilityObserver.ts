@@ -1,5 +1,10 @@
 import { ref, onMounted, onUnmounted, nextTick, type Ref } from 'vue'
 
+// Наблюдение за видимостью «шапки» поста через два sentinel-элемента
+// (над и под постом). Используется для включающих декоративных состояний:
+//  - isSticky: нижний sentinel вышел из зоны видимости → шапка «прилипла»
+//    в момент прокрутки поста.
+//  - isPostVisible: верхний sentinel всё ещё в зоне видимости → пост на экране.
 export function useVisibilityObserver(
     sentinelAbove: Ref<HTMLElement | null>,
     sentinelBelow: Ref<HTMLElement | null>
@@ -9,6 +14,8 @@ export function useVisibilityObserver(
 
     let observer: IntersectionObserver | null = null
 
+    // Ближайший родительский скролл-контейнер (overflowY auto/scroll
+    // И реально скроллируемый — scrollHeight > clientHeight).
     const findScrollContainer = (element: HTMLElement | null): HTMLElement | null => {
         let parent = element?.parentElement
         while (parent) {

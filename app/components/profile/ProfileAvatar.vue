@@ -61,7 +61,10 @@ const handleAvatarUpload = (event: Event) => {
 
         const formData = new FormData()
         formData.append('avatar', file)
-        uploadAvatar(formData)
+        uploadAvatar(formData).catch((error) => {
+            alert(error instanceof Error ? error.message : 'Не удалось загрузить аватар. Попробуйте ещё раз.')
+            resetInput()
+        })
     }
 }
 

@@ -1,19 +1,33 @@
-import { useAuthStore } from "~/stores/auth";
+// Глобальный роут-гард авторизации.
+//  - ждёт загрузки Clerk (до WAIT_FOR_CLERK_MS);
+//  - неавторизованного на '/' → /login;
+//  - авторизованного на /login или /register → '/'.
+//
+// Из-за hash-режима SPA проверка строится на мосте authBridge; фолбэк —
+// window.Clerk.session (внешний фрейм-кэш этапа гидрации).
+const WAIT_FOR_CLERK_MS = 4000
 
-export default defineNuxtRouteMiddleware((to, from) => {
-  const authStore = useAuthStore();
-  const isLoggedIn = !!authStore.user;
+export default defineNuxtRouteMiddleware(async (to) => {
+  let bridge = authBridge.value
 
-  if (to.path === '/' && !isLoggedIn) {
-    return navigateTo('/login');
+  if (!bridge || !bridge.isLoaded.value) {
+    const deadline = Date.now() + WAIT_FOR_CLERK_MS
+    while (Date.now() < deadline) {
+      await new Promise((resolve) => setTimeout(resolve, 50))
+      bridge = authBridge.value
+      if (bridge?.isLoaded.value) break
+    }
   }
 
-  // if (to.path === '/' && isLoggedIn) {
-  //   return navigateTo('/');
-  // }
+  const isLoggedIn = bridge?.isLoaded.value === true
+    ? bridge.isSignedIn.value && !!bridge.userId.value
+    : typeof window !== 'undefined' && !!window.Clerk?.session
+
+  if (to.path === '/' && !isLoggedIn) {
+    return navigateTo('/login')
+  }
 
   if ((to.path === '/login' || to.path === '/register') && isLoggedIn) {
-    console.log('Вы уже авторизованы');
-    return navigateTo('/');
+    return navigateTo('/')
   }
 })

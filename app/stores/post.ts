@@ -1,12 +1,19 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { useApiFetch } from '../composables/useApiFetch'
-import type { ICreatePostRequest, IPost, IPostResponse, IPostsResponse } from '../types/post.types'
+import type { ICreatePostRequest, IPost } from '../types/post.types'
 import type { IReactionRequest } from '../types/reaction.types'
 import type { IPaginationMeta } from '~/types/common.types'
+import { createPost as createSurrealPost, deletePost as deleteSurrealPost, findPostById, findPostsPage, togglePostReaction, updatePost as updateSurrealPost } from '~/data/surreal/posts'
+import { useSurrealDb } from '~/data/surreal/useSurrealDb'
+import type { AuthBridge } from '~/utils/authBridge'
+import { flipReaction, snapshotReaction } from '~/utils/reaction'
+import { redirectToLogin } from '~/utils/redirects'
+import { log, logError } from '~/utils/logger'
 
+// Стор постов: кэш записей (posts) + ленты (feeds: global / user_<id>) с
+// постраничной подгрузкой, CRUD и оптимистичными реакциями с откатом.
 export const usePostStore = defineStore('postsStore', () => {
-    const { apiFetch } = useApiFetch()
+    const clerkAuth = (): AuthBridge | null => authBridge.value
     const posts = ref<Record<string, IPost>>({})
     const feeds = ref<Record<string, {
         ids: string[]
@@ -20,10 +27,12 @@ export const usePostStore = defineStore('postsStore', () => {
     const isEditingPost = ref<IPost | null>(null)
     const isSubmitting = ref(false)
 
+    // Управление модалками создания/редактирования поста.
     function openCreateModal() { isCreateModalOpen.value = true }
     function openEditModal(post: IPost) { isEditingPost.value = post; isEditModalOpen.value = true }
     function closeModals() { isCreateModalOpen.value = false; isEditModalOpen.value = false; isEditingPost.value = null }
 
+    // Корректирует totalDocs ленты после создания/удаления поста.
     function adjustFeedTotalDocs(feedKey: string, delta: number) {
         const feed = feeds.value[feedKey]
         if (feed?.meta) {
@@ -34,23 +43,23 @@ export const usePostStore = defineStore('postsStore', () => {
         }
     }
 
-    function extractPost(data: IPostResponse | IPost, isFormData: boolean): IPost {
-        return isFormData ? data as IPost : (data as IPostResponse).doc!
-    }
-
+    // Полный список постов ленты (из кэша по id).
     function getFeedList(feedKey: string): IPost[] {
         const feed = feeds.value[feedKey]
         if (!feed) return []
         return feed.ids.map(id => posts.value[id]).filter((p): p is IPost => Boolean(p))
     }
 
+    // Есть ли неподгруженные посты в ленте.
     function canLoadMore(feedKey: string): boolean {
         const feed = feeds.value[feedKey]
         if (!feed || !feed.meta) return true
         return feed.ids.length < feed.meta.totalDocs
     }
 
-    async function fetchFeed(feedKey: string, apiUrl: string, page: number = 1, limit: number = 10) {
+    // Постраничная загрузка ленты (feedKey, опц. authorId для профиля).
+    // page=1 сбрасывает ленту; защита от параллельных/повторных загрузок.
+    async function fetchSurrealFeed(feedKey: string, authorId: string | undefined, page = 1, limit = 10) {
         if (!feeds.value[feedKey]) {
             feeds.value[feedKey] = { ids: [], meta: null, isLoading: false, isFullyLoaded: false }
         }
@@ -65,45 +74,58 @@ export const usePostStore = defineStore('postsStore', () => {
 
         feed.isLoading = true
         try {
-            const data = await apiFetch<IPostsResponse>(`${apiUrl}&page=${page}&limit=${limit}`)
+            const db = await useSurrealDb().connect()
+            const data = await findPostsPage(db, {
+                authorId,
+                clerkId: clerkAuth()?.userId.value || undefined,
+                page,
+                limit,
+            })
 
             data.docs.forEach(post => {
                 posts.value[post.id] = post
             })
 
-            const newIds = data.docs.map(p => p.id).filter(id => !feed.ids.includes(id))
+            const newIds = data.docs.map(post => post.id).filter(id => !feed.ids.includes(id))
             feed.ids.push(...newIds)
-
             const { docs, ...restData } = data
-            feed.meta = restData as unknown as IPaginationMeta
-
-            if (data.docs.length < limit) {
-                feed.isFullyLoaded = true
-            }
+            feed.meta = restData as IPaginationMeta
+            feed.isFullyLoaded = !data.hasNextPage
+            log('feed', 'фид получен', { feedKey, page, loaded: newIds.length, total: feed.meta?.totalDocs })
+        } catch (error) {
+            logError('feed', 'загрузка фида упала', error)
+            throw error
         } finally {
             feed.isLoading = false
         }
     }
 
+    // Глобальная лента (все посты, новые сверху).
     async function getGlobalFeed(page = 1) {
-        return fetchFeed('global', '/posts?sort=-createdAt', page)
+        return fetchSurrealFeed('global', undefined, page)
     }
 
+    // Один пост по id (для страницы поста / редиректа к посту).
     async function getPost(postId: string) {
-        const data = await apiFetch<IPost>(`posts/${postId}`)
-        posts.value[postId] = data
-        return data
+        const db = await useSurrealDb().connect()
+        const post = await findPostById(db, postId, clerkAuth()?.userId.value || undefined)
+        if (!post) return undefined
+        posts.value[postId] = post
+        return post
     }
 
+    // Лента постов конкретного автора (профиль), ключ user_<userId>.
     async function getUserFeed(userId: string, page = 1) {
-        return fetchFeed(`user_${userId}`, `/posts?where[author][equals]=${userId}&sort=-createdAt`, page)
+        return fetchSurrealFeed(`user_${userId}`, userId, page)
     }
 
+    // Создание поста. Принимает простой payload или FormData (с файлами):
+    // для FormData файлы загружаются через worker и конвертируются в imageIds.
+    // Нормализует текст (normalizeText). Новый пост вставляется в начало лент.
     async function createPost(payload: ICreatePostRequest | FormData) {
         isSubmitting.value = true
 
         const isFormData = payload instanceof FormData
-        const url = isFormData ? '/posts/create-with-media' : '/posts'
 
         if (!isFormData) {
             payload.content = normalizeText(payload.content)
@@ -113,13 +135,26 @@ export const usePostStore = defineStore('postsStore', () => {
         }
 
         try {
-            const data = await apiFetch<IPostResponse | IPost>(url, {
-                method: 'POST',
-                body: payload
-            })
-            
-            const newPost = extractPost(data, isFormData)
-            if (!newPost) throw new Error("Сервер не вернул созданный пост")
+            const surreal = useSurrealDb()
+            const currentUser = await surreal.getUserByClerkId(clerkAuth()?.userId.value || '')
+            if (!currentUser) throw new Error('Application user profile is not provisioned')
+            const db = await surreal.connect()
+
+            let newPost: IPost | undefined
+            if (!isFormData) {
+                newPost = await createSurrealPost(db, String(currentUser.id), payload.content)
+            } else {
+                const files = payload.getAll('image').filter((value): value is File => value instanceof File)
+                const imageIds: string[] = []
+                for (const file of files) {
+                    const upload = await clerkAuth()!.uploadImage(file.name, file.type, file)
+
+                    imageIds.push(upload.media.id)
+                }
+
+                newPost = await createSurrealPost(db, String(currentUser.id), payload.get('content') as string, imageIds)
+            }
+            if (!newPost) throw new Error('Сервер не вернул созданный пост')
 
             posts.value[newPost.id] = newPost
 
@@ -141,26 +176,28 @@ export const usePostStore = defineStore('postsStore', () => {
         }
     }
 
+    // Редактирование текста поста.
     async function editPost(payload: ICreatePostRequest, id: string) {
         isSubmitting.value = true
         payload.content = normalizeText(payload.content)
         try {
-            const data = await apiFetch<IPostResponse>(`/posts/${id}`, { method: 'PATCH', body: payload })
-
-            if (data.doc) {
-                posts.value[id] = data.doc
-            }
-
+            const db = await useSurrealDb().connect()
+            const updatedPost = await updateSurrealPost(db, id, payload.content, clerkAuth()?.userId.value || undefined)
+            if (!updatedPost) throw new Error('Пост не найден')
+            posts.value[id] = updatedPost
             closeModals()
         } finally {
             isSubmitting.value = false
         }
     }
 
+    // Удаление поста: из БД, кэша и из ВСЕХ лент (с корректировкой totalDocs).
     async function deletePost(id: string) {
         isSubmitting.value = true
         try {
-            await apiFetch(`/posts/${id}`, { method: 'DELETE' })
+            const db = await useSurrealDb().connect()
+            const deletedPost = await deleteSurrealPost(db, id)
+            if (!deletedPost) throw new Error('Пост не найден')
 
             delete posts.value[id]
 
@@ -176,6 +213,8 @@ export const usePostStore = defineStore('postsStore', () => {
         }
     }
 
+    // Переключение реакции на пост: оптимистично (snapshot → flip) с полным
+    // откатом при ошибке. Без авторизации — редирект на /login.
     async function toggleReaction(reaction: IReactionRequest) {
         if (reaction.target.relationTo === 'comments') return
 
@@ -183,27 +222,30 @@ export const usePostStore = defineStore('postsStore', () => {
         if (!post) return
         if (!reaction.type) return
 
-        const oldReaction = post.myReaction
-        const oldCount = post.reactionsCount[reaction.type] || 0
-
-        if (oldReaction) {
-            post.reactionsCount[oldReaction]--
-            post.myReaction = null
-        } else {
-            post.reactionsCount[reaction.type] = oldCount + 1
-            post.myReaction = reaction.type
+        const clerk = clerkAuth()
+        if (!clerk?.isLoaded.value || !clerk.userId.value) {
+            log('reaction', 'лайк поста блокирован (не авторизован), уходим на логин', { post: reaction.target.value })
+            redirectToLogin()
+            return
         }
 
+        const previous = snapshotReaction(post)
+        const next = flipReaction(post, reaction.type)
+        post.myReaction = next.myReaction
+        post.reactionsCount = next.reactionsCount
+
         try {
-            await apiFetch('/reactions/toggle', { method: 'POST', body: reaction })
-        } catch (er) {
-            post.myReaction = oldReaction
-            if (oldReaction) {
-                post.reactionsCount[oldReaction]++
-            } else {
-                post.reactionsCount[reaction.type] = oldCount
-            }
-            throw er
+            const surreal = useSurrealDb()
+            const currentUser = await surreal.getUserByClerkId(clerk.userId.value)
+            if (!currentUser) throw new Error('Application user profile is not provisioned')
+            const db = await surreal.connect()
+            await togglePostReaction(db, String(currentUser.id), reaction.target.value, reaction.type)
+            log('reaction', 'лайк поста успешен', { post: reaction.target.value, myReaction: post.myReaction })
+        } catch (error) {
+            post.myReaction = previous.myReaction
+            post.reactionsCount = previous.reactionsCount
+            logError('reaction', 'лайк поста упал, откат', error)
+            throw error
         }
     }
 

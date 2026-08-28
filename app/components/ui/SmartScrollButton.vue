@@ -25,32 +25,58 @@ useAttrs()
 const show = ref(false)
 const appearScrollY = ref<number | null>(null)
 let scrollEl: HTMLElement | null = null
+let attachTimer: ReturnType<typeof setTimeout> | null = null
+
+const resolveScrollEl = (): HTMLElement | null => {
+    if (!scrollEl) scrollEl = document.getElementById(props.scrollTargetId)
+    return scrollEl
+}
 
 watch(() => props.isVisible, (isVisible) => {
     if (!isVisible) {
         show.value = true
-        appearScrollY.value = (scrollEl?.scrollTop ?? 0) + props.scrollOffset
+        appearScrollY.value = (resolveScrollEl()?.scrollTop ?? 0) + props.scrollOffset
     } else {
         show.value = false
         appearScrollY.value = null
     }
-})
+}, { immediate: true })
 
 const handleScroll = () => {
-    if (!show.value || appearScrollY.value === null || !scrollEl) return
+    if (!show.value || appearScrollY.value === null) return
+    const el = resolveScrollEl()
+    if (!el) return
 
-    if (scrollEl.scrollTop < appearScrollY.value) {
+    if (el.scrollTop < appearScrollY.value) {
         show.value = false
         appearScrollY.value = null
     }
 }
 
-onMounted(() => {
-    scrollEl = document.getElementById(props.scrollTargetId)
-    scrollEl?.addEventListener('scroll', handleScroll, { passive: true })
+const attachScroll = () => {
+    if (attachTimer) {
+        clearTimeout(attachTimer)
+        attachTimer = null
+    }
+    scrollEl?.removeEventListener('scroll', handleScroll)
+
+    const el = resolveScrollEl()
+    if (el) {
+        el.addEventListener('scroll', handleScroll, { passive: true })
+        return
+    }
+    attachTimer = setTimeout(attachScroll, 100)
+}
+
+watch(() => props.scrollTargetId, () => {
+    scrollEl = null
+    attachScroll()
 })
 
+onMounted(attachScroll)
+
 onUnmounted(() => {
+    if (attachTimer) clearTimeout(attachTimer)
     scrollEl?.removeEventListener('scroll', handleScroll)
 })
 </script>

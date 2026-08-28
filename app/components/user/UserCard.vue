@@ -90,6 +90,7 @@ import { useFollowsStore } from '~/stores/follows'
 import type { IPaginationMeta } from '~/types/common.types'
 import type { IUser } from '~/types/user.types'
 import { userCardVariants } from '~/utils/ui/atoms';
+import { copyToClipboard } from '~/utils/clipboard';
 
 const props = withDefaults(
   defineProps<{
@@ -127,10 +128,12 @@ onMounted(async () => {
 
 const subscriptionsHandler = () => (props.itsMe ? navigateTo('/subscriptions') : null)
 const subscribersHandler = () => (props.itsMe ? navigateTo('/subscribers') : null)
-const copyId = () => {
+const copyId = async () => {
   const toast = useNotification()
-  navigator.clipboard.writeText(props.user.nickname)
-  toast.success({ message: 'ID скопирован в буфер обмена' })
+  const copied = await copyToClipboard(props.user.nickname)
+  if (copied) {
+    toast.success({ message: 'ID скопирован в буфер обмена' })
+  }
 }
 
 </script>

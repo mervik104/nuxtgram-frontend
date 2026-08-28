@@ -1,0 +1,28 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "nuxtgram-media-worker",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-27",
+  // Storage is S3-protocol-compatible (B2). Switching to Cloudflare R2 is a
+  // config-only change: point B2_ENDPOINT at the R2 S3 API (region auto, set
+  // S3_REGION=auto), put the R2 token/secret in B2_KEY_ID/B2_APPLICATION_KEY,
+  // and swap B2_PUBLIC_BASE_URL for the R2 custom domain or r2.dev bucket URL.
+  "vars": {
+    "B2_ENDPOINT": "https://s3.us-east-005.backblazeb2.com",
+    "B2_BUCKET_NAME": "nuxtgram-basket",
+    "B2_PUBLIC_BASE_URL": "https://f005.backblazeb2.com/file/nuxtgram-basket",
+    "B2_SIGNED_URL_TTL_SECONDS": "900",
+    "S3_REGION": "us-east-005",
+    "MAX_UPLOAD_BYTES": "10485760",
+    "CLERK_ISSUER": "https://superb-marmot-2888.clerk.accounts.dev",
+    "CLERK_JWKS_URL": "https://superb-marmot-2888.clerk.accounts.dev/.well-known/jwks.json",
+    "CLERK_AUDIENCE": "nuxtgram-surrealdb",
+    "SURREALDB_URL": "wss://nuxtgram-databa-06g46rhocdvvd0fbbma22ik0fk.aws-use1.surreal.cloud/rpc",
+    "SURREALDB_NAMESPACE": "main",
+    "SURREALDB_DATABASE": "main",
+    // TODO-SECURITY: заглушка. CORS сейчас открыт на все домены (ACAO: *)
+    // намеренно для разработки/LAN-тестов. Перед прод-деплоем заменить на
+    // боевой домен фронтенда и сузить CORS в src/index.ts (см. docs/TODO-security.md).
+    "FRONTEND_ORIGIN": "http://localhost:3000"
+  }
+}

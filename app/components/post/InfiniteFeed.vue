@@ -12,6 +12,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { usePostStore } from '~/stores/post'
+import { useAuthStore } from '~/stores/auth'
 
 const props = withDefaults(defineProps<{
     feedKey: string
@@ -21,6 +22,7 @@ const props = withDefaults(defineProps<{
 })
 
 const postsStore = usePostStore()
+const authStore = useAuthStore()
 const bottomSentinel = ref<HTMLElement | null>(null)
 const { isAtBottom } = useInfiniteScroll(bottomSentinel)
 const posts = computed(() => postsStore.getFeedList(props.feedKey))
@@ -56,5 +58,11 @@ watch(isAtBottom, (atBottom) => {
         const currentPage = feed.meta.page || 1
         fetchCurrentFeed(currentPage + 1)
     }
+})
+
+watch(() => authStore.user?.id, (userId, previous) => {
+    if (!userId || userId === previous) return
+    postsStore.feeds[props.feedKey] = { ids: [], meta: null, isLoading: false, isFullyLoaded: false }
+    fetchCurrentFeed(1)
 })
 </script>

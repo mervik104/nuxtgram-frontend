@@ -16,6 +16,11 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       API_URL: process.env.API_URL,
+      SURREALDB_URL: process.env.SURREALDB_URL,
+      SURREALDB_NAMESPACE: process.env.SURREALDB_NAMESPACE,
+      SURREALDB_DATABASE: process.env.SURREALDB_DATABASE,
+      CLERK_JWT_TEMPLATE: process.env.CLERK_JWT_TEMPLATE,
+      WORKER_URL: process.env.WORKER_URL || 'https://nuxtgram-media-worker.stepanenkoboris064.workers.dev',
     }
   },
   app: {
@@ -25,7 +30,6 @@ export default defineNuxtConfig({
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       ],
       link: [
-        { rel: 'stylesheet', href: 'https://awesome-lib.css' },
         { rel: 'icon', type: 'image/svg', href: '/logo.svg' },
       ],
     },
@@ -37,7 +41,7 @@ export default defineNuxtConfig({
       enabled: true,
     },
   },
-  modules: ['@pinia/nuxt', 'nuxt-toast', '@nuxt/ui', 'nuxt-single-html', '@nuxtjs/color-mode', '@vueuse/nuxt', '@nuxt/icon'],
+  modules: ['@pinia/nuxt', 'nuxt-toast', '@nuxt/ui', 'nuxt-single-html', '@nuxtjs/color-mode', '@vueuse/nuxt', '@nuxt/icon', '@clerk/nuxt'],
   toast: {
     composableName: 'useNotification', // Customize the composable name
     settings: {
@@ -59,6 +63,10 @@ export default defineNuxtConfig({
     classPrefix: '',
     classSuffix: '-mode',
     storageKey: 'nuxt-color-mode'
+  },
+
+  clerk: {
+    skipServerMiddleware: true,
   },
   
   components: [

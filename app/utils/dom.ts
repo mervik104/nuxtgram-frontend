@@ -1,3 +1,5 @@
+// Идёт вверх по дереву родителей и возвращает ближайший скролл-контейнер
+// элемента (по overflow-y: auto/scroll); если такого нет — окно.
 export function findScrollContainer(element: HTMLElement | null): HTMLElement | Window {
     if (!element) return window
 

@@ -1,18 +1,31 @@
-import type { FollowsResponse, FollowType, UnfollowType } from "~/types/follows.types"
+import { defineStore } from 'pinia'
+import { ref, watch } from 'vue'
+import type { FollowsResponse } from "~/types/follows.types"
 import { useAuthStore } from "./auth"
+import {
+    findUserFollows,
+    followUser as followTargetUser,
+    unfollowUser as unfollowTargetUser,
+} from "~/data/surreal/follows"
+import { useSurrealDb } from "~/data/surreal/useSurrealDb"
+import { redirectToLogin } from "~/utils/redirects"
+import { log, logError } from "~/utils/logger"
 
+// Стор подписок: счётчики/статус isFollowing по профилям + оптимистичный
+// follow/unfollow (с откатом при ошибке). Данные ключуются по id цели.
 export const useFollowsStore = defineStore('followsStore', () => {
-    const { apiFetch } = useApiFetch()
     const authStore = useAuthStore()
 
     const isFollowProcess = ref(false)
     const follows = ref<Record<string, FollowsResponse>>({})
 
+    // При смене текущего юзера подтягиваем его собственный профиль подписок.
     watch(() => authStore.user?.id, async (userId) => {
         if (!userId) return
         await loadMeFollows()
     }, { immediate: true })
 
+    // Загружает подписки текущего (своего) профиля в store.
     async function loadMeFollows() {
         const userId = authStore.user?.id
         if (!userId) return
@@ -20,20 +33,31 @@ export const useFollowsStore = defineStore('followsStore', () => {
         if (response) follows.value[userId] = response
     }
 
+    // Запрос FollowsResponse для профиля (сетевые ошибки → null).
     async function fetchFollows(id: string): Promise<FollowsResponse | null> {
         try {
-            return await apiFetch<FollowsResponse>(`/follows/user/${id}`, { method: 'GET' })
+            const db = await useSurrealDb().connect()
+            return await findUserFollows(db, id, authStore.user?.id)
         } catch {
             return null
         }
     }
 
+    // Явная загрузка подписок профиля по id в store.
     async function getFollows(id: string) {
         const response = await fetchFollows(id)
         if (response) follows.value[id] = response
     }
 
+    // Записаться на пользователя. Оптимистично: сразу isFollowing=true и
+    // +1 к счётчику; при ошибке — откат и лог. Без авторизации — на /login.
     async function follow(targetId: string) {
+        const currentUserId = authStore.user?.id
+        if (!currentUserId) {
+            log('follow', 'подписка блокирована (не авторизован), уходим на логин', { target: targetId })
+            redirectToLogin()
+            return
+        }
         if (!follows.value[targetId] || follows.value[targetId].isFollowing) return
 
         follows.value[targetId].isFollowing = true
@@ -41,18 +65,28 @@ export const useFollowsStore = defineStore('followsStore', () => {
         isFollowProcess.value = true
 
         try {
-            await apiFetch<FollowType>(`/follows/follow`, { method: 'POST', body: { targetId } })
+            const db = await useSurrealDb().connect()
+            await followTargetUser(db, currentUserId, targetId)
+            log('follow', 'подписка успешна', { target: targetId })
         } catch (e) {
             follows.value[targetId].isFollowing = false
             follows.value[targetId].followersCount -= 1
-            throw e
+            logError('follow', 'подписка упала, откат', e)
         } finally {
             await loadMeFollows()
             isFollowProcess.value = false
         }
     }
 
+    // Отписаться от пользователя. Зеркально follow: оптимистичный сброс
+    // isFollowing/-1, откат при ошибке.
     async function unfollow(targetId: string) {
+        const currentUserId = authStore.user?.id
+        if (!currentUserId) {
+            log('follow', 'отписка блокирована (не авторизован), уходим на логин', { target: targetId })
+            redirectToLogin()
+            return
+        }
         if (!follows.value[targetId] || !follows.value[targetId].isFollowing) return
 
         follows.value[targetId].isFollowing = false
@@ -60,11 +94,13 @@ export const useFollowsStore = defineStore('followsStore', () => {
         isFollowProcess.value = true
 
         try {
-            await apiFetch<UnfollowType>(`/follows/unfollow`, { method: 'DELETE', body: { targetId } })
+            const db = await useSurrealDb().connect()
+            await unfollowTargetUser(db, currentUserId, targetId)
+            log('follow', 'отписка успешна', { target: targetId })
         } catch (e) {
             follows.value[targetId].isFollowing = true
             follows.value[targetId].followersCount += 1
-            throw e
+            logError('follow', 'отписка упала, откат', e)
         } finally {
             await loadMeFollows()
             isFollowProcess.value = false

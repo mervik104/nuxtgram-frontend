@@ -1,3 +1,5 @@
+// Форматирует дату по «социальному» правилу: относительное время для свежих
+// записей (мин/ч/дн назад), «сегодня/вчера в ЧЧ:ММ», далее дата + год по мере удаления.
 export function formatSocialDate(dateString: string): string {
     const date = new Date(dateString)
     const now = new Date()
@@ -46,11 +48,13 @@ export function formatSocialDate(dateString: string): string {
     })
 }
 
+// true, если дата — текущий день.
 function isToday(date: Date): boolean {
     const now = new Date()
     return date.toDateString() === now.toDateString()
 }
 
+// true, если дата — вчерашний день.
 function isYesterday(date: Date): boolean {
     const yesterday = new Date()
     yesterday.setDate(yesterday.getDate() - 1)
@@ -58,6 +62,7 @@ function isYesterday(date: Date): boolean {
     return date.toDateString() === yesterday.toDateString()
 }
 
+// Время в формате «ЧЧ:ММ» (ru-RU).
 function formatTime(date: Date): string {
     return date.toLocaleTimeString('ru-RU', {
         hour: '2-digit',
@@ -65,6 +70,8 @@ function formatTime(date: Date): string {
     })
 }
 
+// Нормализует произвольный текст: убирает отступы по строкам, схлопывает
+// повторяющиеся переносы/пробелы/табы и чистит концы.
 export function normalizeText(text: string) {
   return text
     .replace(/^[ \t]+/gm, '')
@@ -75,6 +82,7 @@ export function normalizeText(text: string) {
     .trim()
 }
 
+// Компактное число с суффиксами k/M/B/T (например 12k, 1.2M); нуль — «0».
 export function formatCompactNumber(num: number, maxDecimals: number = 1): string {
   if (num === 0) return '0';
 
@@ -94,6 +102,7 @@ export function formatCompactNumber(num: number, maxDecimals: number = 1): strin
   return `${formattedNum}${suffixes[tier]}`;
 }
 
+// Число с разделителями тысяч по ru-RU (например 1 234 567).
 export function formatWithSpaces(num: number): string {
   return new Intl.NumberFormat('ru-RU', {
     useGrouping: true,

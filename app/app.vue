@@ -10,4 +10,6 @@
 </template>
 
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+authBridge.value = useClerkAuth()
+</script>

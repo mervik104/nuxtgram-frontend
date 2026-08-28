@@ -1,5 +1,10 @@
+// Дизайн-токены компонентов (tailwind-variants). Каждый atom — конфигуратор
+// className: базовые стили + варианты (variant/size/…). Используется компонентами
+// UI (Button, Input, Avatar, Card, …). Правка вариантов здесь меняет весь UI.
+// TODO: часть размеров/отступов перенести в адаптивные tailwind-варианты (см. docs).
 import { tv } from 'tailwind-variants'
 
+// Кнопки: variant (цвет/роль), size, скругление, disabled/loading/error-состояния.
 export const button = tv({
     base: 'inline-flex items-center justify-center transition-colors font-medium outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 border border-transparent',
     variants: {
@@ -42,6 +47,7 @@ export const button = tv({
     defaultVariants: { variant: 'ghost', size: 'md', rounded: 'lg' },
 })
 
+// Пункты меню (dropdown и похожие списки).
 export const menuItem = tv({
     base: 'w-full text-left px-3 py-1.5 text-sm transition-colors hover:bg-border-hover',
     variants: {
@@ -53,6 +59,7 @@ export const menuItem = tv({
     defaultVariants: { variant: 'default' },
 })
 
+// Иконка-кнопка: варианты акцент/ghost/danger, размеры (соотношение сторон).
 export const iconButton = tv({
     base: 'inline-flex items-center justify-center transition-all duration-200 outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 cursor-pointer',
     variants: {
@@ -74,6 +81,7 @@ export const iconButton = tv({
     defaultVariants: { variant: 'accent', size: 'sm', rounded: 'full' },
 })
 
+// Аватары: кружок с выбором размера (sm…2xl).
 export const avatar = tv({
     base: 'rounded-full overflow-hidden bg-gray-700 flex items-center justify-center shrink-0',
     variants: {
@@ -88,6 +96,7 @@ export const avatar = tv({
     defaultVariants: { size: 'md' },
 })
 
+// Текстовые поля: intent (normal/error/success/disabled), размер, заливка.
 export const input = tv({
     base: 'w-full px-4 py-2 rounded-lg border text-white placeholder-gray-500 outline-none transition-colors',
     variants: {
@@ -110,6 +119,7 @@ export const input = tv({
     defaultVariants: { intent: 'normal', size: 'md', fill: 'transparent' },
 })
 
+// Многострочный текст: intent, заливка, overflow, resize.
 export const textarea = tv({
     base: 'w-full min-h-38 p-2.5 rounded-lg border border-gray-700 text-white text-base placeholder-gray-500 outline-none transition-colors',
     variants: {
@@ -135,6 +145,7 @@ export const textarea = tv({
     defaultVariants: { intent: 'normal', fill: 'solid', overflow: 'auto', resize: 'vertical' },
 })
 
+// Модальные окна: слоты overlay/content/base + ограничение ширины по size.
 export const modal = tv({
     slots: {
         overlay: 'fixed inset-0 flex items-center justify-center z-50 bg-black/60',
@@ -147,6 +158,7 @@ export const modal = tv({
     defaultVariants: { size: 'md' },
 })
 
+// Dropdown: слоты trigger/menu + вертикальное выравнивание (start/end).
 export const dropdown = tv({
     slots: {
         trigger: 'inline-flex items-center gap-2 px-3 py-1 rounded-md transition-colors bg-transparent text-gray-200 hover:bg-gray-800',
@@ -161,6 +173,7 @@ export const dropdown = tv({
     defaultVariants: { align: 'start' },
 })
 
+// Карточка с необязательной подсветкой (highlighted — accent-ring).
 export const card = tv({
     base: 'bg-surface-base border border-border-subtle rounded-xl p-4 shadow-sm',
     variants: {
@@ -169,6 +182,7 @@ export const card = tv({
     defaultVariants: { highlighted: false },
 })
 
+// Бейдж-плашка: intent info (синяя) / muted (серая).
 export const badge = tv({
     base: 'inline-flex items-center px-2 py-0.5 rounded-full text-sm',
     variants: {
@@ -180,6 +194,7 @@ export const badge = tv({
     defaultVariants: { intent: 'muted' },
 })
 
+// Маленький чип (тег, статус); размер влияет только на шрифт.
 export const chip = tv({
     base: 'inline-flex items-center px-2 py-1 rounded-full bg-gray-800 text-gray-200',
     variants: {
@@ -191,6 +206,7 @@ export const chip = tv({
     defaultVariants: { size: 'md' },
 })
 
+// Спиннер загрузки: тема по цветам, размер по толщине/диаметру кольца.
 export const loader = tv({
     base: 'animate-spin rounded-full border-solid box-border inline-flex items-center justify-center',
     variants: {
@@ -210,6 +226,7 @@ export const loader = tv({
     defaultVariants: { size: 'md', theme: 'heavy' },
 })
 
+// Иконка-инлайн-бокс по размеру.
 export const icon = tv({
     base: 'inline-block',
     variants: {
@@ -222,6 +239,7 @@ export const icon = tv({
     defaultVariants: { size: 'md' },
 })
 
+// Текстовые блоки по размеру шрифта.
 export const text = tv({
     base: 'text-gray-200 leading-relaxed',
     variants: {
@@ -234,6 +252,8 @@ export const text = tv({
     defaultVariants: { size: 'md' },
 })
 
+// Юзер-карточка: слоты container/wrapper/info/name/nickname; размер под место
+// использования (виджет поста, комментарий, профиль, списки sm/md/lg).
 export const userCardVariants = tv({
   slots: {
     container: '',

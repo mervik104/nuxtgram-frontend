@@ -1,5 +1,10 @@
 import { ref, onMounted, onUnmounted, type Ref } from 'vue';
 
+// Бесконечный скролл по sentinel-элементу:
+//  - наблюдает за «сигнальным» элементом в конце списка (или в контейнере,
+//    переданном через containerRef);
+//  - выставляет isAtBottom, когда sentinel в зоне видимости (с запасом 200px);
+//  - предоставляет scrollToTop — вернуть скролл списка/окна наверх.
 export function useInfiniteScroll(
     sentinelRef: Ref<HTMLElement | null>,
     containerRef?: Ref<HTMLElement | null>
@@ -10,6 +15,7 @@ export function useInfiniteScroll(
 
     onMounted(() => {
         if (!sentinelRef.value) return;
+        // Контейнер прокрутки: переданный явно или ближайший скролл-контейнер.
         scrollRoot = containerRef?.value || findScrollContainer(sentinelRef.value);
         const observerRoot = scrollRoot === window ? null : (scrollRoot as HTMLElement);
 
@@ -38,6 +44,7 @@ export function useInfiniteScroll(
         }
     });
 
+    // Прокрутка контейнера (или window) к началу, по умолчанию плавная.
     const scrollToTop = (behavior: ScrollBehavior = 'smooth') => {
         if (!scrollRoot) return;
         

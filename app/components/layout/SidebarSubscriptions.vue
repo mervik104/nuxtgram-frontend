@@ -24,12 +24,12 @@ const { getMe } = useAuthStore()
 const followsStore = useFollowsStore()
 
 const me = await getMe()
-const userId = me.value!.id
+const userId = me.value?.id
 
 const { getFollows } = followsStore
-await getFollows(userId)
+if (userId) await getFollows(userId)
 
-const follows = computed(() => followsStore.follows[userId])
+const follows = computed(() => (userId ? followsStore.follows[userId] : undefined))
 
 const sortedFollowing = computed(() =>
     [...(follows.value?.following ?? [])].sort((a, b) =>

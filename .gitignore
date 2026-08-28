@@ -8,7 +8,9 @@ dist
 .github
 .vscode
 vscode
-
+docs
+steps
+changes.txt
 
 # Node dependencies
 node_modules
@@ -26,3 +28,6 @@ logs
 .env
 .env.*
 !.env.example
+
+# clerk configuration (can include secrets)
+/.clerk/

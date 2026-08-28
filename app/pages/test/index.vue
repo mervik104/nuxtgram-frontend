@@ -321,13 +321,13 @@
 // Импортируем атомы (предполагается путь из твоего вопроса)
 import { button, input, textarea, badge, chip, card, dropdown, modal, text, icon, avatar, loader } from '~/utils/ui/atoms'
 
-const sizes = ['sm', 'md', 'lg']
-const allButtonVariants = ['primary', 'success', 'secondary', 'ghost', 'text', 'danger']
+const sizes = ['sm', 'md', 'lg'] as const
+const allButtonVariants = ['primary', 'success', 'secondary', 'ghost', 'text', 'danger'] as const
 
-const loaderSizes = ['sm', 'md', 'lg', 'xl']
-const loaderThemes = ['heavy', 'primary', 'muted', 'white']
+const loaderSizes = ['sm', 'md', 'lg', 'xl'] as const
+const loaderThemes = ['heavy', 'primary', 'muted', 'white'] as const
 
-const avatarSizes = ['sm', 'md', 'lg', 'xl', '2xl']
+const avatarSizes = ['sm', 'md', 'lg', 'xl', '2xl'] as const
 </script>
 
 <style scoped>
