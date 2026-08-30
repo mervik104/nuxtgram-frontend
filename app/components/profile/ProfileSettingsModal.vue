@@ -38,7 +38,6 @@ import { toTypedSchema } from '@vee-validate/zod'
 import { editProfileSchema } from '~/schemas/auth'
 import { useAuthStore } from '~/stores/auth'
 import { useNicknameCheck } from '~/composables/useNicknameCheck'
-import VeeInput from '~/components/ui/VeeInput.vue'
 
 const authStore = useAuthStore()
 const { user } = storeToRefs(authStore)

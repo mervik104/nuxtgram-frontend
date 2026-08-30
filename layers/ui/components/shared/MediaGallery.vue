@@ -30,7 +30,6 @@
 </template>
 
 <script setup lang="ts">
-import App from '~/app.vue';
 import type { MediaArray } from '~/types/common.types'
 
 const props = defineProps<{ images: MediaArray }>()

@@ -36,11 +36,12 @@ export default defineNuxtConfig({
   },
   compatibilityDate: '2025-07-15',
   devtools: {
-    enabled: false,
+    enabled: true,
     timeline: {
       enabled: true,
     },
   },
+  extends: ['./layers/ui'],
   modules: ['@pinia/nuxt', 'nuxt-toast', '@nuxt/ui', 'nuxt-single-html', '@nuxtjs/color-mode', '@vueuse/nuxt', '@nuxt/icon', '@clerk/nuxt'],
   toast: {
     composableName: 'useNotification', // Customize the composable name

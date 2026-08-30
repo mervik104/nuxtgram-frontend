@@ -1,0 +1,23 @@
+@theme {
+  --color-surface-base: #0f1416;
+  --color-surface-background: #101213;
+  --color-surface-secondary: #171A1C;
+  --color-surface-elevated: #252525;
+  --color-surface-menu: #1E2225;
+  --color-surface-accent: #1d2538;
+  --color-surface-accent-hover: #324465;
+
+  --color-border-subtle: #232628;
+  --color-border-header: #1b1d1e;
+  --color-border-input: #3A3F45;
+  --color-border-accent: #39425a;
+  --color-border-hover: #2A2F33;
+  --color-border-sidebar: #565758;
+
+  --color-loader-track: #454545;
+  --color-loader-shadow: #2E2E2E;
+
+  --color-icon-primary: #d1d5db;
+  --color-icon-secondary: #9ca3af;
+  --color-icon-accent: #39425a;
+}

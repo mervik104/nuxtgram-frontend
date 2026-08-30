@@ -65,7 +65,6 @@
 import { usePostStore } from '~/stores/post'
 import type { ICreatePostRequest, IPost } from '~/types/post.types'
 import { button, textarea } from '~/utils/ui/atoms'
-import AppModal from '../ui/AppModal.vue'
 
 const isValide = computed(() => normalizeText(input.value).length > 0)
 
