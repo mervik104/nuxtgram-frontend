@@ -7,7 +7,7 @@
                 <AppIcon name="settings" class="flex size-5 text-icon-secondary" />
             </template>
         </UserMenuItem>
-        <UserMenuItem text="Режим отображения">
+        <UserMenuItem text="Режим отображения" @click="toggleTheme">
             <template #icon>
                 <AppIcon name="theme" class="flex size-5 text-icon-secondary" />
             </template>
@@ -33,4 +33,10 @@ defineEmits<{
 }>()
 
 const dropdownStyles = dropdown({ align: 'end' })
+
+const colorMode = useColorMode()
+
+function toggleTheme() {
+    colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
+}
 </script>

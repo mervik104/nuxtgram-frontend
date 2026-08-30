@@ -1,6 +1,6 @@
 <template>
-    <AppModal v-model="isOpen">
-        <div class="flex flex-col items-center p-6 w-100 mx-auto rounded-2xl">
+    <AppModal v-model="isOpen" size="md" padding="none">
+    <div class="flex flex-col items-center p-6 w-full mx-auto rounded-2xl">
             <h3 class="text-2xl font-bold text-gray-200 mb-6">Настройки профиля</h3>
 
             <div class="w-full space-y-4">

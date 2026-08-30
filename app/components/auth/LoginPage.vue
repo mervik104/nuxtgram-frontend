@@ -1,46 +1,73 @@
 <template>
-    <AuthCard title="Вход в NuxtGram" width="auto">
-        <template #form-fields>
-            <template v-if="!codeStep">
-                <VeeInput :autofocus="true" name="email" type="email" placeholder="Электронная почта" />
-                <VeeInput name="password" type="password" placeholder="Пароль" />
-            </template>
-
-            <template v-else>
-                <p class="text-sm text-gray-400 mb-2">
-                    Мы отправили код подтверждения. Введите его ниже (проверьте почту и SMS).
+    <AuthShell>
+        <template #brand>
+            <AuthBrand size="lg">
+                <p class="text-base sm:text-lg text-icon-secondary leading-relaxed max-w-sm">
+                    Делитесь моментами, следите за близкими и находите единомышленников.
                 </p>
-                <AppInput v-model="codeInput" autofocus placeholder="Код подтверждения" :error="codeError" />
-                <p v-if="codeSendMessage" class="text-sm text-center text-gray-500 mt-1">{{ codeSendMessage }}</p>
-            </template>
+            </AuthBrand>
         </template>
 
-        <template #buttons>
-            <template v-if="!codeStep">
-                <AppButton @click="handleSubmitAction" :disabled="isError" :loading="isProcess" loader-variant="white"
-                    variant="success" size="xl" rounded="md" class="w-full mt-3">Войти</AppButton>
+        <template #mobile-brand>
+            <AuthBrand size="sm" />
+        </template>
+
+        <AuthCard title="Вход">
+            <template #subtitle>
+                <p class="text-sm text-icon-secondary text-center">Войдите, чтобы продолжить</p>
             </template>
 
-            <template v-else>
-                <AppButton @click="submitCode" :disabled="isCodeError" :loading="isCodeSending" loader-variant="white"
-                    variant="success" size="xl" rounded="md" class="w-full mt-3">Подтвердить</AppButton>
-                <AppButton @click="resendCode" variant="text" size="xl" rounded="md"
-                    class="w-full mt-2 text-gray-400 hover:text-gray-600">Отправить код ещё раз</AppButton>
-                <AppButton @click="cancelCodeStep" variant="text" class="text-gray-600 hover:underline w-full">
-                    Назад
-                </AppButton>
+            <template #form-fields>
+                <template v-if="!codeStep">
+                    <div class="flex flex-col gap-2">
+                        <VeeInput :autofocus="true" name="email" type="email" placeholder="Электронная почта" />
+                        <VeeInput name="password" type="password" placeholder="Пароль" />
+                    </div>
+                </template>
+
+                <template v-else>
+                    <p class="text-sm text-icon-secondary">
+                        Мы отправили код подтверждения. Введите его ниже (проверьте почту и SMS).
+                    </p>
+                    <AppInput v-model="codeInput" autofocus placeholder="Код подтверждения" :error="codeError" />
+                    <p v-if="codeSendMessage" class="text-sm text-center text-icon-secondary">{{ codeSendMessage }}</p>
+                </template>
             </template>
 
-            <span v-if="!codeStep" class="text-center text-md text-gray-600 font-semibold uppercase">или</span>
+            <template #social>
+                <AuthDivider />
+                <SocialAuthButtons mode="sign-in" />
+            </template>
 
-            <AppButton v-if="!codeStep" @click="redirectToRegister" variant="primary" size="xl" rounded="md"
-                class="w-full">Регистрация</AppButton>
-            <AppButton v-if="!codeStep" @click="redirectToFeed" variant="text"
-                class="text-gray-700 hover:text-gray-600 hover:underline">
+            <template #buttons>
+                <template v-if="!codeStep">
+                    <AppButton @click="handleSubmitAction" :disabled="isError" :loading="isProcess"
+                        loader-variant="white" variant="success" size="lg" rounded="md" class="w-full">Войти</AppButton>
+                </template>
+
+                <template v-else>
+                    <AppButton @click="submitCode" :disabled="isCodeError" :loading="isCodeSending"
+                        loader-variant="white" variant="success" size="lg" rounded="md" class="w-full">Подтвердить
+                    </AppButton>
+                    <AppButton @click="resendCode" variant="text"
+                        class="text-icon-secondary hover:text-icon-primary w-full">Отправить код ещё раз</AppButton>
+                    <AppButton @click="cancelCodeStep" variant="text"
+                        class="text-icon-secondary hover:underline w-full">Назад</AppButton>
+                </template>
+            </template>
+        </AuthCard>
+
+        <div class="flex flex-col gap-3 items-center">
+            <button type="button" class="text-blue-600 hover:underline text-sm sm:text-base font-medium"
+                @click="redirectToRegister">
+                Нет аккаунта? Регистрация
+            </button>
+            <button type="button" class="text-icon-secondary hover:text-icon-primary hover:underline text-sm"
+                @click="redirectToFeed">
                 Продолжить без входа
-            </AppButton>
-        </template>
-    </AuthCard>
+            </button>
+        </div>
+    </AuthShell>
 </template>
 
 <script lang="ts" setup>
@@ -111,6 +138,14 @@ const cancelCodeStep = () => {
     codeSendMessage.value = ''
     codeError.value = ''
     codeInput.value = ''
+}
+
+function redirectToRegister() {
+    navigateTo('/register')
+}
+
+function redirectToFeed() {
+    navigateTo('/feed')
 }
 
 useEventListener('keydown', (e: KeyboardEvent) => {

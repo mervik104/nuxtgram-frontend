@@ -1,4 +1,4 @@
-import { Surreal } from 'surrealdb'
+import { Surreal, NotAllowedError } from 'surrealdb'
 import { log, logError } from '~/utils/logger'
 import { authBridge } from '~/utils/authBridge'
 import { hydrateUserAvatar } from './avatars'
@@ -29,10 +29,56 @@ async function mintClerkToken(bridge: AuthBridge, template?: string): Promise<st
   return null
 }
 
+// Открывает новую сессию Surreal (app/signed-in → JWT-сессия, иначе guest).
+// Возвращает ORM; при ошибке аутентификации кидает оригинальную ошибку.
+async function openSession(needAuth: boolean, url: string, namespace: string, database: string, template?: string): Promise<NuxtgramDatabase> {
+  const nextSession = new Surreal()
+
+  try {
+    if (needAuth) {
+      const bridge = authBridge.value
+      if (!bridge) {
+        throw new Error('Auth bridge is not ready')
+      }
+
+      const token = await mintClerkToken(bridge, template)
+      if (!token) {
+        throw new Error('Не удалось получить Clerk JWT для подключения к базе')
+      }
+
+      log('db', 'подключаюсь к БД с JWT', { template: template ?? '(default)' })
+
+      await nextSession.connect(url, {
+        namespace,
+        database,
+        authentication: token,
+      })
+
+      if (!nextSession.accessToken) {
+        throw new Error('БД отклонила Clerk JWT: проверьте claims ac/ns/db и audience в шаблоне JWT')
+      }
+
+      log('db', 'авторизованная сессия установлена')
+    } else {
+      log('db', 'подключаюсь анонимно')
+      await nextSession.connect(url, { namespace, database })
+      log('db', 'анонимная сессия установлена')
+    }
+  } catch (error) {
+    await nextSession.close().catch(() => {})
+    throw error
+  }
+
+  session = { client: nextSession, authed: needAuth }
+  return createNuxtgramDatabase(nextSession)
+}
+
 // Подключается к SurrealDB (единственная точка входа data-слоя на клиенте).
 // needAuth=true → авторизованная сессия с Clerk JWT; needAuth=false → анонимная (guest).
 // Кэширует подключение в module-level session/connection: один сокет + один ORM.
 // Если режим (authed/аноним) поменялся — закрывает старый сокет и переподключается.
+// Новый пользователь (Clerk-аккаунт создан, записи users ещё нет) получает от БД
+// NotAllowedError — тогда профиль провижинится через worker и сессия откроется вновь.
 export const useSurrealDb = () => {
   const config = useRuntimeConfig()
 
@@ -61,46 +107,23 @@ export const useSurrealDb = () => {
         session = null
       }
 
-      const nextSession = new Surreal()
-
       try {
-        if (needAuth) {
-          const template = config.public.CLERK_JWT_TEMPLATE || undefined
-          const bridge = authBridge.value
-          if (!bridge) {
-            throw new Error('Auth bridge is not ready')
-          }
-
-          const token = await mintClerkToken(bridge, template)
-          if (!token) {
-            throw new Error('Не удалось получить Clerk JWT для подключения к базе')
-          }
-
-          log('db', 'подключаюсь к БД с JWT', { template: template ?? '(default)' })
-
-          await nextSession.connect(url, {
-            namespace,
-            database,
-            authentication: token,
-          })
-
-          if (!nextSession.accessToken) {
-            throw new Error('БД отклонила Clerk JWT: проверьте claims ac/ns/db и audience в шаблоне JWT')
-          }
-
-          log('db', 'авторизованная сессия установлена')
-        } else {
-          log('db', 'подключаюсь анонимно')
-          await nextSession.connect(url, { namespace, database })
-          log('db', 'анонимная сессия установлена')
-        }
+        return await openSession(needAuth, url, namespace, database, config.public.CLERK_JWT_TEMPLATE || undefined)
       } catch (error) {
-        await nextSession.close().catch(() => {})
+        // БД отклонила JWT: у авторизованного пользователя это значит, что запись
+        // users с этим clerkId ещё не создана (AUTHENTICATE требует её существовать).
+        // Провижиним профиль через worker (тот ходит сервисным аккаунтом) и повторим.
+        if (needAuth && error instanceof NotAllowedError) {
+          const bridge = authBridge.value
+          const username = bridge?.clientUsername.value
+          if (username) {
+            log('db', 'профиль не найден, провижиню через worker', { username })
+            await bridge.provision(username)
+            return await openSession(needAuth, url, namespace, database, config.public.CLERK_JWT_TEMPLATE || undefined)
+          }
+        }
         throw error
       }
-
-      session = { client: nextSession, authed: needAuth }
-      return createNuxtgramDatabase(nextSession)
     })()
 
     try {

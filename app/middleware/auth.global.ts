@@ -1,7 +1,9 @@
 // Глобальный роут-гард авторизации.
 //  - ждёт загрузки Clerk (до WAIT_FOR_CLERK_MS);
-//  - неавторизованного на '/' → /login;
 //  - авторизованного на /login или /register → '/'.
+//
+// Гости НЕ редиректятся на /login — браузинг открыт, а вход предлагается
+// модалкой (AuthPromptModal) при попытке защищённых действий.
 //
 // Из-за hash-режима SPA проверка строится на мосте authBridge; фолбэк —
 // window.Clerk.session (внешний фрейм-кэш этапа гидрации).
@@ -22,10 +24,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const isLoggedIn = bridge?.isLoaded.value === true
     ? bridge.isSignedIn.value && !!bridge.userId.value
     : typeof window !== 'undefined' && !!window.Clerk?.session
-
-  if (to.path === '/' && !isLoggedIn) {
-    return navigateTo('/login')
-  }
 
   if ((to.path === '/login' || to.path === '/register') && isLoggedIn) {
     return navigateTo('/')

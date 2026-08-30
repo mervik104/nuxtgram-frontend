@@ -1,5 +1,5 @@
 <template>
-    <AppModal v-model="isOpen" @dragover.prevent="isDragging = true" @dragleave="isDragging = false"
+    <AppModal v-model="isOpen" size="xl" @dragover.prevent="isDragging = true" @dragleave="isDragging = false"
         @drop.prevent="handleDrop">
         <div class="relative">
             <div v-if="isDragging"

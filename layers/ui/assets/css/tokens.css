@@ -1,23 +1,79 @@
-@theme {
-  --color-surface-base: #0f1416;
-  --color-surface-background: #101213;
-  --color-surface-secondary: #171A1C;
-  --color-surface-elevated: #252525;
-  --color-surface-menu: #1E2225;
-  --color-surface-accent: #1d2538;
-  --color-surface-accent-hover: #324465;
+/* Дизайн-токены цветов. Переключаются CSS-переменными: светлая тема — значения по
+   умолчанию, тёмная — внутри `.dark`. @nuxtjs/color-mode вешает класс `dark`/`light`
+   на <html>, поэтому токены и утилиты `dark:*` подстраиваются синхронно.
+   `@theme inline` — чтобы утилиты (`bg-surface-*`, `text-icon-*`, …) ссылались на наши
+   переменные напрямую и не требовали переназначения на уровне компонентов. */
 
-  --color-border-subtle: #232628;
-  --color-border-header: #1b1d1e;
-  --color-border-input: #3A3F45;
-  --color-border-accent: #39425a;
-  --color-border-hover: #2A2F33;
-  --color-border-sidebar: #565758;
+:root {
+    color-scheme: light;
+    --surface-base: #ffffff;
+    --surface-background: #f7f8fa;
+    --surface-secondary: #f1f2f6;
+    --surface-elevated: #ffffff;
+    --surface-menu: #ffffff;
+    --surface-accent: #eef2ff;
+    --surface-accent-hover: #e0e7ff;
 
-  --color-loader-track: #454545;
-  --color-loader-shadow: #2E2E2E;
+    --border-subtle: #e7e9ee;
+    --border-header: #eef0f3;
+    --border-input: #cdd3dc;
+    --border-accent: #c7d2fe;
+    --border-hover: #d8dde3;
+    --border-sidebar: #e7e9ee;
 
-  --color-icon-primary: #d1d5db;
-  --color-icon-secondary: #9ca3af;
-  --color-icon-accent: #39425a;
+    --loader-track: #e7e9ee;
+    --loader-shadow: #9ca3af;
+
+    --icon-primary: #333a45;
+    --icon-secondary: #667085;
+    --icon-accent: #4f46e5;
+}
+
+.dark {
+    color-scheme: dark;
+    --surface-base: #0f1416;
+    --surface-background: #101213;
+    --surface-secondary: #171A1C;
+    --surface-elevated: #252525;
+    --surface-menu: #1E2225;
+    --surface-accent: #1d2538;
+    --surface-accent-hover: #324465;
+
+    --border-subtle: #232628;
+    --border-header: #1b1d1e;
+    --border-input: #3A3F45;
+    --border-accent: #39425a;
+    --border-hover: #2A2F33;
+    --border-sidebar: #565758;
+
+    --loader-track: #454545;
+    --loader-shadow: #2E2E2E;
+
+    --icon-primary: #d1d5db;
+    --icon-secondary: #9ca3af;
+    --icon-accent: #39425a;
+}
+
+@theme inline {
+    --color-surface-base: var(--surface-base);
+    --color-surface-background: var(--surface-background);
+    --color-surface-secondary: var(--surface-secondary);
+    --color-surface-elevated: var(--surface-elevated);
+    --color-surface-menu: var(--surface-menu);
+    --color-surface-accent: var(--surface-accent);
+    --color-surface-accent-hover: var(--surface-accent-hover);
+
+    --color-border-subtle: var(--border-subtle);
+    --color-border-header: var(--border-header);
+    --color-border-input: var(--border-input);
+    --color-border-accent: var(--border-accent);
+    --color-border-hover: var(--border-hover);
+    --color-border-sidebar: var(--border-sidebar);
+
+    --color-loader-track: var(--loader-track);
+    --color-loader-shadow: var(--loader-shadow);
+
+    --color-icon-primary: var(--icon-primary);
+    --color-icon-secondary: var(--icon-secondary);
+    --color-icon-accent: var(--icon-accent);
 }

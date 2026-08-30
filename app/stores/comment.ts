@@ -8,8 +8,8 @@ import { usePostStore } from './post'
 import { useSurrealDb } from '~/data/surreal/useSurrealDb'
 import type { AuthBridge } from '~/utils/authBridge'
 import { flipReaction, snapshotReaction } from '~/utils/reaction'
-import { redirectToLogin } from '~/utils/redirects'
 import { log, logError } from '~/utils/logger'
+import { useAuthStore } from './auth'
 import {
     createComment as createSurrealComment,
     deleteComment as deleteSurrealComment,
@@ -33,6 +33,10 @@ export const useCommentStore = defineStore('commentStore', () => {
     const postStore = usePostStore()
 
     const isSubmitting = ref(false)
+
+    function openAuthPrompt() {
+        useAuthStore().openAuthPrompt()
+    }
 
     // Возвращает authed-сессию БД и id записи текущего юзера; бросает,
     // если Clerk не загружен или профиль не provisioned.
@@ -224,7 +228,7 @@ export const useCommentStore = defineStore('commentStore', () => {
     }
 
     // Переключение реакции на комментарии: оптимистично (snapshot → flip) с
-    // полным откатом при ошибке. Без авторизации — редирект на /login.
+    // полным откатом при ошибке. Без авторизации — модалка входа.
     async function toggleCommentReaction(reaction: IReactionRequest) {
         if (reaction.target.relationTo !== 'comments') return
 
@@ -234,8 +238,8 @@ export const useCommentStore = defineStore('commentStore', () => {
 
         const clerk = clerkAuth()
         if (!clerk?.isLoaded.value || !clerk.userId.value) {
-            log('reaction', 'лайк комментария блокирован (не авторизован), уходим на логин', { comment: reaction.target.value })
-            redirectToLogin()
+            log('reaction', 'лайк комментария блокирован (не авторизован), открываем промпт входа', { comment: reaction.target.value })
+            openAuthPrompt()
             return
         }
 

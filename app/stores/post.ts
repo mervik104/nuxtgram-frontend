@@ -7,8 +7,8 @@ import { createPost as createSurrealPost, deletePost as deleteSurrealPost, findP
 import { useSurrealDb } from '~/data/surreal/useSurrealDb'
 import type { AuthBridge } from '~/utils/authBridge'
 import { flipReaction, snapshotReaction } from '~/utils/reaction'
-import { redirectToLogin } from '~/utils/redirects'
 import { log, logError } from '~/utils/logger'
+import { useAuthStore } from './auth'
 
 // Стор постов: кэш записей (posts) + ленты (feeds: global / user_<id>) с
 // постраничной подгрузкой, CRUD и оптимистичными реакциями с откатом.
@@ -26,6 +26,10 @@ export const usePostStore = defineStore('postsStore', () => {
     const isEditModalOpen = ref(false)
     const isEditingPost = ref<IPost | null>(null)
     const isSubmitting = ref(false)
+
+    function openAuthPrompt() {
+        useAuthStore().openAuthPrompt()
+    }
 
     // Управление модалками создания/редактирования поста.
     function openCreateModal() { isCreateModalOpen.value = true }
@@ -214,7 +218,7 @@ export const usePostStore = defineStore('postsStore', () => {
     }
 
     // Переключение реакции на пост: оптимистично (snapshot → flip) с полным
-    // откатом при ошибке. Без авторизации — редирект на /login.
+    // откатом при ошибке. Без авторизации — открываем модалку входа.
     async function toggleReaction(reaction: IReactionRequest) {
         if (reaction.target.relationTo === 'comments') return
 
@@ -224,8 +228,8 @@ export const usePostStore = defineStore('postsStore', () => {
 
         const clerk = clerkAuth()
         if (!clerk?.isLoaded.value || !clerk.userId.value) {
-            log('reaction', 'лайк поста блокирован (не авторизован), уходим на логин', { post: reaction.target.value })
-            redirectToLogin()
+            log('reaction', 'лайк поста блокирован (не авторизован), открываем промпт входа', { post: reaction.target.value })
+            openAuthPrompt()
             return
         }
 

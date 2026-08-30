@@ -1,9 +1,9 @@
 <template>
-    <div v-if="me && follows && follows.followingCount > 0" class="mt-6 border-t border-gray-700/50 pt-2">
-        <NuxtLink to="/subscriptions">
-            <div class="flex items-center gap-3 mb-1 cursor-pointer py-2 mt-2 px-3 hover:bg-gray-700/50 rounded-xl">
-                <h4 class=" text-gray-200 text-lg">Подписки</h4>
-                <AppIcon name="right" class="text-gray-100 font-sans" />
+    <div v-if="me && follows && follows.followingCount > 0" class="mt-6 border-t border-border-subtle pt-2">
+        <NuxtLink :to="navRoutes.subscriptions">
+            <div class="flex items-center gap-3 mb-1 cursor-pointer py-2 mt-2 px-3 hover:bg-surface-accent-hover rounded-xl">
+                <h4 class=" text-icon-primary text-lg">Подписки</h4>
+                <AppIcon name="right" class="text-icon-secondary font-sans" />
             </div>
         </NuxtLink>
 
@@ -20,6 +20,7 @@
 <script lang="ts" setup>
 import { useAuthStore } from '~/stores/auth';
 import { useFollowsStore } from '~/stores/follows';
+import { navRoutes } from '~/data/navigation';
 const { getMe } = useAuthStore()
 const followsStore = useFollowsStore()
 

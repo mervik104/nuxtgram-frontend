@@ -21,8 +21,8 @@ export const button = tv({
             sm:   'px-3 py-1.5 text-sm gap-1.5',
             base: 'px-5 py-1.5 text-sm gap-1.5',
             md:   'px-4 py-2 text-base gap-2',
-            lg:   'px-5 py-2.5 text-lg gap-2.5',
-            xl:   'px-4 py-2 text-xl gap-2.5',
+            lg:   'px-4 py-2 text-base gap-2.5 sm:px-5 sm:py-2.5 sm:text-lg sm:gap-2.5',
+            xl:   'px-4 py-2 text-lg gap-2.5 sm:px-5 sm:py-2.5 sm:text-xl sm:gap-3',
         },
         rounded: {
             none: 'rounded-none',
@@ -148,14 +148,23 @@ export const textarea = tv({
 // Модальные окна: слоты overlay/content/base + ограничение ширины по size.
 export const modal = tv({
     slots: {
-        overlay: 'fixed inset-0 flex items-center justify-center z-50 bg-black/60',
-        content: 'p-6 mx-auto rounded-2xl bg-surface-elevated w-full flex flex-col items-center shadow-xl',
-        base: 'p-5 bg-surface-elevated w-max max-h-full rounded-xl relative',
+        overlay: 'fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 sm:p-6 overflow-y-auto',
+        content: 'flex flex-col items-center w-full',
+        base: 'relative bg-surface-elevated rounded-2xl shadow-xl w-full max-h-full overflow-y-auto',
     },
     variants: {
-        size: { sm: 'max-w-sm', md: 'max-w-md', lg: 'max-w-2xl', xl: 'max-w-4xl' },
+        size: {
+            sm: { base: 'max-w-[20rem]' },
+            md: { base: 'max-w-md' },
+            lg: { base: 'max-w-2xl' },
+            xl: { base: 'max-w-4xl' },
+        },
+        padding: {
+            default: { base: 'p-5 sm:p-6' },
+            none: '',
+        },
     },
-    defaultVariants: { size: 'md' },
+    defaultVariants: { size: 'md', padding: 'default' },
 })
 
 // Dropdown: слоты trigger/menu + вертикальное выравнивание (start/end).
@@ -250,6 +259,18 @@ export const text = tv({
         },
     },
     defaultVariants: { size: 'md' },
+})
+
+// Нижний таббар (mobile-only): пункт с состоянием активен/неактив.
+export const tabbarItem = tv({
+    base: 'flex flex-col items-center justify-center gap-0.5 flex-1 min-w-0 transition-colors',
+    variants: {
+        active: {
+            true: 'text-icon-primary',
+            false: 'text-icon-secondary hover:text-icon-primary',
+        },
+    },
+    defaultVariants: { active: false },
 })
 
 // Юзер-карточка: слоты container/wrapper/info/name/nickname; размер под место

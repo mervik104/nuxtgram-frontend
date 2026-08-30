@@ -8,7 +8,6 @@ import {
     unfollowUser as unfollowTargetUser,
 } from "~/data/surreal/follows"
 import { useSurrealDb } from "~/data/surreal/useSurrealDb"
-import { redirectToLogin } from "~/utils/redirects"
 import { log, logError } from "~/utils/logger"
 
 // Стор подписок: счётчики/статус isFollowing по профилям + оптимистичный
@@ -50,12 +49,12 @@ export const useFollowsStore = defineStore('followsStore', () => {
     }
 
     // Записаться на пользователя. Оптимистично: сразу isFollowing=true и
-    // +1 к счётчику; при ошибке — откат и лог. Без авторизации — на /login.
+    // +1 к счётчику; при ошибке — откат и лог. Без авторизации — модалка входа.
     async function follow(targetId: string) {
         const currentUserId = authStore.user?.id
         if (!currentUserId) {
-            log('follow', 'подписка блокирована (не авторизован), уходим на логин', { target: targetId })
-            redirectToLogin()
+            log('follow', 'подписка блокирована (не авторизован), открываем промпт входа', { target: targetId })
+            authStore.openAuthPrompt()
             return
         }
         if (!follows.value[targetId] || follows.value[targetId].isFollowing) return
@@ -83,8 +82,8 @@ export const useFollowsStore = defineStore('followsStore', () => {
     async function unfollow(targetId: string) {
         const currentUserId = authStore.user?.id
         if (!currentUserId) {
-            log('follow', 'отписка блокирована (не авторизован), уходим на логин', { target: targetId })
-            redirectToLogin()
+            log('follow', 'отписка блокирована (не авторизован), открываем промпт входа', { target: targetId })
+            authStore.openAuthPrompt()
             return
         }
         if (!follows.value[targetId] || !follows.value[targetId].isFollowing) return

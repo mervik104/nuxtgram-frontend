@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth';
 
-const { user } = useAuthStore()
-if (user) {
-    redirectToProfile(user.nickname)
+const authStore = useAuthStore()
+const { user } = storeToRefs(authStore)
+
+if (user.value) {
+    redirectToProfile(user.value.nickname)
 }
 else {
-    redirectToLogin()
+    authStore.openAuthPrompt()
+    redirectToFeed()
 }
 
 </script>

@@ -2,7 +2,7 @@
     <div>
         <PostList v-if="filteredPosts.length > 0" :posts-list="filteredPosts" />
         <div ref="bottomSentinel" class="h-1 w-full"></div>
-        <div v-if="!canLoadMore && posts.length > 0" class="text-center py-4 text-gray-500">
+        <div v-if="!canLoadMore && posts.length > 0" class="text-center py-4 text-icon-secondary">
             Вы достигли конца
         </div>
         <FeedSkeleton v-if="isLoading && (posts.length > 0 || posts.length === 0)" />

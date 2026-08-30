@@ -16,8 +16,18 @@ export const useAuthStore = defineStore('authStore', () => {
 
     const isEditProfileModalOpen = ref(false)
 
+    const isAuthPromptOpen = ref(false)
+
     function openEditProfileModal() {
         isEditProfileModalOpen.value = true
+    }
+
+    function openAuthPrompt() {
+        isAuthPromptOpen.value = true
+    }
+
+    function closeAuthPrompt() {
+        isAuthPromptOpen.value = false
     }
 
     // Полный сброс юзера (логаут / «профиль не создан»).
@@ -190,7 +200,10 @@ export const useAuthStore = defineStore('authStore', () => {
         openEditProfileModal,
         clearUser,
         checkNicknameAvailable,
-        editProfile
+        editProfile,
+        isAuthPromptOpen,
+        openAuthPrompt,
+        closeAuthPrompt
     }
 }
 )
