@@ -16,6 +16,7 @@ const icons = {
     menuDots: 'solar:menu-dots-bold',
     right: 'mingcute:right-fill',
     left: 'mingcute:left-fill',
+    search: 'iconamoon:search-bold',
     paperclip: 'streamline-flex:paperclip-1',
     image: 'mdi:file-image-box',
     plus: 'ic:baseline-plus',

@@ -3,7 +3,7 @@
         <AppHeader />
         <div class="flex flex-1 overflow-hidden">
             <AppSidebar />
-            <main id="app-scroller" class="flex-1 overflow-y-auto p-4 sm:p-6 sm:pb-24 lg:pb-6">
+            <main id="app-scroller" class="flex-1 overflow-y-auto px-1.5 sm:px-3 pt-4 pb-28 sm:p-6 sm:pb-24 lg:pb-6">
                 <slot />
             </main>
         </div>

@@ -1,5 +1,34 @@
 <template>
-  <div v-if="me" class="flex items-center justify-center pl-1 gap-3 w-full">
+  <!-- Мобильный вариант: без аватара, инпут сдвинут влево, кнопка отправки справа от инпута -->
+  <div v-if="me && mobile" class="flex w-full items-end gap-2">
+
+    <div class="flex-1">
+      <div v-if="isEditingComment" class="mb-1 flex items-center">
+        <span class="text-sm ml-1 text-gray-200">Изменение комментария</span>
+        <AppButton @click="isEditingComment = null" variant="text" size="sm" class="text-red-500 hover:underline ml-3">
+          Отменить
+        </AppButton>
+      </div>
+
+      <textarea ref="textareaRef" v-model="input" @keydown.enter.exact.prevent="handleSend"
+        :placeholder="isEditingComment ? 'Изменение комментария...' : 'Написать комментарий...'" :class="[textarea({
+          overflow: isOverflowing ? 'auto' : 'hidden',
+          resize: 'none',
+          fill: 'transparent'
+        }), 'max-h-72 min-h-10!']"></textarea>
+    </div>
+
+    <AppButton @click="handleSend" :disabled="!input.trim()" :loading="isSubmitting"
+      :variant="isEditingComment ? 'success' : 'primary'" loader-variant="white" rounded="full" size="sm"
+      class="shrink-0 self-end mb-2 gap-1 p-2!">
+      <span class="hidden sm:inline whitespace-nowrap">{{ isEditingComment ? 'Сохранить' : 'Отправить' }}</span>
+      <AppIcon v-if="!isSubmitting" name="arrowUp" class="size-6 shrink-0" />
+    </AppButton>
+
+  </div>
+
+  <!-- Десктоп: исходный вид (без изменений) -->
+  <div v-else-if="me && !mobile" class="flex items-center justify-center pl-1 gap-3 w-full">
     <Avatar @click="redirectToProfile(me.nickname)" class="cursor-pointer hover:brightness-90 mb-2 transition" :avatar="me.avatar" size="md" />
 
     <div class="relative flex-1">
@@ -22,13 +51,8 @@
         :variant="isEditingComment ? 'success' : 'primary'" loader-variant="white" rounded="full" size="sm"
         class="p-2! gap-0! absolute ml-5 bottom-3 group justify-end!">
 
-        <span
-          class="max-w-0 opacity-0 overflow-hidden whitespace-nowrap transition-all duration-200 ease-out group-hover:max-w-25 group-hover:opacity-100 group-hover:mr-2 group-hover:pl-2">
-          {{ isEditingComment ? 'Сохранить' : 'Отправить' }}
-        </span>
-        
         <AppIcon v-if="!isSubmitting" name="arrowUp" class="size-6 shrink-0" />
-        
+
       </AppButton>
     </div>
   </div>
@@ -43,6 +67,7 @@ import { textarea } from '~/utils/ui/atoms';
 import { nextTick, ref, watch } from 'vue';
 
 const { textarea: textareaRef, input } = useTextareaAutosize()
+const props = withDefaults(defineProps<{ mobile?: boolean }>(), { mobile: false })
 const oldValue = ref<string>('')
 const isEditingComment = defineModel<IComment | null>({ required: true })
 const { isSubmitting } = storeToRefs(useCommentStore())

@@ -123,6 +123,32 @@ export const usePostStore = defineStore('postsStore', () => {
         return fetchSurrealFeed(`user_${userId}`, userId, page)
     }
 
+    // Загружает файлы изображений на worker параллельно с ограничением числа
+    // одновременных запросов (пул). Каждый аплоад на worker занимает ~4с, поэтому
+    // последовательная загрузка (по одному) была главной причиной долгого создания
+    // поста с большим числом картинок: 15 фото последовательно ~60с+. Пул из
+    // `concurrency` одновременно грузящихся файлов сокращает это примерно в N/части.
+    async function uploadFilesConcurrently(files: File[], concurrency: number): Promise<string[]> {
+        const bridge = clerkAuth()
+        if (!bridge) throw new Error('Clerk session is not available')
+        const imageIds: string[] = []
+        let cursor = 0
+
+        async function worker() {
+            while (cursor < files.length) {
+                const index = cursor++
+                const file = files[index]!
+                const upload = await bridge.uploadImage(file.name, file.type, file)
+                imageIds[index] = upload.media.id
+            }
+        }
+
+        const workers = Array.from({ length: Math.min(concurrency, files.length) }, () => worker())
+        await Promise.all(workers)
+        // worker() заполняет imageIds по индексу; порядок сохраняется автоматически.
+        return imageIds.filter((id): id is string => Boolean(id))
+    }
+
     // Создание поста. Принимает простой payload или FormData (с файлами):
     // для FormData файлы загружаются через worker и конвертируются в imageIds.
     // Нормализует текст (normalizeText). Новый пост вставляется в начало лент.
@@ -149,12 +175,12 @@ export const usePostStore = defineStore('postsStore', () => {
                 newPost = await createSurrealPost(db, String(currentUser.id), payload.content)
             } else {
                 const files = payload.getAll('image').filter((value): value is File => value instanceof File)
-                const imageIds: string[] = []
-                for (const file of files) {
-                    const upload = await clerkAuth()!.uploadImage(file.name, file.type, file)
-
-                    imageIds.push(upload.media.id)
-                }
+                // Грузим изображения параллельно, но с ограничением числа одновременных запросов
+                // (пул). Последовательная загрузка по одному была главной причиной долгого
+                // создания поста с большим числом картинок: каждый аплоад на worker занимает
+                // ~4с, поэтому 15 фото последовательно давали ~60с+. Пул из 4 одновременно
+                // грузящихся файлов сокращает время поста с N фото примерно до N/4 × ~4с.
+                const imageIds = await uploadFilesConcurrently(files, 4)
 
                 newPost = await createSurrealPost(db, String(currentUser.id), payload.get('content') as string, imageIds)
             }

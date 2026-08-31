@@ -2,8 +2,8 @@
     <div :class="[
         'flex items-center gap-3 px-4 py-2 cursor-pointer transition-colors select-none',
         danger
-            ? 'text-red-400 hover:bg-red-500/10'
-            : 'text-gray-200 hover:bg-gray-800'
+            ? 'text-red-500 hover:bg-red-500/10'
+            : 'text-icon-primary hover:bg-border-hover'
     ]" @click="$emit('click')">
         <div v-if="$slots.icon" :class="icon({ size: 'md' })">
             <slot name="icon" />

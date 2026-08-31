@@ -1,7 +1,7 @@
 <template>
     <AppModal v-model="isOpen" size="md" padding="none">
-    <div class="flex flex-col items-center p-6 w-full mx-auto rounded-2xl">
-            <h3 class="text-2xl font-bold text-gray-200 mb-6">Настройки профиля</h3>
+        <div :class="styles.wrapper()">
+            <h3 :class="styles.title()">Настройки профиля</h3>
 
             <div class="w-full space-y-4">
                 <VeeInput name="username" label="Имя" placeholder="Введите имя" />
@@ -16,7 +16,7 @@
                 label="Краткое описание" 
                 placeholder="Краткое описание" 
                 is-textarea
-                :maxlength="200" input-class="h-[200px]" />
+                :maxlength="200" input-class="h-32 sm:h-[200px]" />
             </div>
 
             <div class="flex w-full mt-8 gap-3">
@@ -38,6 +38,15 @@ import { toTypedSchema } from '@vee-validate/zod'
 import { editProfileSchema } from '~/schemas/auth'
 import { useAuthStore } from '~/stores/auth'
 import { useNicknameCheck } from '~/composables/useNicknameCheck'
+import { tv } from 'tailwind-variants'
+
+const profileSettingsVariants = tv({
+    slots: {
+        wrapper: 'flex flex-col items-center p-5 sm:p-6 w-full mx-auto rounded-2xl',
+        title: 'text-2xl font-bold text-icon-primary mb-6',
+    },
+})
+const styles = computed(() => profileSettingsVariants())
 
 const authStore = useAuthStore()
 const { user } = storeToRefs(authStore)
