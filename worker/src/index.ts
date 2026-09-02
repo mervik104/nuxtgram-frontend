@@ -12,14 +12,15 @@ import {
 } from './pure'
 
 // Окружение worker (bindings из wrangler.jsonc / секреты в .dev.vars): конфиг
-// B2/R2, лимиты загрузок, параметры Clerk и сервисные доступы к SurrealDB.
+// S3-совместимого хранилища (Cloudflare R2), лимиты загрузок, параметры Clerk
+// и сервисные доступы к SurrealDB.
 interface Env {
-  B2_ENDPOINT: string
-  B2_BUCKET_NAME: string
-  B2_PUBLIC_BASE_URL: string
-  B2_KEY_ID: string
-  B2_APPLICATION_KEY: string
-  B2_SIGNED_URL_TTL_SECONDS: string
+  S3_ENDPOINT: string
+  S3_BUCKET_NAME: string
+  S3_PUBLIC_BASE_URL: string
+  S3_ACCESS_KEY_ID: string
+  S3_SECRET_ACCESS_KEY: string
+  S3_SIGNED_URL_TTL_SECONDS: string
   S3_REGION?: string
   MAX_UPLOAD_BYTES: string
   CLERK_ISSUER: string
@@ -141,23 +142,24 @@ async function authenticate(request: Request, env: Env): Promise<AuthenticatedUs
   return { clerkId: payload.sub, token: payload }
 }
 
-// S3-совместимый клиент Backblaze B2 из env-конфига.
+// S3-совместимый клиент Cloudflare R2 (или любого S3-провайдера) из env-конфига.
+// Для R2 регион должен быть 'auto', endpoint — R2 S3 API-домен, креды — R2 API-токен.
 function createStorageClient(env: Env): S3Client {
   return new S3Client({
-    region: env.S3_REGION || 'us-east-005',
-    endpoint: env.B2_ENDPOINT,
+    region: env.S3_REGION || 'auto',
+    endpoint: env.S3_ENDPOINT,
     credentials: {
-      accessKeyId: env.B2_KEY_ID,
-      secretAccessKey: env.B2_APPLICATION_KEY,
+      accessKeyId: env.S3_ACCESS_KEY_ID,
+      secretAccessKey: env.S3_SECRET_ACCESS_KEY,
     },
   })
 }
 
 // Хард-валидация TTL подписанных URL (1..604800 секунд).
 function signedUrlTtl(env: Env): number {
-  const ttl = Number(env.B2_SIGNED_URL_TTL_SECONDS)
+  const ttl = Number(env.S3_SIGNED_URL_TTL_SECONDS)
   if (!Number.isInteger(ttl) || ttl < 1 || ttl > 604800) {
-    throw new Error('B2_SIGNED_URL_TTL_SECONDS must be between 1 and 604800')
+    throw new Error('S3_SIGNED_URL_TTL_SECONDS must be between 1 and 604800')
   }
   return ttl
 }
@@ -266,16 +268,16 @@ function randomSuffix(): number {
   return 1000 + (values[0] % 9000)
 }
 
-// Публичный URL объекта с проверкой, что B2_PUBLIC_BASE_URL реально настроен.
+// Публичный URL объекта с проверкой, что S3_PUBLIC_BASE_URL реально настроен.
 function publicObjectUrlFor(env: Env, objectKey: string): string {
-  if (!env.B2_PUBLIC_BASE_URL || env.B2_PUBLIC_BASE_URL === '<SET_IN_WRANGLER_ENV>') {
-    throw new Error('B2_PUBLIC_BASE_URL is not configured')
+  if (!env.S3_PUBLIC_BASE_URL || env.S3_PUBLIC_BASE_URL === '<SET_IN_WRANGLER_ENV>') {
+    throw new Error('S3_PUBLIC_BASE_URL is not configured')
   }
-  return publicObjectUrl(env.B2_PUBLIC_BASE_URL, objectKey)
+  return publicObjectUrl(env.S3_PUBLIC_BASE_URL, objectKey)
 }
 
 // POST /media/upload-url: возвращает подписанный PUT-URL для прямой загрузки
-// файла в B2 с браузера (обход потока через worker). Валидирует тип и размер.
+// файла в R2 с браузера (обход потока через worker). Валидирует тип и размер.
 async function uploadUrl(request: Request, env: Env): Promise<Response> {
   const user = await authenticate(request, env)
   const body = await request.json<UploadRequest>()
@@ -297,11 +299,10 @@ async function uploadUrl(request: Request, env: Env): Promise<Response> {
   const url = await getSignedUrl(
     createStorageClient(env),
     new PutObjectCommand({
-      Bucket: env.B2_BUCKET_NAME,
+      Bucket: env.S3_BUCKET_NAME,
       Key: objectKey,
       ContentType: body.contentType,
       ContentLength: body.size,
-      ServerSideEncryption: 'AES256',
     }),
     { expiresIn: signedUrlTtl(env) },
   )
@@ -318,7 +319,7 @@ async function uploadUrl(request: Request, env: Env): Promise<Response> {
   })
 }
 
-// POST /media/upload: буферизует тело запроса, загружает файл в B2 (PUT)
+// POST /media/upload: буферизует тело запроса, загружает файл в R2 (PUT)
 // и создаёт запись media в SurrealDB. Используется, когда прямой PUT невозможен.
 async function uploadBytes(request: Request, env: Env): Promise<Response> {
   const user = await authenticate(request, env)
@@ -347,12 +348,11 @@ async function uploadBytes(request: Request, env: Env): Promise<Response> {
   const publicUrl = publicObjectUrlFor(env, objectKey)
 
   await createStorageClient(env).send(new PutObjectCommand({
-    Bucket: env.B2_BUCKET_NAME,
+    Bucket: env.S3_BUCKET_NAME,
     Key: objectKey,
     Body: body,
     ContentType: contentType,
     ContentLength: body.byteLength,
-    ServerSideEncryption: 'AES256',
   }))
 
   const database = await connectServiceDb(env)
@@ -438,7 +438,7 @@ async function completeMedia(request: Request, env: Env): Promise<Response> {
   return await completeMediaMetadata(request, env, false)
 }
 
-// POST /media/delete-avatar: удаляет аватар текущего юзера — файл из B2,
+// POST /media/delete-avatar: удаляет аватар текущего юзера — файл из R2,
 // запись media и ссылку users.avatar. Проверяет владение объектом.
 async function deleteAvatar(request: Request, env: Env): Promise<Response> {
   const identity = await authenticate(request, env)
@@ -466,7 +466,7 @@ async function deleteAvatar(request: Request, env: Env): Promise<Response> {
     }
 
     await createStorageClient(env).send(new DeleteObjectCommand({
-      Bucket: env.B2_BUCKET_NAME,
+      Bucket: env.S3_BUCKET_NAME,
       Key: objectKey,
     }))
 
@@ -499,7 +499,7 @@ async function deleteUrl(request: Request, env: Env): Promise<Response> {
   const url = await getSignedUrl(
     createStorageClient(env),
     new DeleteObjectCommand({
-      Bucket: env.B2_BUCKET_NAME,
+      Bucket: env.S3_BUCKET_NAME,
       Key: body.objectKey,
     }),
     { expiresIn: signedUrlTtl(env) },

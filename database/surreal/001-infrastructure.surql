@@ -154,9 +154,9 @@ DEFINE INDEX IF NOT EXISTS comment_reactions_pair ON TABLE comment_reactions COL
 DEFINE INDEX IF NOT EXISTS comment_reactions_out ON TABLE comment_reactions COLUMNS out;
 
 DEFINE ACCESS OVERWRITE clerk ON DATABASE TYPE RECORD WITH JWT
-  ALGORITHM RS256 KEY "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3UNiAWuzQb6yI9HhvVq/\nSqNeWW22Anm/cMrAcHVExNoRydv8QBtRRF+Kv+qc5+DzAZhBL9FJGt+Y0vr4rkN9\nx9Esh/o2ZUpI3dxRN3VaMitsSI3xKEt6qUZN1f/XSxb8ubUgVxGjYq+ZthHGz0pb\nbmW43NEihmI2vWQ9ZZ151K7L5j5WLUDN9h67gJGfoRYWb5nBTKl/FAMh5KV4BSNe\niGviMzKBVkdPm7V49HVn1cdDxL960k3H8miyxrjt6b39NMyEpnHaOn8CG002C0L4\n3I8OiEMCdRGH8bIBGXE9yZLgrnS7BhrVRGxEYtNL2Up/hxWkFcbjyi4UEa2tSekI\newIDAQAB\n-----END PUBLIC KEY-----"
+  ALGORITHM RS256 KEY "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzSyAgLcvV5eg8eEDwvSD\n3Y05X9Cekjv/cokzC7Rc8j2MxSoyHcvSRPfDdZgSwyfbGRaWxBxC/fActDzgUAGD\nrTYzl9rmRLc7GKwywzpEY1Kj830PwNBKIqS2eOEH1Vp8OnYCExhZ4Af15i32pwQh\n4hdURHJL8is6mgO3jH7O7AU5yXKP7z9quTmbmw65ppnKF/0FgmwNtJEe5J2ut9Ta\nR4WD74rExL3+PinChxu/VyB4DtjoVhVqU1TheWTGiIrO4RzbseFCY8oh65EUASYK\nrqusWcU4q2WGADosbk+DA32yZTO59JsnV4+1d7+87FRc/U3g/SKsdxUPINtn0PMl\nJwIDAQAB\n-----END PUBLIC KEY-----"
   AUTHENTICATE {
-    IF $token.iss != "https://superb-marmot-2888.clerk.accounts.dev" {
+    IF $token.iss != "https://clerk.mervik.ru" {
       THROW "Invalid Clerk issuer";
     };
     IF $token.aud != "nuxtgram-surrealdb" {

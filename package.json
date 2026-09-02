@@ -6,6 +6,7 @@
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
+    "deploy": "bun run generate && gh-pages -d .output/public",
     "preview": "nuxt preview",
     "typecheck": "tsc -p .nuxt/tsconfig.app.json",
     "postinstall": "nuxt prepare && node scripts/patch-surqlize.mjs"
@@ -34,7 +35,7 @@
   "devDependencies": {
     "@nuxt/icon": "^2.2.2",
     "@types/node": "^25.2.3",
-    "nuxt-single-html": "^0.2.0",
+    "gh-pages": "^6.3.0",
     "typescript": "^5.9.3",
     "vue-tsc": "^3"
   }

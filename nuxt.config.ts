@@ -42,7 +42,7 @@ export default defineNuxtConfig({
     },
   },
   extends: ['./layers/ui'],
-  modules: ['@pinia/nuxt', 'nuxt-toast', '@nuxt/ui', 'nuxt-single-html', '@nuxtjs/color-mode', '@vueuse/nuxt', '@nuxt/icon', '@clerk/nuxt'],
+  modules: ['@pinia/nuxt', 'nuxt-toast', '@nuxt/ui', '@nuxtjs/color-mode', '@vueuse/nuxt', '@nuxt/icon', '@clerk/nuxt'],
   toast: {
     composableName: 'useNotification', // Customize the composable name
     settings: {
@@ -67,6 +67,7 @@ export default defineNuxtConfig({
   },
 
   clerk: {
+    publishableKey: process.env.CLERK_PUBLISHABLE_KEY || process.env.NUXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     skipServerMiddleware: true,
   },
   

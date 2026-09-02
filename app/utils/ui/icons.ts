@@ -22,6 +22,7 @@ const icons = {
     user: 'mingcute:user-3-fill',
     google: 'devicon:google',
     x: 'simple-icons:x',
+    github: 'devicon:github',
 } as const
 
 export type IconName = keyof typeof icons
