@@ -13,6 +13,7 @@ const icons = {
     loveOutline: 'solar:heart-linear',
     loveFilled: 'solar:heart-bold',
     message: 'iconamoon:comment-bold',
+    notification: 'material-symbols:notifications-outline',
     menuDots: 'solar:menu-dots-bold',
     right: 'mingcute:right-fill',
     left: 'mingcute:left-fill',

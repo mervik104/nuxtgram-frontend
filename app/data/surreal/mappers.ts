@@ -56,6 +56,7 @@ export function toUser(value: UserRow): IUser {
     nickname: value.nickname,
     bio: value.bio,
     email: value.email,
+    lastSeenAt: value.last_seen_at ? String(value.last_seen_at) : undefined,
     avatar: toAvatar(value.avatar),
   }
 }

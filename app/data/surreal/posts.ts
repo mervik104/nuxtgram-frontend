@@ -53,7 +53,7 @@ function toMediaImage(value: MediaRow): MediaImage | null {
 
 // Преобразует запись поста в публичный тип IPost (без счётчиков —
 // заполняются гидрацией в hydratePost).
-function toPost(value: FetchedPost, images: MediaRow[] = []): IPost {
+export function toPost(value: FetchedPost, images: MediaRow[] = []): IPost {
   return {
     id: String(value.id),
     content: value.content,
@@ -67,7 +67,7 @@ function toPost(value: FetchedPost, images: MediaRow[] = []): IPost {
 }
 
 // Превращает поле post.images (RecordId[] или строки) в массив строковых id вида `media:<id>`.
-function toRecordIds(value: PostRow['images']): string[] {
+export function toRecordIds(value: PostRow['images']): string[] {
   if (!value) return []
   return value.map((item) => {
     const raw = item as unknown

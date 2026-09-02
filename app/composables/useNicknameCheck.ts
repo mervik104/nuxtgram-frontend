@@ -1,6 +1,7 @@
 import { ref, watch, type Ref } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import { useAuthStore } from '~/stores/auth'
+import { isReservedNickname, normalizeNickname } from '~/utils/nickname'
 
 // Live-проверка уникальности никнейма на форме профиля/регистрации.
 //
@@ -16,29 +17,50 @@ export function useNicknameCheck(
 
     const isAvailable = ref<boolean | null>(null)
     const isChecking = ref(false)
+    let requestId = 0
 
     const checkNicknameDebounced = useDebounceFn(async (nick: string) => {
+        const currentRequest = ++requestId
+        const canonical = normalizeNickname(nick)
+        if (isReservedNickname(canonical)) {
+            isAvailable.value = false
+            setFieldError('nickname', 'Это имя зарезервировано')
+            isChecking.value = false
+            return
+        }
         try {
             isChecking.value = true
-            const available = await authStore.checkNicknameAvailable(nick)
+            const available = await authStore.checkNicknameAvailable(canonical)
+            if (currentRequest !== requestId) return
             isAvailable.value = available
 
             if (!available) {
                 setFieldError('nickname', 'Это имя занято')
+            } else {
+                setFieldError('nickname', undefined)
             }
         } catch (error) {
             console.error('Ошибка проверки ника', error)
         } finally {
-            isChecking.value = false
+            if (currentRequest === requestId) isChecking.value = false
         }
     }, 200)
 
     watch(nicknameVal, (newNick) => {
+        const canonical = normalizeNickname(newNick)
+        if (newNick !== canonical) {
+            nicknameVal.value = canonical
+            return
+        }
         isAvailable.value = null
-        if (!newNick || newNick === originalNickname.value) return
-        if (newNick.length < 3 || newNick.length > 30) return
+        requestId++
+        if (!canonical || canonical === normalizeNickname(originalNickname.value ?? '')) {
+            isChecking.value = false
+            return
+        }
+        if (canonical.length < 3 || canonical.length > 30) return
 
-        checkNicknameDebounced(newNick)
+        checkNicknameDebounced(canonical)
     })
 
     return { isAvailable, isChecking }

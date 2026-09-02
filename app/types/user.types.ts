@@ -77,6 +77,7 @@ export interface IUser {
   email?: string,
   avatar?: IAvatarType,
   bio?: string,
+  lastSeenAt?: string,
   id: string
 }
 

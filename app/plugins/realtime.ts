@@ -5,6 +5,8 @@ import { useFollowsStore } from '~/stores/follows'
 import { usePostStore } from '~/stores/post'
 import { useSurrealDb } from '~/data/surreal/useSurrealDb'
 import { log, logError } from '~/utils/logger'
+import { notifyUserChanged } from '~/composables/useUserRealtime'
+import { useNotificationsStore } from '~/stores/notifications'
 
 // Realtime-плагин: подписки LIVE на все таблицы через рекорд-сессию БД.
 //
@@ -30,9 +32,12 @@ export default defineNuxtPlugin(() => {
     const commentStore = useCommentStore()
     const followsStore = useFollowsStore()
     const authStore = useAuthStore()
+    const notificationsStore = useNotificationsStore()
 
     let started = false
     let generation = 0
+    let transition = 0
+    let transitionQueue = Promise.resolve()
     let subscriptions: LiveSubscription[] = []
     const postRefreshTimers = new Map<string, ReturnType<typeof setTimeout>>()
     const commentRefreshTimers = new Map<string, ReturnType<typeof setTimeout>>()
@@ -206,19 +211,26 @@ export default defineNuxtPlugin(() => {
     function onUser(message: LiveMessage) {
         if (message.action !== 'UPDATE' && message.action !== 'CREATE') return
         const userId = recordString(message.recordId)
+        notifyUserChanged(userId)
         for (const id of Object.keys(postStore.posts)) {
             if (postStore.posts[id]?.author?.id === userId) schedulePostRefresh(id)
         }
     }
 
+    function onNotification(message: LiveMessage) {
+        if (message.action === 'KILLED') return
+        void notificationsStore.fetchNotifications(true)
+    }
+
     // Поднимает LIVE-подписки в авторизованной сессии (connect(true)).
     // При смене генерации во время установки — созданные подписки убиваются.
-    async function startRealtime() {
+    async function startRealtime(expectedTransition: number) {
         if (started) return
+        const userId = authBridge.value?.userId.value
         try {
             const db = await useSurrealDb().connect(true)
             const client = useSurrealDb().getClient()
-            if (!client) {
+            if (!client || expectedTransition !== transition || authBridge.value?.userId.value !== userId) {
                 log('realtime', 'клиент БД недоступен, подписки не созданы')
                 return
             }
@@ -229,7 +241,7 @@ export default defineNuxtPlugin(() => {
             const attach = async (what: string, handler: (message: LiveMessage) => void) => {
                 try {
                     const sub = await client.live(new Table(what))
-                    if (gen !== generation || !started) {
+                    if (gen !== generation || !started || expectedTransition !== transition) {
                         sub.kill().catch(() => {})
                         return
                     }
@@ -250,7 +262,13 @@ export default defineNuxtPlugin(() => {
                 attach('comment_reactions', onCommentReaction),
                 attach('follows', onFollow),
                 attach('users', onUser),
+                attach('notifications', onNotification),
             ])
+
+            if (expectedTransition !== transition) {
+                await stopRealtime()
+                return
+            }
 
             log('realtime', 'LIVE-подписки установлены', { count: subscriptions.length })
         } catch (error) {
@@ -275,25 +293,32 @@ export default defineNuxtPlugin(() => {
         log('realtime', 'LIVE-подписки остановлены', { killed: subs.length })
     }
 
+    // Все переходы состояния auth выполняются строго последовательно. Это
+    // важно, потому что connect() и client.live() асинхронны: параллельный
+    // stop/start мог оставить started=true от устаревшей сессии.
+    function reconcileRealtime() {
+        const currentTransition = ++transition
+        transitionQueue = transitionQueue.then(async () => {
+            await stopRealtime()
+            const bridge = authBridge.value
+            if (!bridge || currentTransition !== transition || !bridge.isLoaded.value) return
+            if (!bridge.isSignedIn.value || !bridge.userId.value) {
+                log('realtime', 'не авторизован, подписки не нужны')
+                return
+            }
+            await startRealtime(currentTransition)
+        }).catch((error) => {
+            logError('realtime', 'синхронизация realtime упала', error)
+        })
+    }
+
     watch(
         [
             () => authBridge.value?.isLoaded.value,
             () => authBridge.value?.isSignedIn.value,
             () => authBridge.value?.userId.value,
         ],
-        async () => {
-            const bridge = authBridge.value
-            if (!bridge || !bridge.isLoaded.value) return
-
-            await stopRealtime()
-
-            if (!bridge.isSignedIn.value || !bridge.userId.value) {
-                log('realtime', 'не авторизован, подписки не нужны')
-                return
-            }
-
-            await startRealtime()
-        },
+        () => reconcileRealtime(),
         { immediate: true },
     )
 })

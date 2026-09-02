@@ -31,6 +31,69 @@ DEFINE TABLE IF NOT EXISTS comments SCHEMAFULL
     FOR update WHERE author = $auth.id
     FOR delete WHERE author = $auth.id;
 
+DEFINE TABLE IF NOT EXISTS notifications SCHEMAFULL
+  PERMISSIONS
+    FOR select WHERE recipient = $auth.id
+    FOR create WHERE false
+    FOR update WHERE recipient = $auth.id
+    FOR delete WHERE recipient = $auth.id;
+
+DEFINE FIELD IF NOT EXISTS recipient ON TABLE notifications TYPE record<users> READONLY;
+DEFINE FIELD IF NOT EXISTS type ON TABLE notifications TYPE string;
+DEFINE FIELD IF NOT EXISTS actor ON TABLE notifications TYPE record<users> READONLY;
+DEFINE FIELD IF NOT EXISTS entity_id ON TABLE notifications TYPE string READONLY;
+DEFINE FIELD IF NOT EXISTS post_id ON TABLE notifications TYPE option<string> READONLY;
+DEFINE FIELD IF NOT EXISTS unread ON TABLE notifications TYPE bool;
+DEFINE FIELD IF NOT EXISTS created_at ON TABLE notifications TYPE datetime VALUE time::now() READONLY;
+DEFINE INDEX IF NOT EXISTS notifications_recipient_unread ON TABLE notifications COLUMNS recipient, unread;
+DEFINE INDEX IF NOT EXISTS notifications_recipient_created ON TABLE notifications COLUMNS recipient, created_at;
+
+DEFINE EVENT OVERWRITE notify_post_reaction ON TABLE post_reactions
+  WHEN $event = 'CREATE'
+  THEN {
+    LET $recipient = (SELECT VALUE author FROM posts WHERE id = $value.out)[0];
+    IF $recipient != NONE AND $recipient != $value.in
+      AND count(SELECT * FROM notifications WHERE recipient = $recipient
+        AND actor = $value.in AND type = 'reaction'
+        AND entity_id = type::string($value.out) AND unread = true) = 0 {
+      CREATE notifications SET recipient = $recipient, type = 'reaction',
+        actor = $value.in, entity_id = type::string($value.out), unread = true;
+    };
+  };
+
+DEFINE EVENT OVERWRITE notify_comment_reaction ON TABLE comment_reactions
+  WHEN $event = 'CREATE'
+  THEN {
+    LET $post = (SELECT VALUE post FROM comments WHERE id = $value.out)[0];
+    LET $recipient = (SELECT VALUE author FROM posts WHERE id = $post)[0];
+    IF $recipient != NONE AND $recipient != $value.in
+      AND count(SELECT * FROM notifications WHERE recipient = $recipient
+        AND actor = $value.in AND type = 'reaction'
+        AND entity_id = type::string($value.out) AND unread = true) = 0 {
+      CREATE notifications SET recipient = $recipient, type = 'reaction',
+        actor = $value.in, entity_id = type::string($value.out), post_id = type::string($post), unread = true;
+    };
+  };
+
+DEFINE EVENT IF NOT EXISTS notify_follow ON TABLE follows
+  WHEN $event = 'CREATE'
+  THEN {
+    IF $value.in != $value.out {
+      CREATE notifications SET recipient = $value.out, type = 'follow',
+        actor = $value.in, entity_id = type::string($value.out), unread = true;
+    };
+  };
+
+DEFINE EVENT OVERWRITE notify_comment ON TABLE comments
+  WHEN $event = 'CREATE'
+  THEN {
+    LET $recipient = (SELECT VALUE author FROM posts WHERE id = $value.post)[0];
+    IF $recipient != NONE AND $recipient != $value.author {
+      CREATE notifications SET recipient = $recipient, type = 'comment',
+        actor = $value.author, entity_id = type::string($value.id), post_id = type::string($value.post), unread = true;
+    };
+  };
+
 DEFINE TABLE OVERWRITE follows SCHEMAFULL TYPE RELATION IN users OUT users ENFORCED
   PERMISSIONS
     FOR select WHERE $auth.id != NONE
@@ -66,7 +129,11 @@ DEFINE FIELD IF NOT EXISTS legacyId ON TABLE users TYPE option<string> READONLY
 DEFINE FIELD IF NOT EXISTS username ON TABLE users TYPE string
   ASSERT string::len($value) >= 3 AND string::len($value) <= 48;
 DEFINE FIELD IF NOT EXISTS nickname ON TABLE users TYPE string
-  ASSERT string::len($value) >= 3 AND string::len($value) <= 30;
+  ASSERT string::len($value) >= 3 AND string::len($value) <= 30
+    AND $value = string::lowercase($value)
+    AND $value NOT IN ['admin', 'administrator', 'api', 'auth', 'help',
+      'login', 'logout', 'moderator', 'root', 'settings', 'support',
+      'system', 'user'];
 DEFINE FIELD IF NOT EXISTS bio ON TABLE users TYPE option<string>
   ASSERT $value = NONE OR string::len($value) <= 200;
 -- email виден только самому владельцу записи. Канонический порядок $auth.id = id
@@ -79,6 +146,7 @@ DEFINE FIELD IF NOT EXISTS email ON TABLE users TYPE option<string> READONLY
 DEFINE FIELD IF NOT EXISTS avatar ON TABLE users TYPE option<record<media>>;
 DEFINE FIELD IF NOT EXISTS createdAt ON TABLE users TYPE datetime VALUE time::now() READONLY;
 DEFINE FIELD IF NOT EXISTS updatedAt ON TABLE users TYPE datetime VALUE time::now();
+DEFINE FIELD IF NOT EXISTS last_seen_at ON TABLE users TYPE option<datetime>;
 
 DEFINE FIELD IF NOT EXISTS legacyId ON TABLE media TYPE option<string> READONLY
   PERMISSIONS NONE;

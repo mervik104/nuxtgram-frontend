@@ -13,18 +13,21 @@
 
   <div v-else-if="size === 'post' || size === 'comment'" :class="styles.container()">
     <div :class="styles.wrapper()">
-      <NuxtLink :to="`/profile/${user.nickname}`">
-        <Avatar class="cursor-pointer hover:brightness-90 transition" :avatar="user.avatar"
-          :size="size === 'post' ? 'md' : 'sm'" />
+        <NuxtLink :to="`/profile/${user.nickname}`">
+          <span class="presence-avatar">
+            <Avatar class="cursor-pointer hover:brightness-90 transition" :avatar="user.avatar"
+              :size="size === 'post' ? 'md' : 'sm'" />
+            <i v-if="user.lastSeenAt && isUserOnline(user.lastSeenAt)" class="presence-dot presence-dot--avatar online" />
+          </span>
       </NuxtLink>
-      <span class="text-icon-primary font-medium">
-        <div class="flex items-center gap-2">
+          <span class="text-icon-primary font-medium">
+            <div class="flex items-center gap-2">
           <NuxtLink :to="`/profile/${user.nickname}`" :class="styles.name()">
             {{ user.username }}
           </NuxtLink>
           <span class="text-icon-secondary text-[12px]"> • {{ date }}</span>
-        </div>
-        <p v-if="size === 'post'" :class="styles.nickname()">@{{ user.nickname }}</p>
+            </div>
+            <p v-if="size === 'post'" :class="styles.nickname()">@{{ user.nickname }}</p>
       </span>
     </div>
   </div>
@@ -72,6 +75,10 @@
             <h1 class="text-xl font-bold text-icon-primary leading-tight">{{ user.username }}</h1>
             <p class="text-sm text-icon-secondary font-mono">@{{ user.nickname }}</p>
           </div>
+          <p v-if="user.lastSeenAt" class="mt-1 flex items-center gap-1 text-xs text-icon-secondary">
+            <i class="presence-dot" :class="{ online: isUserOnline(user.lastSeenAt) }" />
+            {{ isUserOnline(user.lastSeenAt) ? 'онлайн' : formatLastSeen(user.lastSeenAt) }}
+          </p>
           <div v-if="follows" class="mt-2 flex gap-2">
             <UserActions :isFollowing="follows?.isFollowing || false" :itsMe="itsMe" :user="user"
               @openEditModalHandler="emit('openEditModalHandler')" />
@@ -108,6 +115,10 @@
         <div class="flex items-center gap-3 flex-wrap">
           <h1 class="text-2xl font-bold text-icon-primary leading-tight">{{ user.username }}</h1>
           <span class="text-icon-secondary font-mono">@{{ user.nickname }}</span>
+          <span v-if="user.lastSeenAt" class="flex items-center gap-1 text-xs text-icon-secondary">
+            <i class="presence-dot" :class="{ online: isUserOnline(user.lastSeenAt) }" />
+            {{ isUserOnline(user.lastSeenAt) ? 'онлайн' : formatLastSeen(user.lastSeenAt) }}
+          </span>
           <div v-if="follows" class="ml-auto flex gap-2">
             <UserActions :isFollowing="follows?.isFollowing || false" :itsMe="itsMe" :user="user"
               @openEditModalHandler="emit('openEditModalHandler')" />
@@ -225,6 +236,8 @@ const styles = computed(() => userCardVariants({ size: props.size }))
 const follows = computed(() =>
   ['lg', 'profile'].includes(props.size) ? followsStore.follows[props.user.id] : null
 )
+const isUserOnline = (lastSeenAt: string) => Date.now() - Date.parse(lastSeenAt) < 5_000
+const formatLastSeen = (lastSeenAt: string) => `был(а) в сети ${formatSocialDate(lastSeenAt)}`
 
 onMounted(async () => {
   if (['lg', 'profile'].includes(props.size)) {
@@ -250,3 +263,33 @@ const copyId = async () => {
 }
 
 </script>
+
+<style scoped>
+.presence-avatar {
+  position: relative;
+  display: inline-flex;
+}
+
+.presence-dot {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-radius: 50%;
+  background: var(--color-gray-400, #9ca3af);
+}
+
+.presence-dot--avatar {
+  position: absolute;
+  right: 0;
+  bottom: 1px;
+  width: 9px;
+  height: 9px;
+  flex-basis: 9px;
+  border: 2px solid var(--color-surface-background, #fff);
+}
+
+.presence-dot.online {
+  background: #22c55e;
+  box-shadow: 0 0 0 2px color-mix(in srgb, #22c55e 18%, transparent);
+}
+</style>

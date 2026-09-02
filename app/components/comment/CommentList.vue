@@ -101,8 +101,8 @@
         <div v-if="me" @focusin="isFocus = true" @focusout="isFocus = false"
             :class="`sticky transition-colors duration-500 border-t -bottom-6 z-99 p-2 
             ${isSticky && !isFocus
-            ? 'rounded-t-xl bg-[#1F2A3E]/60 border-[#39425a]/60'
-            : isFocus && isSticky ? 'rounded-t-xl bg-[#1F2A3E] border-[#39425a]' 
+            ? 'rounded-t-xl bg-surface-elevated border-border-input'
+            : isFocus && isSticky ? 'rounded-t-xl bg-surface-base border-border-input'
             : 'rounded-xl border-transparent'}`">
             <CommentCreateInput @edit-comment="editCommentHandler" v-model="isEditingComment"
                 @add-comment="addCommentHandler" />

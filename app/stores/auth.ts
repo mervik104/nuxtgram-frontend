@@ -4,6 +4,7 @@ import { ref } from "vue";
 import { useSurrealDb } from "../data/surreal/useSurrealDb";
 import { toAvatar, toUser } from "~/data/surreal/mappers";
 import { log, logError } from "~/utils/logger";
+import { normalizeNickname } from '~/utils/nickname'
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -131,7 +132,10 @@ export const useAuthStore = defineStore('authStore', () => {
             const bridge = authBridge.value
             if (bridge?.isLoaded.value && bridge.userId.value) {
                 const { updateUserByClerkId } = useSurrealDb()
-                const updatedUser = await updateUserByClerkId(bridge.userId.value, data)
+                 const updatedUser = await updateUserByClerkId(bridge.userId.value, {
+                     ...data,
+                     nickname: normalizeNickname(data.nickname),
+                 })
                 if (!updatedUser) throw new Error('Профиль не найден')
 
                 const nextUser = toUser(updatedUser)

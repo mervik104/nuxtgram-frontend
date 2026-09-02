@@ -3,6 +3,7 @@ import { orm } from 'surqlize'
 import {
   commentReactions,
   comments,
+  notifications,
   follows,
   media,
   postReactions,
@@ -22,7 +23,8 @@ export const createNuxtgramDatabase = (session: Surreal) =>
     comments,
     follows,
     postReactions,
-    commentReactions,
+  commentReactions,
+  notifications,
   )
 
 // Тип ORM-базы: переиспользуется в data-слое и в realtime-подписках,

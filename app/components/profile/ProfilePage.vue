@@ -9,7 +9,14 @@
                         <h2 class="text-lg font-semibold text-icon-primary">
                             {{ itsMe ? 'Мой профиль' : `Профиль ${user.username}` }}
                         </h2>
-                        <DropdownMenu v-if="itsMe">
+                        <div class="flex items-center gap-2">
+                            <NuxtLink v-if="itsMe" to="/notifications" class="relative flex size-9 items-center justify-center rounded-full text-icon-primary hover:bg-surface-secondary" aria-label="Уведомления">
+                                <AppIcon name="notification" class="size-5" />
+                                <span v-if="notifications.unreadCount" class="absolute right-0 top-0 min-w-4 rounded-full bg-red-500 px-1 text-center text-[10px] leading-4 text-white">
+                                    {{ notifications.unreadCount > 99 ? '99+' : notifications.unreadCount }}
+                                </span>
+                            </NuxtLink>
+                            <DropdownMenu v-if="itsMe">
                             <UserMenuItem text="Режим отображения" @click="toggleTheme">
                                 <template #icon>
                                     <AppIcon name="theme" class="flex size-5 text-icon-secondary" />
@@ -20,7 +27,8 @@
                                     <AppIcon name="exit" class="flex size-5" />
                                 </template>
                             </UserMenuItem>
-                        </DropdownMenu>
+                            </DropdownMenu>
+                        </div>
                     </div>
                     <UserCard
                         :user="user"
@@ -53,13 +61,16 @@
 </template>
 
 <script setup lang="ts">
+import { useUserRealtime } from '~/composables/useUserRealtime';
 import { useAuthStore } from '~/stores/auth';
+import { useNotificationsStore } from '~/stores/notifications';
 import { usePostStore } from '~/stores/post';
 import type { IUser } from '~/types/user.types';
 
 const userNick: string = useRoute().params.id as string
 const authStore = useAuthStore()
 const postStore = usePostStore()
+const notifications = useNotificationsStore()
 const { feeds } = storeToRefs(postStore)
 
 const colorMode = useColorMode()
@@ -78,6 +89,7 @@ const itsMe = computed(() => me.value?.nickname === userNick)
 const user = computed<IUser | null>(() => {
     return itsMe.value ? me.value : otherUserData.value
 })
+const { userRevision, changedUserId } = useUserRealtime()
 
 const feedMeta = computed(() => {
     if (!user.value) return null
@@ -94,6 +106,12 @@ onMounted(async () => {
     otherUserData.value = result ? result : null
     isFound.value = !!result
     isLoadingPage.value = false
+})
+
+watch(userRevision, async () => {
+    if (!otherUserData.value || changedUserId.value !== otherUserData.value.id) return
+    const result = await getUserByNickname(userNick)
+    if (result) otherUserData.value = result
 })
 
 useHead({

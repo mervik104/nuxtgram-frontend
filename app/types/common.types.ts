@@ -9,7 +9,8 @@ export interface IPaginationMeta {
   prevPage: number | null
   nextPage: number | null
 }
-export interface MediaImage {
+export interface IFile {
+  id: string
   createdAt: string
   updatedAt: string
   alt: string
@@ -19,6 +20,9 @@ export interface MediaImage {
   filesize: number
   width: number
   height: number
+}
+
+export interface IMediaItem extends IFile {
   focalX: number
   focalY: number
   sizes: {
@@ -39,8 +43,9 @@ export interface MediaImage {
       filename: string
     };
   };
-  id: string
   thumbnailURL: string
 }
+
+export type MediaImage = IMediaItem
 
 export type MediaArray = MediaImage[]

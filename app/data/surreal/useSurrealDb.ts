@@ -5,6 +5,7 @@ import { hydrateUserAvatar } from './avatars'
 import { createNuxtgramDatabase, type NuxtgramDatabase } from './client'
 import type { UserRow } from './schema'
 import type { AuthBridge } from '~/utils/authBridge'
+import { normalizeNickname } from '~/utils/nickname'
 
 // Модуль-синглтон доступа к SurrealDB на клиенте.
 //
@@ -172,10 +173,11 @@ export const useSurrealDb = () => {
   // Ищет юзера по никнейму (используется при заходе в профиль по ссылке).
   const getUserByNickname = async (nickname: string): Promise<UserRow | undefined> => {
     const db = await connect()
+    const canonicalNickname = normalizeNickname(nickname)
 
     const rows = (await db
       .select('users')
-      .where((user) => user.nickname.eq(nickname))
+      .where((user) => user.nickname.eq(canonicalNickname))
       .limit(1)) as unknown as UserRow[]
     if (!rows[0]) return undefined
 
@@ -186,7 +188,7 @@ export const useSurrealDb = () => {
   // Проверка уникальности никнейма: true, если он ещё не занят.
   // Используется на странице регистрации (live-валидация поля).
   const isNicknameAvailable = async (nickname: string): Promise<boolean> => {
-    return !(await getUserByNickname(nickname))
+    return !(await getUserByNickname(normalizeNickname(nickname)))
   }
 
   // Обновляет профиль юзера (username/nickname/bio) по clerkId.
@@ -196,11 +198,12 @@ export const useSurrealDb = () => {
     data: Pick<UserRow, 'username' | 'nickname' | 'bio'>,
   ): Promise<UserRow | undefined> => {
     const db = await connect()
+    const normalizedData = { ...data, nickname: normalizeNickname(data.nickname) }
 
     const rows = (await db
       .update('users')
       .where((user) => user.clerkId.eq(clerkId))
-      .merge(data)
+      .merge(normalizedData)
       .return('after')) as unknown as UserRow[]
     if (!rows[0]) return undefined
 

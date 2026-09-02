@@ -4,7 +4,7 @@ export const loginSchema = z.object({
   email: z.string().email('Введите корректный email.'), // Исправил z.email на z.string().email
   password: z.string()
     .min(1, 'Поле не должно быть пустым')
-    .min(8, 'Пароль должен быть не менее 8 символов')
+    .min(15, 'Пароль должен быть не менее 8 символов')
     .regex(/[a-zA-Z]/, 'Пароль должен содержать латинские буквы'),
 })
 

@@ -25,6 +25,7 @@ export const users = table('users', {
   avatar: t.option(t.record('media')),
   createdAt: t.date(),
   updatedAt: t.date(),
+  last_seen_at: t.option(t.date()),
 })
 
 // Медиа-файлы (аватары и картинки постов). publicUrl — публичная ссылка
@@ -83,6 +84,16 @@ export const postReactions = edge('users', 'post_reactions', 'posts', {
 // Ребро «юзер поставил реакцию на комментарий» (out → in), с типом реакции.
 export const commentReactions = edge('users', 'comment_reactions', 'comments', {
   type: reactionType,
+})
+
+export const notifications = table('notifications', {
+  recipient: t.record('users'),
+  type: t.string(),
+  actor: t.record('users'),
+  entity_id: t.string(),
+  post_id: t.option(t.string()),
+  unread: t.union([t.literal(true), t.literal(false)]),
+  created_at: t.date(),
 })
 
 // Выведенные типы строк таблиц — публичный контракт data-слоя.

@@ -6,12 +6,12 @@ import { tv } from 'tailwind-variants'
 
 // Кнопки: variant (цвет/роль), size, скругление, disabled/loading/error-состояния.
 export const button = tv({
-    base: 'inline-flex items-center justify-center transition-colors font-medium outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 border border-transparent',
+    base: 'inline-flex items-center justify-center transition-colors font-medium outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base border border-transparent',
     variants: {
         variant: {
             primary: 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm focus-visible:ring-blue-500',
             success: 'bg-green-600 text-white hover:bg-green-700 shadow-sm focus-visible:ring-green-500',
-            secondary: 'bg-gray-800 text-gray-300 hover:bg-gray-700 border border-gray-700 focus-visible:ring-gray-500',
+            secondary: 'bg-surface-secondary text-icon-primary hover:bg-surface-accent-hover border border-border-input focus-visible:ring-icon-accent',
             outline: 'bg-transparent text-icon-primary border border-border-input hover:bg-surface-secondary focus-visible:ring-icon-accent',
             ghost: 'bg-transparent text-icon-primary hover:bg-surface-secondary focus-visible:ring-icon-accent',
             text: 'bg-transparent text-icon-primary hover:text-icon-secondary',
@@ -98,13 +98,13 @@ export const avatar = tv({
 
 // Текстовые поля: intent (normal/error/success/disabled), размер, заливка.
 export const input = tv({
-    base: 'w-full px-4 py-2 rounded-lg border text-white placeholder-gray-500 outline-none transition-colors',
+    base: 'w-full px-4 py-2 rounded-lg border text-icon-primary placeholder:text-icon-secondary outline-none transition-colors',
     variants: {
         intent: {
             normal: 'border-border-input focus:border-blue-500',
             error: 'border-red-500 focus:border-red-600',
             success: 'border-green-500 focus:border-green-600',
-            disabled: 'border-gray-600 bg-gray-800 cursor-not-allowed',
+            disabled: 'border-border-input bg-surface-secondary cursor-not-allowed',
         },
         size: {
             sm: 'text-sm',
@@ -113,7 +113,7 @@ export const input = tv({
         fill: {
             transparent: 'bg-transparent',
             subtle: 'bg-surface-secondary',
-            solid: 'bg-gray-800',
+            solid: 'bg-surface-elevated',
         },
     },
     defaultVariants: { intent: 'normal', size: 'md', fill: 'transparent' },
@@ -121,12 +121,12 @@ export const input = tv({
 
 // Многострочный текст: intent, заливка, overflow, resize.
 export const textarea = tv({
-    base: 'w-full min-h-38 p-2.5 rounded-lg border border-gray-700 text-white text-base placeholder-gray-500 outline-none transition-colors',
+    base: 'w-full min-h-38 p-2.5 rounded-lg border border-border-input text-icon-primary text-base placeholder:text-icon-secondary outline-none transition-colors',
     variants: {
         intent: {
             normal: 'focus:border-blue-500',
             error: 'border-red-500 focus:border-red-600',
-            disabled: 'border-gray-600 bg-gray-800 cursor-not-allowed',
+            disabled: 'border-border-input bg-surface-secondary cursor-not-allowed',
         },
         fill: {
             solid: 'bg-surface-base',

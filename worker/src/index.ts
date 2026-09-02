@@ -590,6 +590,22 @@ async function provisionUser(request: Request, env: Env): Promise<Response> {
   }
 }
 
+async function heartbeat(request: Request, env: Env): Promise<Response> {
+  const identity = await authenticate(request, env)
+  const database = await connectServiceDb(env)
+  try {
+    const result = await database.query<[Array<{ last_seen_at?: unknown }>]>(
+      'UPDATE users SET last_seen_at = time::now() WHERE clerkId = $clerkId RETURN AFTER',
+      { clerkId: identity.clerkId },
+    ).collect()
+    const lastSeenAt = result[0]?.[0]?.last_seen_at
+    if (!lastSeenAt) return json(env, { message: 'User profile not found' }, 404)
+    return json(env, { last_seen_at: String(lastSeenAt) })
+  } finally {
+    await database.close()
+  }
+}
+
 // Точка входа worker: маршрутизация POST-запросов по pathname,
 // preflight-ответ на OPTIONS, единая обработка ошибок и нормализация
 // CORS-заголовков на ВСЕХ ответах (включая 401/500).
@@ -619,6 +635,8 @@ export default {
         response = await deleteUrl(request, env)
       } else if (request.method === 'POST' && url.pathname === '/auth/provision') {
         response = await provisionUser(request, env)
+      } else if (request.method === 'POST' && url.pathname === '/presence/heartbeat') {
+        response = await heartbeat(request, env)
       } else {
         response = json(env, { message: 'Not found' }, 404)
       }

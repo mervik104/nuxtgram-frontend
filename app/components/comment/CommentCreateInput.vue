@@ -15,7 +15,7 @@
           overflow: isOverflowing ? 'auto' : 'hidden',
           resize: 'none',
           fill: 'transparent'
-        }), 'max-h-72 min-h-10!']"></textarea>
+        }), 'max-h-72 min-h-10! comment-input']"></textarea>
     </div>
 
     <AppButton @click="handleSend" :disabled="!input.trim()" :loading="isSubmitting"
@@ -45,7 +45,7 @@
           overflow: isOverflowing ? 'auto' : 'hidden',
           resize: 'none',
           fill: 'transparent'
-        }), 'max-h-72 min-h-10!']"></textarea>
+        }), 'max-h-72 min-h-10! comment-input']"></textarea>
 
       <AppButton @click="handleSend" :disabled="!input.trim()" :loading="isSubmitting"
         :variant="isEditingComment ? 'success' : 'primary'" loader-variant="white" rounded="full" size="sm"
@@ -113,3 +113,15 @@ const editCommentHandler = () => {
   isEditingComment.value = null
 }
 </script>
+
+<style scoped>
+.comment-input {
+  color: var(--icon-primary);
+  caret-color: var(--icon-accent);
+}
+
+.comment-input::placeholder {
+  color: var(--icon-secondary);
+  opacity: 1;
+}
+</style>
