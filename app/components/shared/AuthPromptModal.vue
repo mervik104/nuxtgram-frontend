@@ -3,7 +3,7 @@
         <div class="flex flex-col items-center text-center gap-4">
             <img :src="brand.logo" class="w-14 h-auto" alt="logo">
             <div>
-                <h3 class="text-xl font-bold text-icon-primary">{{ brand.name }}</h3>
+                <h2 class="text-xl font-bold text-icon-primary">{{ brand.name }}</h2>
                 <p class="mt-2 text-sm text-icon-secondary leading-relaxed">
                     Войдите или зарегистрируйтесь, чтобы ставить лайки, комментировать
                     и создавать публикации.
