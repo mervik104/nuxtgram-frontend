@@ -1,0 +1,1 @@
+import{_ as o}from"./B2L_HnO4.js";import{_ as r}from"./DlAUqK2U.js";import{o as t,c as _,a as n}from"./BovftjOy.js";const c={},s={class:"pb-6 border-b border-border-subtle"};function a(m,p){const e=o;return t(),_("div",s,[n(e)])}const l=Object.assign(r(c,[["render",a]]),{__name:"ProfileSkeleton"});export{l as _};
