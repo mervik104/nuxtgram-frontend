@@ -1,1 +1,0 @@
-import{e as s,i as t,s as r,j as a,f as n}from"./r9kT9h2l.js";const f=s({__name:"index",setup(i){const e=t(),{user:o}=r(e);return o.value?a(o.value.nickname):(e.openAuthPrompt(),n()),()=>{}}});export{f as default};
