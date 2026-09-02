@@ -15,6 +15,8 @@
 
         <FeedSinglePost v-if="route.params.id" />
         <InfiniteFeed v-else feed-key="global" />
+
+        <AppFooter class="lg:hidden" />
     </div>
 </template>
 
