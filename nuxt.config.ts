@@ -42,22 +42,7 @@ export default defineNuxtConfig({
     },
   },
   extends: ['./layers/ui'],
-  modules: ['@pinia/nuxt', 'nuxt-toast', '@nuxt/ui', '@nuxtjs/color-mode', '@vueuse/nuxt', '@nuxt/icon', '@clerk/nuxt'],
-  toast: {
-    composableName: 'useNotification', // Customize the composable name
-    settings: {
-      position: 'topRight',
-      closeOnClick: true,
-      pauseOnHover: true,
-      theme: "dark",
-      backgroundColor: '#2A2F33',
-      closeOnEscape: true,
-      close: true,
-      drag: true,
-      displayMode: 1000,
-      timeout: 1500,
-    }
-  },
+  modules: ['@pinia/nuxt', '@nuxt/ui', '@nuxtjs/color-mode', '@vueuse/nuxt', '@nuxt/icon', '@clerk/nuxt'],
   colorMode: {
     preference: 'system',
     fallback: 'light',
@@ -97,6 +82,8 @@ export default defineNuxtConfig({
         'solar:heart-linear',
         'solar:menu-dots-bold',
         'solar:trash-bin-trash-bold',
+        'solar:check-circle-bold',
+        'solar:danger-triangle-bold',
         'streamline-flex:paperclip-1',
         'tabler:arrow-narrow-up-dashed',
         'tabler:arrow-up',

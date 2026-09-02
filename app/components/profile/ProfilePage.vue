@@ -1,7 +1,7 @@
 <template>
-    <div class="min-h-screen bg-surface-background text-icon-primary">
+
         <ProfileLayout>
-            <ProfileSkeleton v-if="isLoadingPage || !feedMeta || isProcess" />
+            <ProfileSkeleton v-if="isLoadingPage" />
 
             <template v-else-if="user">
                 <div class="pb-6 border-b border-border-subtle">
@@ -30,23 +30,26 @@
                         @openEditModalHandler="openEditProfileModal()"
                     />
                 </div>
+
+                <div class="mt-6 flex flex-col gap-4">
+                    <h2 class="text-lg font-semibold text-icon-secondary py-2 z-10">
+                        Публикации
+                    </h2>
+                    <InfiniteFeed :feed-key="`user_${user.id}`" />
+                </div>
             </template>
 
-            <div v-if="user" class="mt-6 flex flex-col gap-4">
-                <h2 class="text-lg font-semibold text-icon-secondary py-2 z-10">
-                    Публикации
-                </h2>
-                <InfiniteFeed :feed-key="`user_${user.id}`" />
-            </div>
-
-            <div v-else-if="!isFound" class="min-h-screen flex items-center justify-center text-icon-secondary text-xl">
-                <div class="text-center">
-                    <p class="text-5xl mb-4">😢</p>
-                    <p>Пользователь не найден</p>
+            <div v-else class="flex flex-col items-center justify-center gap-4 text-icon-secondary text-center px-6">
+                <div class="w-20 h-20 rounded-full bg-surface-secondary flex items-center justify-center">
+                    <AppIcon name="user" class="size-10" />
+                </div>
+                <div>
+                    <p class="text-xl font-semibold text-icon-primary mb-1">Пользователь не найден</p>
+                    <p class="text-sm">Возможно, он изменил никнейм или перестал существовать.</p>
                 </div>
             </div>
         </ProfileLayout>
-    </div>
+
 </template>
 
 <script setup lang="ts">
@@ -67,11 +70,10 @@ function toggleTheme() {
 const { getUserByNickname, openEditProfileModal, logout } = authStore
 
 const logoutHandler = () => logout()
-const { isProcess: isEditProcess, user: me } = storeToRefs(authStore)
+const { user: me } = storeToRefs(authStore)
 const otherUserData = ref<IUser | null>(null)
 const isLoadingPage = ref<boolean>(true)
 const isFound = ref<boolean>(true)
-const isProcess = computed(() => isLoadingPage.value || isEditProcess.value)
 const itsMe = computed(() => me.value?.nickname === userNick)
 const user = computed<IUser | null>(() => {
     return itsMe.value ? me.value : otherUserData.value

@@ -53,15 +53,20 @@ const props = withDefaults(defineProps<{
     // Жест закрытия свайпом:
     //  down — тянем лист вниз (классический bottom sheet);
     //  back — тянем от левого края экрана вправо (системный жест "назад");
-    //  none — свайпом не закрывается.
+    // none — свайпом не закрывается.
     // auto сам выбирает: full → back, sheet → down, иначе none.
     swipeClose?: SwipeClose
+    // Отключить трюк с history.pushState/popstate (кнопка "назад" закрывает модалку).
+    // Нужно, когда закрытие ведёт к программной навигации (например кнопка "Войти" →
+    // /login): history.back() из releaseHistoryEntry конфликтует с navigateTo в hash-режиме.
+    disableHistory?: boolean
 }>(), {
     size: 'md',
     padding: 'default',
     variant: 'sheet',
     hideClose: false,
     swipeClose: 'auto',
+    disableHistory: false,
 })
 
 const isOpen = defineModel<boolean>({ required: true })
@@ -266,8 +271,10 @@ let closingFromPopState = false
 function pushHistoryEntry() {
     if (!import.meta.client) return
     openModalIds.push(modalId)
-    history.pushState({ appModal: true }, '')
-    hasHistoryEntry = true
+    if (!props.disableHistory) {
+        history.pushState({ appModal: true }, '')
+        hasHistoryEntry = true
+    }
     syncBodyScrollLock()
 }
 

@@ -236,10 +236,16 @@ onMounted(async () => {
 const subscriptionsHandler = () => (props.itsMe ? navigateTo('/subscriptions') : null)
 const subscribersHandler = () => (props.itsMe ? navigateTo('/subscribers') : null)
 const copyId = async () => {
-  const toast = useNotification()
+  const toast = useToast()
   const copied = await copyToClipboard(props.user.nickname)
   if (copied) {
-    toast.success({ message: 'ID скопирован в буфер обмена' })
+    toast.add({
+      color: 'success',
+      icon: 'solar:check-circle-bold',
+      title: 'Скопировано',
+      description: 'ID скопирован в буфер обмена',
+      duration: 2500,
+    })
   }
 }
 

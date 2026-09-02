@@ -90,18 +90,21 @@ body {
 }
 
 ::-webkit-scrollbar {
-    width: 12px; 
+    width: 12px;
 }
+
 ::-webkit-scrollbar-track {
     background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
     background-color: rgba(100, 100, 100, 0.4);
-    border-radius: 10px; 
+    border-radius: 10px;
     border: 3px solid transparent;
     background-clip: content-box;
     transition: background-color 0.3s ease;
 }
+
 ::-webkit-scrollbar-thumb:hover {
     background-color: rgba(100, 100, 100, 0.7);
 }
@@ -110,10 +113,12 @@ textarea::-webkit-scrollbar {
     width: 10px;
     height: 10px;
 }
+
 textarea::-webkit-scrollbar-track {
     background: rgba(127, 127, 127, 0.12);
     border-radius: 10px;
 }
+
 textarea::-webkit-scrollbar-thumb {
     background-color: rgba(127, 127, 127, 0.35);
     border-radius: 10px;
@@ -121,6 +126,7 @@ textarea::-webkit-scrollbar-thumb {
     background-clip: content-box;
     transition: background-color 0.3s ease;
 }
+
 textarea::-webkit-scrollbar-thumb:hover {
     background-color: rgba(127, 127, 127, 0.5);
 }
@@ -129,6 +135,7 @@ textarea::-webkit-scrollbar-thumb:hover {
 html.light ::-webkit-scrollbar-thumb {
     background-color: rgba(0, 0, 0, 0.2);
 }
+
 html.light ::-webkit-scrollbar-thumb:hover {
     background-color: rgba(0, 0, 0, 0.5);
 }
@@ -137,27 +144,163 @@ html.light ::-webkit-scrollbar-thumb:hover {
 html.dark ::-webkit-scrollbar-thumb {
     background-color: rgba(255, 255, 255, 0.2);
 }
+
 html.dark ::-webkit-scrollbar-thumb:hover {
     background-color: rgba(255, 255, 255, 0.5);
 }
 
 @keyframes highlight-animation {
-    0% { filter: brightness(1); }
-    25% { filter: brightness(0.6); }
-    50% { filter: brightness(1); }
-    75% { filter: brightness(0.6); }
-    100% { filter: brightness(1); }
+    0% {
+        filter: brightness(1);
+    }
+
+    25% {
+        filter: brightness(0.6);
+    }
+
+    50% {
+        filter: brightness(1);
+    }
+
+    75% {
+        filter: brightness(0.6);
+    }
+
+    100% {
+        filter: brightness(1);
+    }
 }
 
 .highlighted {
     animation: highlight-animation 0.5s ease-in-out;
 }
 
-.iziToast-wrapper  {
-    z-index: 40 !important;
-    top: 64px !important;
+/* ===== Тосты (@nuxt/ui UToaster) — в стиле приложения ===== */
+
+/* Вьюпорт тостов */
+ol[data-slot="viewport"] {
+    position: fixed !important;
+    /* страховка, если что-то сбрасывает позиционирование */
+    top: 72px !important;
+    right: 12px !important;
+    left: auto !important;
+    bottom: auto !important;
+    gap: 8px !important;
+    width: min(380px, calc(100vw - 24px)) !important;
+    max-width: min(380px, calc(100vw - 24px)) !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    z-index: 2147483647 !important;
+    /* заведомо выше любых модалок/хедеров */
+    pointer-events: none;
+    /* пустая область вьюпорта не блокирует клики */
 }
 
-.bg-elevated {
-    background-color: var(--surface-elevated) !important;
+ol[data-slot="viewport"]>* {
+    pointer-events: auto;
+    /* сами карточки остаются кликабельными */
+}
+
+/* Карточка тоста */
+ol[data-slot="viewport"] [data-slot="base"],
+ol[data-slot="viewport"] [data-slot="root"] {
+    font-family: 'Inter', sans-serif;
+    background: color-mix(in srgb, var(--surface-elevated) 92%, transparent) !important;
+    backdrop-filter: blur(10px) saturate(140%);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+    border: 1px solid var(--border-header) !important;
+    border-radius: 14px !important;
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.06),
+        0 12px 32px rgba(0, 0, 0, 0.16) !important;
+    padding: 12px 14px !important;
+    gap: 10px !important;
+    align-items: flex-start !important;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+ol[data-slot="viewport"] [data-slot="base"]:hover,
+ol[data-slot="viewport"] [data-slot="root"]:hover {
+    box-shadow:
+        0 2px 6px rgba(0, 0, 0, 0.1),
+        0 16px 40px rgba(0, 0, 0, 0.2) !important;
+    transform: translateY(-1px);
+}
+
+/* Иконка статуса */
+ol[data-slot="viewport"] [data-slot="base"] [data-slot="icon"],
+ol[data-slot="viewport"] [data-slot="root"] [data-slot="icon"] {
+    width: 20px !important;
+    height: 20px !important;
+    margin-top: 1px !important;
+    flex-shrink: 0 !important;
+}
+
+/* Заголовок */
+ol[data-slot="viewport"] [data-slot="title"] {
+    color: var(--icon-primary) !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    line-height: 1.35 !important;
+}
+
+/* Описание */
+ol[data-slot="viewport"] [data-slot="description"] {
+    color: var(--icon-secondary) !important;
+    font-size: 12.5px !important;
+    font-weight: 400 !important;
+    line-height: 1.4 !important;
+    margin-top: 2px !important;
+}
+
+/* Прогресс-бар */
+ol[data-slot="viewport"] [data-slot="progress"] {
+    height: 2.5px !important;
+    border-radius: 2px !important;
+}
+
+/* Кнопка закрытия */
+ol[data-slot="viewport"] [data-slot="close"] {
+    color: var(--icon-secondary) !important;
+    opacity: 0.65 !important;
+    transition: opacity 0.15s ease;
+}
+
+ol[data-slot="viewport"] [data-slot="close"]:hover {
+    opacity: 1 !important;
+}
+
+/* Мобильные (≤ 640px) */
+@media (max-width: 640px) {
+    ol[data-slot="viewport"] {
+        top: 8px !important;
+        right: 0.75rem !important;
+        left: 0.75rem !important;
+        width: auto !important;
+        max-width: none !important;
+    }
+
+    ol[data-slot="viewport"] [data-slot="base"],
+    ol[data-slot="viewport"] [data-slot="root"] {
+        padding: 10px 12px !important;
+        gap: 8px !important;
+        border-radius: 12px !important;
+    }
+
+    ol[data-slot="viewport"] [data-slot="base"] [data-slot="icon"],
+    ol[data-slot="viewport"] [data-slot="root"] [data-slot="icon"] {
+        width: 18px !important;
+        height: 18px !important;
+    }
+
+    ol[data-slot="viewport"] [data-slot="title"] {
+        font-size: 13px !important;
+        line-height: 1.3 !important;
+    }
+
+    ol[data-slot="viewport"] [data-slot="description"] {
+        font-size: 12px !important;
+        margin-top: 2px !important;
+        line-height: 1.3 !important;
+    }
 }

@@ -40,7 +40,7 @@ Cloudflare Worker       →  Cloudflare R2
 | --- | --- |
 | Frontend | Nuxt 4 (`nuxt@^4.3.0`), Vue 3.5, TypeScript 5.9 |
 | State | Pinia (stores через `@pinia/nuxt`) |
-| UI | `@nuxt/ui` (UIkit), Tailwind CSS 4 + `tailwind-variants`, `@nuxtjs/color-mode`, `@nuxt/icon`, `nuxt-toast` |
+| UI | `@nuxt/ui` (UIkit + нативные тосты), Tailwind CSS 4 + `tailwind-variants`, `@nuxtjs/color-mode`, `@nuxt/icon` |
 | Forms | `vee-validate`, `@vee-validate/zod`, `zod` |
 | Auth | `@clerk/nuxt` (3.0.15) |
 | Данные | `surrealdb` 2.0.8, `surqlize` 0.1.0 |

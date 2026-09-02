@@ -1,5 +1,5 @@
 <template>
-    <AppModal v-model="isOpen" size="md" padding="none">
+    <AppModal v-model="isOpen" size="md" padding="none" :disable-history="true">
         <div :class="styles.wrapper()">
             <h3 :class="styles.title()">Настройки профиля</h3>
 

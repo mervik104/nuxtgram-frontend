@@ -10,8 +10,13 @@ export const usePostLink = () => {
         const url = window.location.origin
         const postUrl = url + `/#/feed/${postId}`
         copyToClipboard(postUrl)
-        const toast = useNotification()
-        toast.success({ message: 'Ссылка на пост скопирована' })
+        const toast = useToast()
+        toast.add({
+            color: 'success',
+            icon: 'solar:check-circle-bold',
+            title: 'Ссылка скопирована',
+            duration: 2500,
+        })
     }
     return {
         createPostUrl

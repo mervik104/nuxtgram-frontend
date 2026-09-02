@@ -1,5 +1,5 @@
 <template>
-    <AppModal v-model="isOpen" size="sm" variant="card">
+    <AppModal v-model="isOpen" size="sm" variant="card" :disable-history="true">
         <div class="flex flex-col items-center text-center gap-4">
             <img :src="brand.logo" class="w-14 h-auto" alt="logo">
             <div>

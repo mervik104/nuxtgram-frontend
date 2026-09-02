@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen">
-    <UApp>
+    <UApp :toaster="{ position: 'top-right', max: 3 }">
       <NuxtLayout>
         <NuxtLoadingIndicator />
         <NuxtPage />

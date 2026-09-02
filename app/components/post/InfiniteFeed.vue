@@ -5,6 +5,7 @@
         <div v-if="!canLoadMore && posts.length > 0" class="text-center py-4 text-icon-secondary">
             Вы достигли конца
         </div>
+        <FeedEmptyState v-if="showEmpty" :is-user-feed="isUserFeed" />
         <FeedSkeleton v-if="isLoading && (posts.length > 0 || posts.length === 0)" />
     </div>
 </template>
@@ -35,6 +36,15 @@ const canLoadMore = computed(() => {
     const feed = postsStore.feeds[props.feedKey]
     if (!feed) return true
     return !feed.isFullyLoaded
+})
+const isUserFeed = computed(() => props.feedKey.startsWith('user_'))
+const showEmpty = computed(() => {
+    if (filteredPosts.value.length > 0) return false
+    if (isLoading.value) return false
+    const feed = postsStore.feeds[props.feedKey]
+    if (!feed) return false
+    // Показываем пустое состояние только когда лента реально догрузилась без постов.
+    return feed.isFullyLoaded
 })
 
 function fetchCurrentFeed(page: number) {

@@ -47,8 +47,14 @@ const start = async (strategy: OAuthStrategy) => {
         }
         // Успех — уходим на страницу OAuth; UI здесь завершается.
     } catch (error) {
-        const toast = useNotification()
-        toast.error({ message: error instanceof Error ? error.message : 'Не удалось выполнить вход. Попробуйте ещё раз.' })
+        const toast = useToast()
+        toast.add({
+            color: 'error',
+            icon: 'solar:danger-triangle-bold',
+            title: 'Не удалось войти',
+            description: error instanceof Error ? error.message : 'Попробуйте ещё раз.',
+            duration: 3500,
+        })
     } finally {
         loading.value = null
     }
