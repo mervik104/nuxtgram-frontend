@@ -6,7 +6,7 @@
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
-    "deploy": "bun run generate && gh-pages -d .output/public",
+    "deploy": "bun run generate && gh-pages -d .output/public --nojekyll",
     "preview": "nuxt preview",
     "typecheck": "tsc -p .nuxt/tsconfig.app.json",
     "postinstall": "nuxt prepare && node scripts/patch-surqlize.mjs"
