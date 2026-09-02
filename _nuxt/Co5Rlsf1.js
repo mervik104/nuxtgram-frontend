@@ -1,0 +1,1 @@
+import{e as t,v as s,x as r,y as a,f as n}from"./B-FGmMG2.js";const f=t({__name:"index",setup(u){const e=s(),{user:o}=r(e);return o.value?a(o.value.nickname):(e.openAuthPrompt(),n()),()=>{}}});export{f as default};
