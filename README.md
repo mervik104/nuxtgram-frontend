@@ -4,7 +4,7 @@ Social/photo-блог (Instagram-подобная лента): посты с к�
 
 ## Project Overview
 
-- **Frontend** — Nuxt SPA (Vue 3), отдаётся как статический single-page артефакт.
+- **Frontend** — Nuxt SPA (Vue 3), отдаётся как статический SPA-артефакт (компактный `index.html` + hashed-чанки `_nuxt/*`).
 - **Аутентификация** — Clerk (аккаунты, сессии, JWT).
 - **Данные** — SurrealDB (посты, комментарии, реакции, подписки, медиа-строки).
 - **Файлы/медиа** — Cloudflare Worker + Cloudflare R2 (загрузка, валидация, пресайн-ссылки).
@@ -20,7 +20,7 @@ Nuxt SPA
 Clerk
    ↓
 Cloudflare Worker       →  SurrealDB
-(pровижининг пользователя, media-операции)
+(провижининг пользователя, media-операции)
 
 Cloudflare Worker       →  Cloudflare R2
 (presigned URLs, uploads, ownership)
@@ -34,12 +34,12 @@ Cloudflare Worker       →  Cloudflare R2
 
 ## Technology Stack
 
-Сессия на `package.json` (актуально на 2026-08):
+Сессия на `package.json` (актуально на 2026-09):
 
 | Слой | Технологии |
 | --- | --- |
 | Frontend | Nuxt 4 (`nuxt@^4.3.0`), Vue 3.5, TypeScript 5.9 |
-| State | Pinia (storеs через `@pinia/nuxt`) |
+| State | Pinia (stores через `@pinia/nuxt`) |
 | UI | `@nuxt/ui` (UIkit), Tailwind CSS 4 + `tailwind-variants`, `@nuxtjs/color-mode`, `@nuxt/icon`, `nuxt-toast` |
 | Forms | `vee-validate`, `@vee-validate/zod`, `zod` |
 | Auth | `@clerk/nuxt` (3.0.15) |
@@ -55,14 +55,16 @@ Cloudflare Worker       →  Cloudflare R2
 ```text
 app/
 ├── assets/css/           # глобальные стили (main.css)
-├── components/           # UI-компоненты (auth, comment, layout, post, profile, shared, ui, user)
+├── components/           # UI-компоненты (auth, comment, layout, post, profile, shared, user)
 ├── composables/          # hooks: авторизация, скролл, модалки, infinite scroll, nickname check и т.д.
 ├── data/
+│   ├── navigation.ts     # централизованная навигация (sidebarNav/tabbarNav/navRoutes/brand)
+│   ├── socialOAuth.ts    # конфиг OAuth-провайдеров (Google/GitHub/Apple/…)
 │   └── surreal/          # data-слой SurrealDB: ids, client (surqlize ORM), schema, mappers,
 │                         #   avatars, follows, comments, posts, useSurrealDb (сессия+подписки)
-├── layouts/              # layout (default.vue)
+├── layouts/              # layouts: default.vue, auth.vue (вход/регистрация без сайдбара/таббара)
 ├── middleware/           # auth.global.ts — глобальный роут-гард авторизации
-├── pages/                # маршруты: feed, profile, subscribers, subscriptions, login, register, index
+├── pages/                # маршруты: feed, profile, subscribers, subscriptions, messager, login, register, sso-callback, test
 ├── plugins/              # auth (Clerk↔Pinia), realtime (LIVE-подписки SurrealDB), tracing, scroll-manager
 ├── schemas/              # zod-схемы валидации форм (auth.ts)
 ├── stores/               # Pinia: auth, post, comment, follows
@@ -91,10 +93,10 @@ tests/                    # юнит-тесты (bun:test): ids, mappers, schema
 
 - **Clerk (`@clerk/nuxt`)** — вход/регистрация (email, пароль, OAuth), управление сессией, publishable-ключ в env.
 - Приложение работает через **authBridge** (`app/utils/authBridge.ts`) — реактивный мост, который Clerk подставляет в `shallowRef`. Отсюда берутся `userId/isLoaded/isSignedIn`, `getToken(template)`, `provision(username)`, `requestWorker(...)`.
-- **JWT**: `getToken('surrealdb')` отдаёт токен по кастомному шаблону Clerk (issuer `https://superb-marmot-2888.clerk.accounts.dev`, audience `nuxtgram-surrealdb`). Этот же токен идёт в SurrealDB (аутентификация сессии) и в Worker (проверка JWT).
+- **JWT**: `getToken('surrealdb')` отдаёт токен по кастомному шаблону Clerk (issuer `https://clerk.mervik.ru`, audience `nuxtgram-surrealdb`). Этот же токен идёт в SurrealDB (аутентификация сессии) и в Worker (проверка JWT).
 - **Frontend → Worker**: Worker проверяет issuer/audience/`sub`, затем от имени пользователя делает провижининг и медиа-операции.
 - **Authorization boundary**: граница безопасности — Worker и серверные пермишены SurrealDB (`DEFINE PERMISSION`/SCHEMAFULL в миграции). Клиентский UI не считается границей; secrets не переносятся во frontend.
-- Роут-гард `app/middleware/auth.global.ts` дожидается загрузки Clerk и направляет неавторизованных на `/login`.
+- Роут-гард `app/middleware/auth.global.ts` по возможности не блокирует первый рендер: синхронная проверка `window.Clerk?.session` без busy-wait, неавторизованные направляются на `/login`, гостям доступен браузинг с AuthPrompt-модалкой для защищённых действий.
 
 ## Database
 
@@ -125,9 +127,8 @@ tests/                    # юнит-тесты (bun:test): ids, mappers, schema
 | `NUXT_PUBLIC_SURREALDB_DATABASE` | Database (по умолчанию `main`) | data-слой |
 | `NUXT_PUBLIC_CLERK_JWT_TEMPLATE` | Имя JWT-шаблона Clerk (`surrealdb`) | `getToken(template)` |
 | `NUXT_PUBLIC_WORKER_URL` | URL медиа-Worker | `authBridge.requestWorker/uploadImage` |
-| `API_URL` | Legacy-остаток эпохи Payload (база для относительных URL `buildApiUrl`) | `app/composables/useApiBuilder.ts` (все новые URL — абсолютные R2, префикс не используется) |
 
-В `nuxt.config.ts` runtimeConfig.public отображает `process.env.*` в одноимённые ключи; значения из `.env` подставляются Nuxt через `NUXT_PUBLIC_*` (для ключей `SURREALDB_*`, `CLERK_JWT_TEMPLATE`, `WORKER_URL`, `API_URL`).
+В `nuxt.config.ts` runtimeConfig.public отображает `process.env.*` в одноимённые ключи; значения из `.env` подставляются Nuxt через `NUXT_PUBLIC_*` (для ключей `SURREALDB_*`, `CLERK_JWT_TEMPLATE`, `WORKER_URL`).
 
 ### Worker (`nuxtgram-frontend/worker` — wrangler secrets/vars)
 
@@ -154,7 +155,8 @@ bunx tsc --noEmit      # typecheck полный (альтернативный; �
 
 ## Deployment
 
-- **Frontend**: собирается командой `bun run generate` → компактный `index.html` (SPA-оболочка ~5 КБ) + hashed-чанки `_nuxt/*` (кэшируются по содержимому) + `_fonts`. Хостится на любом статическом хостинге (GitHub Pages / прочее). CI-конфигурации пока нет.
+- **Frontend**: собирается `bun run generate`, деплой на GitHub Pages — `bun run deploy` (`gh-pages -d .output/public --nojekyll`). GitHub Pages по умолчанию запускает Jekyll и выкидывает каталоги с `_` (`_nuxt/`, `_fonts/`) — флаг `--nojekyll` создаёт `.nojekyll` в публикации, чтобы они отдавались. CI-конфигурации пока нет.
+  - Live: `https://nuxtgram.mervik.ru` (custom domain через `public/CNAME`).
 - **Worker**: `wrangler deploy` из `worker/` (см. `worker/wrangler.jsonc`); для production нужны все секреты выше и суженный CORS.
 - Перед прод: задать боевой `FRONTEND_ORIGIN`/домен в CORS Worker, выставить production-ключи Clerk.
 

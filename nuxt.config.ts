@@ -15,7 +15,6 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
   runtimeConfig: {
     public: {
-      API_URL: process.env.API_URL,
       SURREALDB_URL: process.env.SURREALDB_URL,
       SURREALDB_NAMESPACE: process.env.SURREALDB_NAMESPACE,
       SURREALDB_DATABASE: process.env.SURREALDB_DATABASE,
@@ -121,8 +120,7 @@ export default defineNuxtConfig({
      * Automatically add stores dirs to the auto imports. This is the same as
      * directly adding the dirs to the `imports.dirs` option. If you want to
      * also import nested stores, you can use the glob pattern `./stores/**`
-     * (on Nimport { API_URL } from './app/utils/constants';
-uxt 3) or `app/stores/**` (on Nuxt 4+)
+     * (on Nuxt 3) or `app/stores/**` (on Nuxt 4+)
      *
      * @default `['stores']`
      */
