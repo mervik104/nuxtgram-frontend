@@ -1,1 +1,0 @@
-import{_ as t}from"./L7uvkC3x.js";import{_ as r}from"./DlAUqK2U.js";import{o as e,d as n}from"./CWek8o9p.js";import"./CAmjM6u3.js";import"./DoyTBGTS.js";const _={};function c(s,m){const o=t;return e(),n(o,{type:"followers"})}const l=r(_,[["render",c]]);export{l as default};
