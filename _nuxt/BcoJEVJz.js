@@ -1,1 +1,0 @@
-import{g as s,j as t,s as r,k as a,h as n}from"./9dKRToSA.js";const p=s({__name:"index",setup(u){const e=t(),{user:o}=r(e);return o.value?a(o.value.nickname):(e.openAuthPrompt(),n()),()=>{}}});export{p as default};
