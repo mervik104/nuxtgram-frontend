@@ -1,5 +1,6 @@
 <template>
-    <button @click="handleClick" :class="menuItem({ variant: danger ? 'danger' : 'default' })">
+    <button @click="handleClick"
+        :class="[menuItem({ variant: danger ? 'danger' : 'default' }), 'max-sm:px-4 max-sm:py-2.5 max-sm:text-base']">
         <slot />
     </button>
 </template>

@@ -178,12 +178,12 @@ export const usePostStore = defineStore('postsStore', () => {
                 newPost = await createSurrealPost(db, String(currentUser.id), payload.content)
             } else {
                 const files = payload.getAll('image').filter((value): value is File => value instanceof File)
-                const imageIds: string[] = []
-                for (const file of files) {
-                    const upload = await clerkAuth()!.uploadImage(file.name, file.type, file)
-
-                    imageIds.push(upload.media.id)
-                }
+                // Грузим изображения параллельно, но с ограничением числа одновременных запросов
+                // (пул). Последовательная загрузка по одному была главной причиной долгого
+                // создания поста с большим числом картинок: каждый аплоад на worker занимает
+                // ~4с, поэтому 15 фото последовательно давали ~60с+. Пул из 4 одновременно
+                // грузящихся файлов сокращает время поста с N фото примерно до N/4 × ~4с.
+                const imageIds = await uploadFilesConcurrently(files, 4)
 
                 newPost = await createSurrealPost(db, String(currentUser.id), payload.get('content') as string, imageIds)
             }

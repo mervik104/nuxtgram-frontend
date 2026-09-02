@@ -1,12 +1,12 @@
 <template>
-    <div class="w-250 mx-auto py-10">
-        <div class="flex flex-col gap-4">
-            <h2 class="text-2xl font-bold">{{ title }}</h2>
+    <div :class="styles.container()">
+        <div :class="styles.wrapper()">
+            <h2 :class="styles.title()">{{ title }}</h2>
             <div v-if="isLoadingPage">
                 <UserlistSkeleton />
             </div>
-            <div v-else-if="sortedUsers.length === 0" class="text-gray-400">{{ emptyText }}</div>
-            <div v-else class="flex flex-col gap-3">
+            <div v-else-if="sortedUsers.length === 0" :class="styles.empty()">{{ emptyText }}</div>
+            <div v-else :class="styles.list()">
                 <div v-for="user in sortedUsers" :key="user.id" class="cursor-pointer"
                     @click="navigateTo(`/profile/${user.nickname}`)">
                     <UserCard size="lg" :user="user" />
@@ -20,6 +20,18 @@
 import { useAuthStore } from '~/stores/auth';
 import { useFollowsStore } from '~/stores/follows';
 import type { IUser } from '~/types/user.types';
+import { tv } from 'tailwind-variants'
+
+const userListVariants = tv({
+    slots: {
+        container: 'w-full max-w-5xl mx-auto px-2 sm:px-3 py-4',
+        wrapper: 'flex flex-col gap-4',
+        title: 'text-2xl sm:text-3xl font-bold text-icon-primary',
+        empty: 'text-icon-secondary',
+        list: 'flex flex-col gap-3',
+    },
+})
+const styles = computed(() => userListVariants())
 
 const props = defineProps<{
     type: 'following' | 'followers'

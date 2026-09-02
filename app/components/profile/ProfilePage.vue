@@ -1,11 +1,27 @@
 <template>
-    <div class="min-h-screen bg-base-dark text-white">
+    <div class="min-h-screen bg-surface-background text-icon-primary">
         <ProfileLayout>
             <ProfileSkeleton v-if="isLoadingPage || !feedMeta || isProcess" />
 
             <template v-else-if="user">
-                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6 pb-6 border-b border-gray-800">
-                    <ProfileAvatar :user="user" :its-me="itsMe" />
+                <div class="pb-6 border-b border-border-subtle">
+                    <div class="flex items-center justify-between sm:hidden mb-4">
+                        <h2 class="text-lg font-semibold text-icon-primary">
+                            {{ itsMe ? 'Мой профиль' : `Профиль ${user.username}` }}
+                        </h2>
+                        <DropdownMenu v-if="itsMe">
+                            <UserMenuItem text="Режим отображения" @click="toggleTheme">
+                                <template #icon>
+                                    <AppIcon name="theme" class="flex size-5 text-icon-secondary" />
+                                </template>
+                            </UserMenuItem>
+                            <UserMenuItem text="Выйти" danger @click="logoutHandler">
+                                <template #icon>
+                                    <AppIcon name="exit" class="flex size-5" />
+                                </template>
+                            </UserMenuItem>
+                        </DropdownMenu>
+                    </div>
                     <UserCard
                         :user="user"
                         :its-me="itsMe"
@@ -17,13 +33,13 @@
             </template>
 
             <div v-if="user" class="mt-6 flex flex-col gap-4">
-                <h2 class="text-lg font-semibold text-gray-300 bg-base-dark py-2 z-10">
+                <h2 class="text-lg font-semibold text-icon-secondary py-2 z-10">
                     Публикации
                 </h2>
                 <InfiniteFeed :feed-key="`user_${user.id}`" />
             </div>
 
-            <div v-else-if="!isFound" class="min-h-screen flex items-center justify-center text-gray-500 text-xl">
+            <div v-else-if="!isFound" class="min-h-screen flex items-center justify-center text-icon-secondary text-xl">
                 <div class="text-center">
                     <p class="text-5xl mb-4">😢</p>
                     <p>Пользователь не найден</p>
@@ -43,7 +59,14 @@ const authStore = useAuthStore()
 const postStore = usePostStore()
 const { feeds } = storeToRefs(postStore)
 
-const { getUserByNickname, openEditProfileModal } = authStore
+const colorMode = useColorMode()
+function toggleTheme() {
+    colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
+}
+
+const { getUserByNickname, openEditProfileModal, logout } = authStore
+
+const logoutHandler = () => logout()
 const { isProcess: isEditProcess, user: me } = storeToRefs(authStore)
 const otherUserData = ref<IUser | null>(null)
 const isLoadingPage = ref<boolean>(true)

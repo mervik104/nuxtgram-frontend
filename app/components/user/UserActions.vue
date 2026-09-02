@@ -1,7 +1,7 @@
 <template>
     <div v-if="itsMe">
         <AppButton variant="outline" size="base" @click="emit('openEditModalHandler')">
-            Изменить профиль
+            Изменить
         </AppButton>
     </div>
     <div v-else>

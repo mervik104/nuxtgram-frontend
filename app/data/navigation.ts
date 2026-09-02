@@ -13,6 +13,7 @@ export interface INavItem {
 
 export const navRoutes = {
     feed: '/feed',
+    messenger: '/messager',
     subscriptions: '/subscriptions',
     subscribers: '/subscribers',
     profile: '/profile',
@@ -23,13 +24,13 @@ export const navRoutes = {
 // Пункты сайдбара (десктоп, lg+).
 export const sidebarNav: INavItem[] = [
     { label: 'Лента', to: navRoutes.feed, icon: 'image', kind: 'link' },
-    { label: 'Мессенджер', icon: 'message', kind: 'link', disabled: true },
+    { label: 'Мессенджер', to: navRoutes.messenger, icon: 'message', kind: 'link' },
 ]
 
 // Пункты нижнего таббара (мобильные, <lg).
 export const tabbarNav: INavItem[] = [
     { label: 'Лента', to: navRoutes.feed, icon: 'image', kind: 'link' },
-    { label: 'Мессенджер', icon: 'message', kind: 'link', disabled: true },
+    { label: 'Мессенджер', to: navRoutes.messenger, icon: 'message', kind: 'link' },
     { label: 'Создать', icon: 'plus', kind: 'create' },
     { label: 'Подписки', to: navRoutes.subscriptions, icon: 'loveFilled', kind: 'link' },
     { label: 'Профиль', to: navRoutes.profile, icon: 'user', kind: 'link' },

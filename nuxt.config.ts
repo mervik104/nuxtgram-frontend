@@ -66,6 +66,44 @@ export default defineNuxtConfig({
     storageKey: 'nuxt-color-mode'
   },
 
+  // Иконки: заранее собираем нужные в клиентский бандл, чтобы не дёргать
+  // api.iconify.design в рантайме (отдельные мелкие запросы + паузы между ними).
+  // scan ловит литеральные имена вида 'collection:icon' в исходниках (в т.ч. в
+  // app/utils/ui/icons.ts), иконки кладутся в localStorage и не грузятся по сети.
+  icon: {
+    clientBundle: {
+      scan: {
+        globInclude: ['{app,shared,layers}/**', 'node_modules/@nuxt/ui/dist/**'],
+        globExclude: ['node_modules', 'dist'],
+      },
+      icons: [
+        'devicon:google',
+        'fluent:arrow-exit-24-filled',
+        'ic:baseline-plus',
+        'ic:baseline-square',
+        'iconamoon:comment-bold',
+        'maki:cross-11',
+        'material-symbols:android-camera',
+        'material-symbols:light-mode',
+        'material-symbols:settings',
+        'mdi:file-image-box',
+        'mingcute:home-3-fill',
+        'mingcute:left-fill',
+        'mingcute:right-fill',
+        'mingcute:share-forward-line',
+        'mingcute:user-3-fill',
+        'simple-icons:x',
+        'solar:heart-bold',
+        'solar:heart-linear',
+        'solar:menu-dots-bold',
+        'solar:trash-bin-trash-bold',
+        'streamline-flex:paperclip-1',
+        'tabler:arrow-narrow-up-dashed',
+        'tabler:arrow-up',
+      ],
+    },
+  },
+
   clerk: {
     publishableKey: process.env.CLERK_PUBLISHABLE_KEY || process.env.NUXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     skipServerMiddleware: true,

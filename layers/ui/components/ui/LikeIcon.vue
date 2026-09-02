@@ -10,7 +10,7 @@ const attrs = useAttrs()
 
 const className = computed(() => {
     const baseClass = 'flex'
-    const colorClass = props.myReaction ? 'text-red-500' : 'text-icon-access'
+    const colorClass = props.myReaction ? 'text-red-500' : 'text-icon-accent'
     return `${baseClass} ${colorClass} ${attrs.class || ''}`
 })
 

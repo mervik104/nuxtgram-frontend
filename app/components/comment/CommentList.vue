@@ -1,5 +1,64 @@
 <template>
-    <CommentBorder @close="closeCommentsHandler" v-model="isPostVisible">
+    <!-- Мобильный полноэкранный шит комментариев (Instagram/VK): сверху пост,
+         под ним лента комментариев и поле ввода, прижатое к низу. Показывается
+         только на мобильных (fullscreen=true); на десктопе — инлайновый вид ниже. -->
+    <AppModal v-if="fullscreen" v-model="isOpen" size="full" padding="none" hide-close>
+        <div class="flex h-full flex-col bg-surface-background text-icon-primary">
+
+            <div class="flex shrink-0 items-center justify-between border-b border-border-subtle px-4 pb-2.5 pt-[calc(0.625rem_+_env(safe-area-inset-top))]">
+                <span class="text-base font-semibold">Комментарии</span>
+                <button :class="iconButton({ variant: 'ghost', size: 'sm', rounded: 'full' })"
+                    @click="closeCommentsHandler" aria-label="Закрыть комментарии">
+                    <AppIcon name="cross" class="size-5" />
+                </button>
+            </div>
+
+            <!-- Пост + комментарии в ОДНОМ скроллящемся регионе: даже очень длинный
+                 пост скроллится вместе с комментариями, а поле ввода остаётся прижатым
+                 к низу и всегда доступно. -->
+            <div class="min-h-0 flex-1 overflow-y-auto">
+                <div v-if="post" class="border-b border-border-subtle px-3 py-3">
+                    <UserCard :user="post.author" :date="formatSocialDate(post.createdAt)" size="post" />
+                    <div v-if="post.image?.length" class="my-2">
+                        <MediaGallery :images="post.image" />
+                    </div>
+                    <TextBody class="pl-0">{{ post.content }}</TextBody>
+                </div>
+
+                <div class="px-3 py-3">
+                    <div v-if="commentsList.length" class="relative" v-auto-animate>
+                        <CommentItem v-for="comment in commentsList" :key="comment.id"
+                            @delete-comment="deleteCommentHandler" @edit-comment="() => { onEditMode(comment) }"
+                            @set-like="toggleReactionHandler" v-bind="comment" />
+                    </div>
+
+                    <div v-else-if="!isLoading && commentsMeta?.totalDocs === 0">
+                        <p class="text-gray-400">Комментариев пока нет</p>
+                    </div>
+
+                    <div v-if="canLoadMore && !isLoading" class="mt-3">
+                        <span class="select-none text-gray-400 hover:underline cursor-pointer" @click="loadNextPageHandler">
+                            Показать ещё...
+                        </span>
+                    </div>
+
+                    <div class="flex items-center justify-center py-2">
+                        <TransitionDrop>
+                            <AppLoader v-if="isLoading" :is-center="false" size="sm" theme="muted" />
+                        </TransitionDrop>
+                    </div>
+                </div>
+            </div>
+
+            <div class="shrink-0 border-t border-border-subtle p-2 pb-[calc(0.5rem_+_env(safe-area-inset-bottom))]">
+                <CommentCreateInput v-if="me" mobile @edit-comment="editCommentHandler" v-model="isEditingComment"
+                    @add-comment="addCommentHandler" />
+            </div>
+        </div>
+    </AppModal>
+
+    <!-- Десктоп: текущий инлайновый вид (без изменений). -->
+    <CommentBorder v-else @close="closeCommentsHandler" v-model="isPostVisible">
         <div class="w-full">
             <SmartScrollButton :is-visible="isPostVisible" :scroll-offset="32"
                 :class="button({ variant: 'primary', size: 'sm', rounded: 'full', class: 'left-1/2 -translate-x-1/2 shadow-lg' })"
@@ -53,15 +112,23 @@
 
 <script setup lang="ts">
 import { vAutoAnimate } from '@formkit/auto-animate';
-import App from '~/app.vue';
 import { useAuthStore } from '~/stores/auth';
 import { useCommentStore } from '~/stores/comment';
 import type { IComment } from '~/types/comment.types.ts';
+import type { IPost } from '~/types/post.types';
 import type { IReactionRequest } from '~/types/reaction.types';
-import { button } from '~/utils/ui/atoms';
+import { button, iconButton } from '~/utils/ui/atoms';
 
 const { user: me } = storeToRefs(useAuthStore())
-const props = defineProps<{ postId: string, sentinelAbove: HTMLElement | null }>()
+const props = withDefaults(defineProps<{
+    postId: string,
+    sentinelAbove: HTMLElement | null,
+    fullscreen?: boolean,
+    post?: IPost | null,
+}>(), {
+    fullscreen: false,
+    post: null,
+})
 const emit = defineEmits<{
     (e: 'close-comments'): void,
 }>()
@@ -74,6 +141,10 @@ const canLoadMore = computed(() => commentStore.canLoadMoreComments(props.postId
 
 const isEditingComment = ref<IComment | null>(null)
 const isFocus = ref(false)
+
+// Состояние открытия мобильного шита. При закрытии (крестик/свайп) сообщаем родителю.
+const isOpen = ref(true)
+watch(isOpen, (val) => { if (!val && props.fullscreen) closeCommentsHandler() })
 
 const sentinelBelow = ref<HTMLElement | null>(null);
 const sentinelAbove = ref<HTMLElement | null>(null);
@@ -91,7 +162,7 @@ async function loadNextPageHandler() {
 }
 
 function closeCommentsHandler() {
-    scrollToPost(props.postId)
+    if (!props.fullscreen) scrollToPost(props.postId)
     emit('close-comments')
 }
 
