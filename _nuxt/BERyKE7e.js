@@ -1,1 +1,0 @@
-import{e as s,s as t,v as r,x as a,f as n}from"./Dc1726R5.js";const f=s({__name:"index",setup(u){const e=t(),{user:o}=r(e);return o.value?a(o.value.nickname):(e.openAuthPrompt(),n()),()=>{}}});export{f as default};
