@@ -1,1 +1,0 @@
-import{_ as t}from"./J2gBDHlq.js";import{e as r,o as e,d as p}from"./B_NZHZZt.js";import"./fsjej3JU.js";import"./BQDKAFa-.js";import"./DlAUqK2U.js";import"./BOuNkM__.js";import"./XM7p1Lpz.js";import"./DOXBARrn.js";import"./CafrBhZJ.js";import"./CBXyZ6d9.js";import"./jwZvZAll.js";const g=r({__name:"[id]",setup(m){return(n,_)=>{const o=t;return e(),p(o)}}});export{g as default};
