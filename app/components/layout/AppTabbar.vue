@@ -33,6 +33,7 @@
             </NuxtLink>
 
             <div class="flex items-center gap-2 ml-auto shrink-0">
+                <ThemeToggle />
                 <NuxtLink :class="button({ variant: 'ghost', size: 'sm', rounded: 'full' })" to="/login">
                     Войти
                 </NuxtLink>

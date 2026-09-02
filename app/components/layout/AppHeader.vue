@@ -12,11 +12,7 @@
                bg-surface-secondary border border-transparent
                focus-within:bg-surface-base focus-within:border-border-header
                transition-colors cursor-text">
-        <svg class="w-4 h-4 shrink-0 text-icon-secondary group-focus-within:text-icon-primary" fill="none"
-          stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <circle cx="11" cy="11" r="7" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" />
-        </svg>
+        <AppIcon name="search" class="w-4 h-4 shrink-0 text-icon-secondary group-focus-within:text-icon-primary" />
 
         <input v-model="search" type="text" name="q" autocomplete="off" placeholder="Поиск в NuxtGram (пока не работает)"
           class="w-full bg-transparent outline-none text-sm text-icon-primary placeholder:text-icon-secondary"
@@ -24,15 +20,14 @@
 
         <button v-if="search" type="button" class="shrink-0 text-icon-secondary hover:text-icon-primary"
           @click="clearSearch">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
+          <AppIcon name="cross" class="w-4 h-4" />
         </button>
       </label>
     </div>
 
     <div class="flex items-center gap-2 shrink-0">
+      <ThemeToggle />
+
       <button class="hidden sm:inline-flex items-center justify-center transition-colors font-medium rounded-full px-4 py-2 text-base gap-2 text-icon-primary hover:bg-surface-secondary outline-none focus-visible:ring-2 focus-visible:ring-icon-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base"
         @click="createPostHandler">
         <span class="text-sm">+ Создать</span>
