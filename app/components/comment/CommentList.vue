@@ -33,11 +33,11 @@
                     </div>
 
                     <div v-else-if="!isLoading && commentsMeta?.totalDocs === 0">
-                        <p class="text-gray-400">Комментариев пока нет</p>
+                        <p class="text-icon-secondary">Комментариев пока нет</p>
                     </div>
 
                     <div v-if="canLoadMore && !isLoading" class="mt-3">
-                        <span class="select-none text-gray-400 hover:underline cursor-pointer" @click="loadNextPageHandler">
+                        <span class="select-none text-icon-secondary hover:underline cursor-pointer" @click="loadNextPageHandler">
                             Показать ещё...
                         </span>
                     </div>
@@ -79,11 +79,11 @@
                 </div>
 
                 <div v-else-if="!isLoading && commentsMeta?.totalDocs === 0">
-                    <p class="text-gray-400">Комментариев пока нет</p>
+                    <p class="text-icon-secondary">Комментариев пока нет</p>
                 </div>
 
                 <div v-if="canLoadMore && !isLoading" class="mt-3">
-                    <span class="select-none text-gray-400 hover:underline cursor-pointer" @click="loadNextPageHandler">
+                    <span class="select-none text-icon-secondary hover:underline cursor-pointer" @click="loadNextPageHandler">
                         Показать ещё...
                     </span>
                 </div>

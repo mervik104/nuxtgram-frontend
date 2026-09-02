@@ -4,7 +4,7 @@
 
     <div class="flex-1">
       <div v-if="isEditingComment" class="mb-1 flex items-center">
-        <span class="text-sm ml-1 text-gray-200">Изменение комментария</span>
+        <span class="text-sm ml-1 text-icon-primary">Изменение комментария</span>
         <AppButton @click="isEditingComment = null" variant="text" size="sm" class="text-red-500 hover:underline ml-3">
           Отменить
         </AppButton>
@@ -34,7 +34,7 @@
     <div class="relative flex-1">
 
       <div v-if="isEditingComment" class="mb-1 flex items-center">
-        <span class="text-sm ml-1 text-gray-200">Изменение комментария</span>
+        <span class="text-sm ml-1 text-icon-primary">Изменение комментария</span>
         <AppButton @click="isEditingComment = null" variant="text" size="sm" class="text-red-500 hover:underline ml-3">
           Отменить
         </AppButton>

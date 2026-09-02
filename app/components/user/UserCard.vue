@@ -122,11 +122,11 @@
           <ProfileStatChip :stat="feedMeta ? feedMeta.totalDocs : 0">
             {{ pluralPublications(feedMeta?.totalDocs || 0) }}
           </ProfileStatChip>
-          <ProfileStatChip :class="itsMe ? 'cursor-pointer hover:bg-gray-700 transition-colors' : ''"
+          <ProfileStatChip :class="itsMe ? 'cursor-pointer hover:bg-surface-accent-hover transition-colors' : ''"
             @click="subscribersHandler" :stat="follows?.followersCount">
             {{ pluralFollowers(follows?.followersCount) }}
           </ProfileStatChip>
-          <ProfileStatChip :class="itsMe ? 'cursor-pointer hover:bg-gray-700 transition-colors' : ''"
+          <ProfileStatChip :class="itsMe ? 'cursor-pointer hover:bg-surface-accent-hover transition-colors' : ''"
             @click="subscriptionsHandler" :stat="follows?.followingCount">
             {{ pluralFollowing(follows?.followingCount) }}
           </ProfileStatChip>

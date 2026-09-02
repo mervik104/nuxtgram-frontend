@@ -12,9 +12,9 @@ export const button = tv({
             primary: 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm focus-visible:ring-blue-500',
             success: 'bg-green-600 text-white hover:bg-green-700 shadow-sm focus-visible:ring-green-500',
             secondary: 'bg-gray-800 text-gray-300 hover:bg-gray-700 border border-gray-700 focus-visible:ring-gray-500',
-            outline: 'bg-transparent text-gray-300 border border-gray-600 hover:bg-gray-800 focus-visible:ring-gray-500',
-            ghost: 'bg-transparent text-gray-200 hover:bg-gray-800 focus-visible:ring-gray-500',
-            text: 'bg-transparent text-gray-200 hover:text-gray-400',
+            outline: 'bg-transparent text-icon-primary border border-border-input hover:bg-surface-secondary focus-visible:ring-icon-accent',
+            ghost: 'bg-transparent text-icon-primary hover:bg-surface-secondary focus-visible:ring-icon-accent',
+            text: 'bg-transparent text-icon-primary hover:text-icon-secondary',
             danger: 'bg-red-500 text-white hover:bg-red-600 focus-visible:ring-red-500',
         },
         size: {
@@ -52,7 +52,7 @@ export const menuItem = tv({
     base: 'w-full text-left px-3 py-1.5 text-sm transition-colors hover:bg-border-hover',
     variants: {
         variant: {
-            default: 'text-white',
+            default: 'text-icon-primary',
             danger: 'text-red-400',
         },
     },
@@ -64,8 +64,8 @@ export const iconButton = tv({
     base: 'inline-flex items-center justify-center transition-all duration-200 outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 cursor-pointer',
     variants: {
         variant: {
-            accent: 'bg-surface-accent border border-border-accent text-gray-200 hover:bg-surface-accent-hover hover:scale-110',
-            ghost: 'bg-transparent text-gray-200 hover:bg-gray-800',
+            accent: 'bg-surface-accent border border-border-accent text-icon-primary hover:bg-surface-accent-hover hover:scale-110',
+            ghost: 'bg-transparent text-icon-primary hover:bg-surface-secondary',
             danger: 'bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20',
         },
         size: {
@@ -196,7 +196,7 @@ export const modal = tv({
 // Dropdown: слоты trigger/menu + вертикальное выравнивание (start/end).
 export const dropdown = tv({
     slots: {
-        trigger: 'inline-flex items-center gap-2 px-3 py-1 rounded-md transition-colors bg-transparent text-gray-200 hover:bg-gray-800',
+        trigger: 'inline-flex items-center gap-2 px-3 py-1 rounded-md transition-colors bg-transparent text-icon-primary hover:bg-surface-secondary',
         menu: 'bg-surface-menu border border-border-hover rounded-lg shadow-lg overflow-hidden py-1',
     },
     variants: {
@@ -223,7 +223,7 @@ export const badge = tv({
     variants: {
         intent: {
             info: 'bg-blue-500 text-white',
-            muted: 'bg-gray-700 text-gray-200',
+            muted: 'bg-surface-secondary text-icon-primary',
         },
     },
     defaultVariants: { intent: 'muted' },
@@ -231,7 +231,7 @@ export const badge = tv({
 
 // Маленький чип (тег, статус); размер влияет только на шрифт.
 export const chip = tv({
-    base: 'inline-flex items-center px-2 py-1 rounded-full bg-gray-800 text-gray-200',
+    base: 'inline-flex items-center px-2 py-1 rounded-full bg-surface-secondary text-icon-primary',
     variants: {
         size: {
             sm: 'text-xs',
@@ -276,7 +276,7 @@ export const icon = tv({
 
 // Текстовые блоки по размеру шрифта.
 export const text = tv({
-    base: 'text-gray-200 leading-relaxed',
+    base: 'text-icon-primary leading-relaxed',
     variants: {
         size: {
             sm: 'text-sm',
